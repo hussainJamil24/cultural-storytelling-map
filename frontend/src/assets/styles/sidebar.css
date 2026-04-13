@@ -1,0 +1,71 @@
+.sidebar {
+    position: relative;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    gap: 8px;
+}
+
+.sidebar-menu li {
+    margin: 0;
+}
+
+.sidebar-menu li.active .menu-link {
+    color: #fff;
+    background: #007BFF;
+    border-radius: 50px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    -ms-border-radius: 50px;
+    -o-border-radius: 50px;
+}
+
+.menu-link {
+    gap: 20px;
+    padding: 12px 20px;
+    color: #111;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 50px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    -ms-border-radius: 50px;
+    -o-border-radius: 50px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.sidebar-menu li:not(.active) .menu-link:hover {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+.menu-link i {
+    font-size: 25px;
+}
+
+.menu-link span {
+    font-size: 20px;
+}
+
+.upload-btn {
+    width: 80%;
+    background: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 50px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    -ms-border-radius: 50px;
+    -o-border-radius: 50px;
+    position: absolute;
+    bottom: 10px;
+}
+
+.upload-btn i {
+    font-size: 16px;
+    margin-right: 5px;
+}
