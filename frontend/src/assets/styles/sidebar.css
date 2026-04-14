@@ -51,7 +51,7 @@
 }
 
 .upload-btn {
-    width: 80%;
+    width: 100%;
     background: #007BFF;
     color: #fff;
     border: none;
@@ -61,8 +61,8 @@
     -moz-border-radius: 50px;
     -ms-border-radius: 50px;
     -o-border-radius: 50px;
-    position: absolute;
-    bottom: 10px;
+    /* position: absolute;
+    bottom: 10px; */
 }
 
 .upload-btn i {

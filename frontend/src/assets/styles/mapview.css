@@ -1,0 +1,16 @@
+.map-container {
+    position: relative;
+}
+
+.map-search {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 1000;
+    width: 250px;
+}
+
+.map-search input {
+    border-radius: 50px;
+    padding: 10px 15px;
+}
