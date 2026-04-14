@@ -1,0 +1,26 @@
+/* Layout below navbar */
+.main-layout {
+    height: calc(100vh - 70px); /* adjust based on navbar height */
+}
+
+/* Sidebar */
+.sidebar-wrapper {
+    width: 275px;
+}
+
+/* Map */
+.map-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    /* hide sidebar */
+    /* .sidebar-wrapper {
+            display: none; 
+    } */
+
+    .main-layout {
+        height: calc(100vh - 70px);
+    }
+}

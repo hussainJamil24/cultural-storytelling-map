@@ -20,6 +20,14 @@ export default function MapView() {
                 />
             </div>
 
+            {/* Upload Button */}
+            <div className="map-upload-btn">
+                <button className="upload-btn mt-auto">
+                    <i className="bi bi-plus-lg"></i>
+                    Upload Story
+                </button>
+            </div>
+
             {/* Map */}
             <MapContainer center={CyprusCenter} zoom={9}  maxBounds={bounds} maxBoundsViscosity={1.0}
             zoomControl={false} // disable default
