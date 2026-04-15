@@ -1,7 +1,65 @@
-// import { useState } from "react";
+import { MapContainer, TileLayer, Marker, useMapEvents  } from "react-leaflet";
+import { ZoomControl } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { useState } from "react";
 import Navbar from '../components/Navbar';
 import '../assets/styles/uploadstory.css';
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+    iconUrl: require("leaflet/dist/images/marker-icon.png"),
+    shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+});
+
+// Component to handle map clicks
+function LocationMarker({ setPosition }) {
+    useMapEvents({
+        click(e) {
+            setPosition([e.latlng.lat, e.latlng.lng]);
+        },
+    });
+    return null;
+}
+
 export default function Upload() {
+    const [position, setPosition] = useState(null);
+    const CyprusCenter = [35.1264, 33.4299];
+    const bounds = [
+        [34.5, 32.0], // Southwest
+        [35.7, 34.8], // Northeast
+    ];
+
+    const [formData, setFormData] = useState({
+        title:'',
+        narrative:'',
+        anonymous: false,
+        images:null,
+        audio:null,
+    });
+
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    const handleFileChange = (e, fieldName) => {
+        setFormData(prev => ({
+            ...prev,
+            [fieldName]: e.target.files
+        }));
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log('Form submitted:', formData);
+    };
+
     return (
         <div className="upload-story-container bg-light">
             {/* Navbar */}
@@ -15,12 +73,13 @@ export default function Upload() {
 
             {/* Main Form */}
             <div className="story-card">
-                <form>
+                <form onSubmit={handleSubmit}>
                     {/* Story Title */}
                     <div className="form-section">
                         <label className='form-label d-block text-uppercase mb-2 fw-medium '>Story Title</label>
                         <input type='text' name='title' className='form-control p-3'
                         placeholder='Enter a memorable name for your story'
+                        value={formData.title} onChange={handleInputChange}
                         />
                     </div>
 
@@ -29,6 +88,7 @@ export default function Upload() {
                         <label className='form-label d-block text-uppercase mb-2 fw-medium'>The narrative</label>
                         <textarea type='text' name='narrative' className='form-control textarea-large p-3' rows="6"
                         placeholder='Describe the memory, the event, or the significance of this place....'
+                        value={formData.narrative} onChange={handleInputChange}
                         >
                         </textarea>
                     </div>
@@ -38,7 +98,7 @@ export default function Upload() {
                         {/* Upload Images */}
                         <div className="upload-box text-center">
                             <input type="file" id="images-input" multiple accept="image/*"
-                            // style={{ display: 'none' }}    
+                            onChange={(e)=> handleFileChange(e, 'images')}
                             />
                             <label htmlFor="images-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
                                 <div className="upload-icon d-flex align-items-center justify-content-center">
@@ -52,7 +112,7 @@ export default function Upload() {
                         {/* Add Oral History */}
                         <div className="upload-box text-center">
                             <input type="file" id="audio-input" accept="audio/*"
-                            // style={{ display: 'none' }}    
+                            onChange={(e)=> handleFileChange(e, 'audio')}
                             />
                             <label htmlFor="audio-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
                                 <div className="upload-icon d-flex align-items-center justify-content-center">
@@ -62,10 +122,63 @@ export default function Upload() {
                                 <p className='fw-lighter'>MP3, WAV up to 20MB</p>
                             </label>
                         </div>
-
                     </div>
 
+                    {/* Geographic Anchor */}
+                    <div className="form-section">
+                        <label className="form-label d-block text-uppercase mb-2 fw-medium">Geographic Anchor</label>
+                        <div className="map-wrapper">
+                            <MapContainer center={CyprusCenter} zoom={9}  maxBounds={bounds} maxBoundsViscosity={1.0}
+                            zoomControl={false} // disable default
+                            style={{height: "180px", borderRadius:"15px" }}
+                            >
+                                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+
+                                {/* Detect click */}
+                                <LocationMarker setPosition={setPosition} />
+
+                                {/* Show marker ONLY if user clicked */}
+                                {position && <Marker position={position} />}
+
+                                {/* Zoom on right */}
+                                <ZoomControl position="topright"/>
+                            </MapContainer>
+
+                            <div className="map-overlay d-flex gap-1">
+                                <i className="bi bi-geo-alt-fill"></i>
+                                <p className="fw-medium">Click to pinpoint location</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Anonymous Checkbox */}
+                    <div className="form-section checkbox-section">
+                        <div className="form-check d-flex align-items-center gap-2">
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id="anonymous"
+                                name="anonymous"
+                                checked={formData.anonymous} onChange={handleInputChange}
+                            />
+                            <label className="form-check-label fw-medium" htmlFor="anonymous">
+                                Post story anonymously
+                            </label>
+                        </div>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="form-section submit-section d-flex justify-content-center mt-5">
+                        <button type="submit" className="main-btn rounded-pill">
+                            SUBMIT STORY
+                        </button>
+                    </div>
                 </form>
+            </div>
+
+            {/* Footer Quote */}
+            <div className="story-footer text-center fst-italic fw-lighter">
+                <p>"We are the stories we tell." — The Curator</p>
             </div>
         </div>
     );
