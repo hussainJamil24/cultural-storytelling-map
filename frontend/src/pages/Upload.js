@@ -15,10 +15,16 @@ L.Icon.Default.mergeOptions({
 });
 
 // Component to handle map clicks
-function LocationMarker({ setPosition }) {
+function LocationMarker({ setPosition, onSelectLocation  }) {
     useMapEvents({
         click(e) {
-            setPosition([e.latlng.lat, e.latlng.lng]);
+            const coords = {
+                lat: e.latlng.lat,
+                lng: e.latlng.lng
+            };
+
+            setPosition([coords.lat, coords.lng]);   // show marker
+            onSelectLocation(coords); // save to formData
         },
     });
     return null;
@@ -38,7 +44,18 @@ export default function Upload() {
         anonymous: false,
         images:null,
         audio:null,
+        location: null,
     });
+
+    const btnDisable =
+    formData.title === "" || formData.narrative === ""  ||formData.location == null ;
+    
+    const handleLocationSelect = (coords) => {
+    setFormData(prev => ({
+        ...prev,
+        location: coords
+    }));
+};
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -135,7 +152,9 @@ export default function Upload() {
                                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
 
                                 {/* Detect click */}
-                                <LocationMarker setPosition={setPosition} />
+                                <LocationMarker setPosition={setPosition} 
+                                    onSelectLocation={handleLocationSelect} 
+                                />
 
                                 {/* Show marker ONLY if user clicked */}
                                 {position && <Marker position={position} />}
@@ -169,7 +188,7 @@ export default function Upload() {
 
                     {/* Submit Button */}
                     <div className="form-section submit-section d-flex justify-content-center mt-5">
-                        <button type="submit" className="main-btn rounded-pill">
+                        <button type="submit" id="submit-btn" className={`main-btn rounded-pill ${btnDisable ? "disabled" : ""}`}>
                             SUBMIT STORY
                         </button>
                     </div>
@@ -183,3 +202,5 @@ export default function Upload() {
         </div>
     );
 }
+
+//  className={btnDisable ? "disabled" : ""}
