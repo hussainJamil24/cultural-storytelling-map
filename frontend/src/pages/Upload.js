@@ -74,7 +74,7 @@ export default function Upload() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Form submitted:', formData);
+        // console.log('Form submitted:', formData);
     };
 
     return (
