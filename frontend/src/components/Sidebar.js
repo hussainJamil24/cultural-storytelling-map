@@ -44,10 +44,10 @@ export default function Sidebar() {
                 </li>
             </ul>
 
-            <button className="upload-btn mt-auto">
+            <Link to="/upload" className="upload-btn mt-auto">
                 <i className="bi bi-plus-lg"></i>
                 Upload Story
-            </button>
+            </Link>
         </div>
     );
 }

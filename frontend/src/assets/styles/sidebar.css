@@ -56,6 +56,8 @@
     color: #fff;
     border: none;
     padding: 12px 20px;
+    text-decoration: none;
+    font-weight: 500;
     border-radius: 50px;
     -webkit-border-radius: 50px;
     -moz-border-radius: 50px;

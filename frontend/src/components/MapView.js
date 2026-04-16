@@ -1,7 +1,9 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { ZoomControl } from "react-leaflet";
+import { Link } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import '../assets/styles/mapview.css';
+import popup from'../assets/images/old-nicosia.jpg'
 
 export default function MapView() {
     const CyprusCenter = [35.1264, 33.4299];
@@ -22,10 +24,10 @@ export default function MapView() {
 
             {/* Upload Button */}
             <div className="map-upload-btn">
-                <button className="upload-btn mt-auto">
+                <Link to="/upload" className="upload-btn mt-auto">
                     <i className="bi bi-plus-lg"></i>
                     Upload Story
-                </button>
+                </Link>
             </div>
 
             {/* Map */}
@@ -35,7 +37,38 @@ export default function MapView() {
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
                 <Marker position={[35.1856, 33.3823]}>
-                    <Popup>Nicosia Story</Popup>
+                    <Popup className="custom-popup">
+                        <div className="popup-card">
+                            {/* Image */}
+                            <div className="popup-image">
+                                <img 
+                                    src={popup} 
+                                    alt="story" 
+                                />
+                            </div>
+
+                            {/* Content */}
+                            <div className="popup-content">
+                                <h5>The golden heart of the city</h5>
+
+                                <p>
+                                An elevated, sun-drenched view of Nicosia's historic quarter, where the weathered 
+                                stone of an ancient church spire stands in quiet contrast to 
+                                the sprawling urban horizon of the divided capital.
+                                </p>
+
+                                {/* Audio */}
+                                <audio controls className="w-100">
+                                    <source src="" />
+                                </audio>
+
+                                {/* Button */}
+                                <Link to={`/story/1`} className="popup-btn">
+                                    View Full Story
+                                </Link>
+                            </div>
+                        </div>
+                    </Popup>
                 </Marker>
 
                 {/* Zoom on right */}
