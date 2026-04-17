@@ -3,6 +3,7 @@ import { ZoomControl } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useState } from "react";
+import API from "../services/api";
 import Navbar from '../components/Navbar';
 import '../assets/styles/uploadstory.css';
 
@@ -72,8 +73,42 @@ export default function Upload() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        try {
+            const form = new FormData();
+
+            form.append("title", formData.title);
+            form.append("narrative", formData.narrative);
+
+             // location
+            form.append("lat", formData.location?.lat);
+            form.append("lng", formData.location?.lng);
+
+            // files
+            if (formData.images) {
+            form.append("image", formData.images[0]); // first image
+            }
+
+            if (formData.audio) {
+            form.append("audio", formData.audio[0]);
+            }
+
+            const res = await API.post("/stories", form, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            console.log("SUCCESS:", res.data);
+            alert("Story uploaded successfully");
+
+        } catch(err) {
+            console.error(err);
+            alert("Upload failed");
+        }
+
+
         // console.log('Form submitted:', formData);
     };
 
@@ -188,7 +223,9 @@ export default function Upload() {
 
                     {/* Submit Button */}
                     <div className="form-section submit-section d-flex justify-content-center mt-5">
-                        <button type="submit" id="submit-btn" className={`main-btn rounded-pill ${btnDisable ? "disabled" : ""}`}>
+                        <button type="submit" id="submit-btn" className= "main-btn rounded-pill" 
+                            disabled={btnDisable}
+                        >
                             SUBMIT STORY
                         </button>
                     </div>
@@ -202,5 +239,3 @@ export default function Upload() {
         </div>
     );
 }
-
-//  className={btnDisable ? "disabled" : ""}
