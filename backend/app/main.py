@@ -1,6 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.db.session import Base, engine
+from app.models import story_model
 from app.routes import stories
+
+
+# creates database tables from models
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -13,9 +20,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def root():
     return {"message": "API is working"}
+
 
 # include routes AFTER middleware
 app.include_router(stories.router)
