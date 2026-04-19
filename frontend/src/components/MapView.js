@@ -3,7 +3,9 @@ import { ZoomControl } from "react-leaflet";
 import { Link } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import '../assets/styles/mapview.css';
-import popup from'../assets/images/old-nicosia.jpg'
+import popup from'../assets/images/old-nicosia.jpg';
+import { useEffect, useState } from "react";
+import API from "../services/api";
 
 export default function MapView() {
     const CyprusCenter = [35.1264, 33.4299];
@@ -11,6 +13,21 @@ export default function MapView() {
         [34.5, 32.0], // Southwest
         [35.7, 34.8], // Northeast
     ];
+
+    const [stories, setStories] = useState([]);
+        useEffect(() => {
+        const fetchStories = async () => {
+            try {
+                const res = await API.get("/stories");
+                setStories(res.data);
+            } catch (err) {
+                console.error("Error fetching stories", err);
+            }
+        };
+
+        fetchStories();
+    }, []);
+
     return (
         <div className="map-container">
             {/* Search Bar */}
@@ -36,40 +53,44 @@ export default function MapView() {
             style={{ height: "100vh" }}
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-                <Marker position={[35.1856, 33.3823]}>
-                    <Popup className="custom-popup">
-                        <div className="popup-card">
-                            {/* Image */}
-                            <div className="popup-image">
-                                <img 
-                                    src={popup} 
-                                    alt="story" 
-                                />
+                {stories.map((story) => (
+                    <Marker key={story.id}
+                        position={[story.location.lat, story.location.lng]}
+                    >
+                        <Popup>
+                            <div className="popup-card">
+                                {/* Image */}
+                                <div className="popup-image">
+                                    <img
+                                        src={popup} // temporary static image
+                                        alt="story"
+                                    />
+                                </div>
+
+                                {/* Content */}
+                                <div className="popup-content">
+                                    <h5>{story.title}</h5>
+                                    <p>
+                                        {story.narrative?.slice(0, 80)}...
+                                    </p>
+
+                                    {/* Audio */}
+                                    {story.audio && (
+                                        <audio controls style={{ width: "100%", marginTop: "10px" }}>
+                                            <source src="#" type="audio/mpeg" />
+                                            Your browser does not support audio
+                                        </audio>
+                                    )}
+
+                                    <Link to="/upload" className="popup-btn">
+                                        View Full Story
+                                    </Link>
+                                </div>
                             </div>
-
-                            {/* Content */}
-                            <div className="popup-content">
-                                <h5>The golden heart of the city</h5>
-
-                                <p>
-                                An elevated, sun-drenched view of Nicosia's historic quarter, where the weathered 
-                                stone of an ancient church spire stands in quiet contrast to 
-                                the sprawling urban horizon of the divided capital.
-                                </p>
-
-                                {/* Audio */}
-                                <audio controls className="w-100">
-                                    <source src="" />
-                                </audio>
-
-                                {/* Button */}
-                                <Link to={`/story/1`} className="popup-btn">
-                                    View Full Story
-                                </Link>
-                            </div>
-                        </div>
-                    </Popup>
-                </Marker>
+                        </Popup>
+                    </Marker>
+                ))}
+                
 
                 {/* Zoom on right */}
                 <ZoomControl position="topright" />
