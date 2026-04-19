@@ -1,37 +1,32 @@
-from fastapi import APIRouter, UploadFile, File, Form
-from typing import List
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
+
+from app.db.session import get_db
+from app.models.story_model import Story
+from app.schemas.story_schema import StoryCreate, StoryResponse
 
 router = APIRouter()
 
-# Temporary storage (in memory)
-stories = []
 
-@router.post("/stories")
-async def create_story(
-    title: str = Form(...),
-    narrative: str = Form(None),
-    lat: float = Form(...),
-    lng: float = Form(...),
-    image: UploadFile = File(None),
-    audio: UploadFile = File(None)
-):
-    story = {
-        "id": len(stories) + 1,
-        "title": title,
-        "narrative": narrative,
-        "location": {
-            "lat": lat,
-            "lng": lng
-        },
-        "image": image.filename if image else None,
-        "audio": audio.filename if audio else None
-    }
+@router.post("/stories", response_model=StoryResponse, status_code=status.HTTP_201_CREATED)
+def create_story(story: StoryCreate, db: Session = Depends(get_db)):
+    # creates a new story record in the database
+    new_story = Story(
+        title=story.title,
+        content=story.content,
+        media_url=story.media_url,
+        latitude=story.latitude,
+        longitude=story.longitude,
+    )
 
-    stories.append(story)
+    db.add(new_story)
+    db.commit()
+    db.refresh(new_story)
 
-    return {"message": "Story created", "story": story}
+    return new_story
 
 
-@router.get("/stories")
-def get_stories():
-    return stories
+@router.get("/stories", response_model=list[StoryResponse])
+def get_stories(db: Session = Depends(get_db)):
+    # returns all saved stories from the database
+    return db.query(Story).order_by(Story.created_at.desc()).all()
