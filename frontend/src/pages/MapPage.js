@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import popup from'../assets/images/old-nicosia.jpg';
-import API from "../services/api";
+import API from "../services/Api";
 import Navbar from "../components/Navbar";
 
 export default function MapPage() {

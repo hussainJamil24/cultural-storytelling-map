@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 import '../assets/styles/mapview.css';
 import popup from'../assets/images/old-nicosia.jpg';
 import { useEffect, useState } from "react";
-import API from "../services/api";
+import API from "../services/Api";
 
 export default function MapView() {
     const CyprusCenter = [35.1264, 33.4299];
