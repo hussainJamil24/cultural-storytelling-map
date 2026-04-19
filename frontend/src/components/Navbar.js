@@ -36,8 +36,8 @@ export default function Navbar() {
 
                 {/* Right Side */}
                 <div className="d-flex">
-                    <Link className="btn btn-outline-primary rounded-pill px-3" to="/Login">
-                        Logo in
+                    <Link className="btn btn-outline-primary rounded-pill px-3" to="/login">
+                        Log in
                     </Link>
                 </div>
             </div>

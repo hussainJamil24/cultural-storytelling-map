@@ -8,6 +8,16 @@ import API from "../services/Api";
 import Navbar from "../components/Navbar";
 
 export default function MapPage() {
+    const getStoryPreview = (story) => {
+        if (!story.content) {
+            return "No story content available yet.";
+        }
+
+        return story.content.length > 80
+            ? `${story.content.slice(0, 80)}...`
+            : story.content;
+    };
+
     const CyprusCenter = [35.1264, 33.4299];
     const bounds = [
         [34.5, 32.0], // Southwest
@@ -36,9 +46,11 @@ export default function MapPage() {
             style={{ height: "100vh" }}
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-                {stories.map((story) => (
+                {stories
+                    .filter((story) => Number.isFinite(Number(story.latitude)) && Number.isFinite(Number(story.longitude)))
+                    .map((story) => (
                     <Marker key={story.id}
-                        position={[story.location.lat, story.location.lng]}
+                        position={[Number(story.latitude), Number(story.longitude)]}
                     >
                         <Popup>
                             <div className="popup-card">
@@ -53,21 +65,24 @@ export default function MapPage() {
                                 {/* Content */}
                                 <div className="popup-content">
                                     <h5>{story.title}</h5>
-                                    <p>
-                                        {story.narrative?.slice(0, 80)}...
-                                    </p>
+                                    <p>{getStoryPreview(story)}</p>
 
-                                    {/* Audio */}
-                                    {story.audio && (
-                                        <audio controls style={{ width: "100%", marginTop: "10px" }}>
-                                            <source src="#" type="audio/mpeg" />
-                                            Your browser does not support audio
-                                        </audio>
+                                    {/* Media link */}
+                                    {story.media_url && (
+                                        <a
+                                            href={story.media_url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="popup-btn"
+                                        >
+                                            Open Media
+                                        </a>
                                     )}
-
-                                    <Link to="/upload" className="popup-btn">
+                                    {!story.media_url && (
+                                        <Link to="/upload" className="popup-btn">
                                         View Full Story
-                                    </Link>
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         </Popup>

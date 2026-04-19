@@ -76,32 +76,36 @@ export default function Upload() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const form = new FormData();
-
-            form.append("title", formData.title);
-            form.append("narrative", formData.narrative);
-
-             // location
-            form.append("lat", formData.location?.lat);
-            form.append("lng", formData.location?.lng);
-
-            // files
-            if (formData.images) {
-            form.append("image", formData.images[0]); // first image
+            if (formData.images || formData.audio) {
+                alert("Media file upload is coming soon. For now, submit text and location only.");
+                return;
             }
 
-            if (formData.audio) {
-            form.append("audio", formData.audio[0]);
-            }
+            const payload = {
+                title: formData.title.trim(),
+                content: formData.narrative.trim(),
+                media_url: null,
+                latitude: formData.location?.lat,
+                longitude: formData.location?.lng,
+            };
 
-            const res = await API.post("/stories", form, {
+            const res = await API.post("/stories", payload, {
                 headers: {
-                    "Content-Type": "multipart/form-data",
+                    "Content-Type": "application/json",
                 },
             });
 
             console.log("SUCCESS:", res.data);
-            alert("Story uploaded successfully");
+            alert("Story submitted successfully and is now pending review.");
+            setFormData({
+                title: '',
+                narrative: '',
+                anonymous: false,
+                images: null,
+                audio: null,
+                location: null,
+            });
+            setPosition(null);
 
         } catch(err) {
             console.error(err);
@@ -150,6 +154,7 @@ export default function Upload() {
                         {/* Upload Images */}
                         <div className="upload-box text-center">
                             <input type="file" id="images-input" multiple accept="image/*"
+                            disabled
                             onChange={(e)=> handleFileChange(e, 'images')}
                             />
                             <label htmlFor="images-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
@@ -157,13 +162,14 @@ export default function Upload() {
                                     <i className="bi bi-image"></i>
                                 </div>
                                 <h6>Upload Images</h6>
-                                <p className='fw-lighter'>PNG, JPG up to 10MB</p>
+                                <p className='fw-lighter'>Media upload coming soon</p>
                             </label>
                         </div>
 
                         {/* Add Oral History */}
                         <div className="upload-box text-center">
                             <input type="file" id="audio-input" accept="audio/*"
+                            disabled
                             onChange={(e)=> handleFileChange(e, 'audio')}
                             />
                             <label htmlFor="audio-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
@@ -171,7 +177,7 @@ export default function Upload() {
                                     <i className="bi bi-mic"></i>
                                 </div>
                                 <h6>Add Oral History</h6>
-                                <p className='fw-lighter'>MP3, WAV up to 20MB</p>
+                                <p className='fw-lighter'>Media upload coming soon</p>
                             </label>
                         </div>
                     </div>
