@@ -9,6 +9,10 @@ from app.schemas.story_schema import StoryCreate, StoryResponse, StoryStatusUpda
 # story api routes
 router = APIRouter()
 
+# temporary local setting so ui-only testing works without admin approval
+# switch this back to False when a real moderation flow is being used
+AUTO_APPROVE_NEW_STORIES = True
+
 
 # creates a new story submission
 @router.post("/stories", response_model=StoryResponse, status_code=http_status.HTTP_201_CREATED)
@@ -20,7 +24,7 @@ def create_story(story: StoryCreate, db: Session = Depends(get_db)):
         media_url=story.media_url,
         latitude=story.latitude,
         longitude=story.longitude,
-        status=StoryStatus.PENDING.value,
+        status=StoryStatus.APPROVED.value if AUTO_APPROVE_NEW_STORIES else StoryStatus.PENDING.value,
     )
 
     try:
@@ -44,6 +48,7 @@ def get_stories(
         query = db.query(Story)
 
         # public api shows only approved stories by default
+        # passing ?status=... is useful for internal testing and moderation checks
         if status is None:
             query = query.filter(Story.status == StoryStatus.APPROVED.value)
         else:
@@ -86,6 +91,7 @@ def update_story_status(
     db: Session = Depends(get_db),
 ):
     # updates a story status for the moderation workflow
+    # this currently acts like a simple internal moderation endpoint
     try:
         story = db.query(Story).filter(Story.id == story_id).first()
     except SQLAlchemyError:

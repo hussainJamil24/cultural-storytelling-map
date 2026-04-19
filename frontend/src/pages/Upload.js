@@ -76,11 +76,13 @@ export default function Upload() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            // media upload is not wired end to end yet, so keep local demo flow text-only
             if (formData.images || formData.audio) {
                 alert("Media file upload is coming soon. For now, submit text and location only.");
                 return;
             }
 
+            // matches the backend story schema exactly
             const payload = {
                 title: formData.title.trim(),
                 content: formData.narrative.trim(),
@@ -96,7 +98,11 @@ export default function Upload() {
             });
 
             console.log("SUCCESS:", res.data);
-            alert("Story submitted successfully and is now pending review.");
+            alert(
+                res.data.status === "approved"
+                    ? "Story submitted successfully and is now live on the map."
+                    : "Story submitted successfully and is now pending review."
+            );
             setFormData({
                 title: '',
                 narrative: '',

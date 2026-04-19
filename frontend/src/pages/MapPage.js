@@ -8,6 +8,7 @@ import API from "../services/Api";
 import Navbar from "../components/Navbar";
 
 export default function MapPage() {
+    // keeps popup text short so markers stay easy to scan on the map
     const getStoryPreview = (story) => {
         if (!story.content) {
             return "No story content available yet.";
@@ -25,7 +26,8 @@ export default function MapPage() {
     ];
 
     const [stories, setStories] = useState([]);
-        useEffect(() => {
+    // fetches public stories from the backend when the page loads
+    useEffect(() => {
         const fetchStories = async () => {
             try {
                 const res = await API.get("/stories");
