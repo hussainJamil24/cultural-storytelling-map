@@ -18,4 +18,4 @@ def root():
     return {"message": "API is working"}
 
 # include routes AFTER middleware
-app.include_router(stories.router)
+app.include_router(stories.router) 
