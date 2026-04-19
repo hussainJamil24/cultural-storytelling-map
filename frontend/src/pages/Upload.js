@@ -3,7 +3,7 @@ import { ZoomControl } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useState } from "react";
-import API from "../services/api";
+import API from "../services/Api";
 import Navbar from '../components/Navbar';
 import '../assets/styles/uploadstory.css';
 
