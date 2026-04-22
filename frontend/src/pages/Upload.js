@@ -7,15 +7,17 @@ import API from "../services/Api";
 import Navbar from '../components/Navbar';
 import '../assets/styles/uploadstory.css';
 
+// restores leaflet marker image paths inside the react build
 delete L.Icon.Default.prototype._getIconUrl;
 
+// configures the default leaflet marker assets
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
     iconUrl: require("leaflet/dist/images/marker-icon.png"),
     shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-// Component to handle map clicks
+// captures map clicks and sends the selected coordinates to the form
 function LocationMarker({ setPosition, onSelectLocation  }) {
     useMapEvents({
         click(e) {
@@ -24,21 +26,26 @@ function LocationMarker({ setPosition, onSelectLocation  }) {
                 lng: e.latlng.lng
             };
 
-            setPosition([coords.lat, coords.lng]);   // show marker
-            onSelectLocation(coords); // save to formData
+            setPosition([coords.lat, coords.lng]);   // shows the marker on the map
+            onSelectLocation(coords); // saves the coordinates into the form state
         },
     });
     return null;
 }
 
+// renders the story upload form and location picker
 export default function Upload() {
+    // tracks the marker position selected on the map
     const [position, setPosition] = useState(null);
+
+    // centers the picker map on cyprus and keeps panning inside island bounds
     const CyprusCenter = [35.1264, 33.4299];
     const bounds = [
-        [34.5, 32.0], // Southwest
-        [35.7, 34.8], // Northeast
+        [34.5, 32.0], // southwest map limit
+        [35.7, 34.8], // northeast map limit
     ];
 
+    // stores the story form values before submission
     const [formData, setFormData] = useState({
         title:'',
         narrative:'',
@@ -48,9 +55,11 @@ export default function Upload() {
         location: null,
     });
 
+    // disables submit until the required text and location are filled
     const btnDisable =
     formData.title === "" || formData.narrative === ""  ||formData.location == null ;
     
+    // saves the selected map coordinates into the form data
     const handleLocationSelect = (coords) => {
     setFormData(prev => ({
         ...prev,
@@ -58,6 +67,7 @@ export default function Upload() {
     }));
 };
 
+    // updates text fields and checkbox values
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -66,6 +76,7 @@ export default function Upload() {
         }));
     };
 
+    // stores selected files even though uploads are currently disabled
     const handleFileChange = (e, fieldName) => {
         setFormData(prev => ({
             ...prev,
@@ -73,6 +84,7 @@ export default function Upload() {
         }));
     };
 
+    // submits the story payload to the backend api
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -118,19 +130,19 @@ export default function Upload() {
 
     return (
         <div className="upload-story-container bg-light">
-            {/* Navbar */}
+            {/* shows the shared site navigation */}
             <Navbar/>
 
-            {/* Header */}
+            {/* introduces the upload page */}
             <div className="story-header text-center mt-5">
                 <h1 className='fw-bolder mb-3'>Share a Fragment of History</h1>
                 <p className='fw-lighter m-0'>Pin your story to the living map of our collective heritage.</p>
             </div>
 
-            {/* Main Form */}
+            {/* contains the story submission form */}
             <div className="story-card">
                 <form onSubmit={handleSubmit}>
-                    {/* Story Title */}
+                    {/* collects the story title */}
                     <div className="form-section">
                         <label className='form-label d-block text-uppercase mb-2 fw-medium '>Story Title</label>
                         <input type='text' name='title' className='form-control p-3'
@@ -139,7 +151,7 @@ export default function Upload() {
                         />
                     </div>
 
-                    {/* The Narrative */}
+                    {/* collects the main story narrative */}
                     <div className="form-section">
                         <label className='form-label d-block text-uppercase mb-2 fw-medium'>The narrative</label>
                         <textarea type='text' name='narrative' className='form-control textarea-large p-3' rows="6"
@@ -149,9 +161,9 @@ export default function Upload() {
                         </textarea>
                     </div>
 
-                    {/* Upload Boxes */}
+                    {/* shows the placeholder media upload boxes */}
                     <div className="upload-boxes">
-                        {/* Upload Images */}
+                        {/* shows the disabled image upload field */}
                         <div className="upload-box text-center">
                             <input type="file" id="images-input" multiple accept="image/*"
                             disabled
@@ -166,7 +178,7 @@ export default function Upload() {
                             </label>
                         </div>
 
-                        {/* Add Oral History */}
+                        {/* shows the disabled audio upload field */}
                         <div className="upload-box text-center">
                             <input type="file" id="audio-input" accept="audio/*"
                             disabled
@@ -182,28 +194,30 @@ export default function Upload() {
                         </div>
                     </div>
 
-                    {/* Geographic Anchor */}
+                    {/* lets the user choose a map location */}
                     <div className="form-section">
                         <label className="form-label d-block text-uppercase mb-2 fw-medium">Geographic Anchor</label>
                         <div className="map-wrapper">
+                            {/* renders the picker map with a custom zoom control placement */}
                             <MapContainer center={CyprusCenter} zoom={9}  maxBounds={bounds} maxBoundsViscosity={1.0}
-                            zoomControl={false} // disable default
+                            zoomControl={false}
                             style={{height: "180px", borderRadius:"15px" }}
                             >
                                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
 
-                                {/* Detect click */}
+                                {/* listens for clicks and updates the selected coordinates */}
                                 <LocationMarker setPosition={setPosition} 
                                     onSelectLocation={handleLocationSelect} 
                                 />
 
-                                {/* Show marker ONLY if user clicked */}
+                                {/* shows a marker only after a location is selected */}
                                 {position && <Marker position={position} />}
 
-                                {/* Zoom on right */}
+                                {/* shows zoom controls on the right side of the map */}
                                 <ZoomControl position="topright"/>
                             </MapContainer>
 
+                            {/* explains how to choose a location */}
                             <div className="map-overlay d-flex gap-1">
                                 <i className="bi bi-geo-alt-fill"></i>
                                 <p className="fw-medium">Click to pinpoint location</p>
@@ -211,7 +225,7 @@ export default function Upload() {
                         </div>
                     </div>
 
-                    {/* Anonymous Checkbox */}
+                    {/* lets the user submit anonymously */}
                     <div className="form-section checkbox-section">
                         <div className="form-check d-flex align-items-center gap-2">
                             <input
@@ -227,7 +241,7 @@ export default function Upload() {
                         </div>
                     </div>
 
-                    {/* Submit Button */}
+                    {/* submits the story once required fields are complete */}
                     <div className="form-section submit-section d-flex justify-content-center mt-5">
                         <button type="submit" id="submit-btn" className= "main-btn rounded-pill" 
                             disabled={btnDisable}
@@ -238,7 +252,7 @@ export default function Upload() {
                 </form>
             </div>
 
-            {/* Footer Quote */}
+            {/* shows the closing page quote */}
             <div className="story-footer text-center fst-italic fw-lighter">
                 <p>"We are the stories we tell." — The Curator</p>
             </div>

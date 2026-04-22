@@ -1,7 +1,9 @@
+/* positions floating map controls relative to the map */
 .map-container {
     position: relative;
 }
 
+/* anchors the upload button over the map */
 .map-upload-btn {
     position: absolute;
     bottom: 20px;
@@ -15,6 +17,7 @@
     text-decoration: none;
 }
 
+/* anchors the search input over the map */
 .map-search {
     position: absolute;
     top: 15px;
@@ -28,7 +31,7 @@
     padding: 10px 15px;
 }
 
-/* Remove default popup style */
+/* removes the default leaflet popup wrapper spacing */
 .leaflet-popup-content-wrapper {
     padding: 0;
     border-radius: 20px;
@@ -39,7 +42,7 @@
     margin: 0;
 }
 
-/* Popup card */
+/* styles the popup card shell */
 .popup-card {
     width: 260px;
     border-radius: 20px;
@@ -47,14 +50,14 @@
     background: #fff;
 }
 
-/* Image */
+/* sizes the popup image area */
 .popup-image img {
     width: 100%;
     height: 140px;
     object-fit: cover;
 }
 
-/* Content */
+/* styles the popup content area */
 .popup-content {
     padding: 15px;
 }
@@ -69,7 +72,7 @@
     color: #555;
 }
 
-/* Button */
+/* styles the popup action button */
 .popup-btn {
     display: block;
     width: 100%;
@@ -88,6 +91,7 @@
     color: white;
 }
 
+/* adjusts floating controls on smaller screens */
 @media (max-width: 768px) {
     .map-upload-btn {
         right: 10px;

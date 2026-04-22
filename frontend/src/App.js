@@ -5,9 +5,11 @@ import Upload from "./pages/Upload";
 import MapPage from "./pages/MapPage";
 import './App.css';
 
+// renders the main application routes
 function App() {
   return (
     <BrowserRouter>
+      {/* defines the main page routes */}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />

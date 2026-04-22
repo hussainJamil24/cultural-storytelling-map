@@ -1,21 +1,22 @@
-/* Layout below navbar */
+/* sizes the layout below the navbar */
 .main-layout {
     height: calc(100vh - 70px); /* adjust based on navbar height */
 }
 
-/* Sidebar */
+/* fixes the sidebar column width */
 .sidebar-wrapper {
     width: 275px;
 }
 
-/* Map */
+/* lets the map fill the remaining space */
 .map-wrapper {
     flex: 1;
     position: relative;
 }
 
+/* adjusts the layout on smaller screens */
 @media (max-width: 768px) {
-    /* hide sidebar */
+    /* keeps the sidebar visible while leaving the old fallback commented out */
     /* .sidebar-wrapper {
             display: none; 
     } */

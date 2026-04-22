@@ -2,10 +2,13 @@ import Navbar from '../components/Navbar';
 import { useState } from 'react';
 import '../assets/styles/login.css';
 
+// renders the login page layout and form shell
 export default function Login() {
+    // stores the local login form values
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    // prevents page refresh until authentication is implemented
     const handleSignIn = (e) => {
     e.preventDefault();
     // console.log('Sign in with:', { email, password });
@@ -13,10 +16,10 @@ export default function Login() {
 
     return (
         <div className="login-page d-flex flex-column">
-            {/* Navbar */}
+            {/* shows the shared site navigation */}
             <Navbar/>
             <div className="login-container d-flex">
-                {/* left side */}
+                {/* shows the brand message panel */}
                 <div className="login-left d-flex align-items-center justify-content-end">
                         <div className="branding-content">
                             <div className="accent-line mb-5"></div>
@@ -31,16 +34,16 @@ export default function Login() {
                         </div>
                 </div>
 
-                {/* right side */} 
+                {/* shows the sign-in form card */}
                 <div className="login-right d-flex align-items-center justify-content-start">
                         <div className="login-card">
                             <h1 className='text-center mb-3 fw-semibold'>Welcome Back</h1>
                             <p className="login-subtitle text-center mb-5 fw-lighter">Enter your credentials to access your heritage collection.</p>
                             
-                            {/* list form */}
+                            {/* collects email and password inputs */}
                             <form onSubmit={handleSignIn}
                             className='d-flex flex-column gap-3'>
-                                {/* email field */}
+                                {/* collects the email address */}
                                 <div className="form-group d-flex flex-column gap-1">
                                     <label htmlFor="email">EMAIL ADDRESS</label>
                                     <div className="input-wrapper">
@@ -51,7 +54,7 @@ export default function Login() {
                                     </div>
                                 </div>
 
-                                {/* email field */}
+                                {/* collects the password */}
                                 <div className="form-group d-flex flex-column gap-1">
                                     <div className="password-label d-flex align-items-center justify-content-between">
                                         <label htmlFor="password">PASSWORD</label>
@@ -65,13 +68,13 @@ export default function Login() {
                                     </div>
                                 </div>
 
-                                {/* sign in button */}
+                                {/* submits the login form */}
                                 <button type="submit" className="signin-button mt-3">
                                     SIGN IN
                                 </button>
                             </form>
 
-                            {/* register link */}
+                            {/* shows the register prompt */}
                             <div className="register-section fw-light text-center mt-4 pt-3">
                                 <span>New to the archive? </span>
                                 <a href="#register" className="register-link fw-semibold">Register</a>

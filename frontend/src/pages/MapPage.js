@@ -7,7 +7,9 @@ import popup from'../assets/images/old-nicosia.jpg';
 import API from "../services/Api";
 import Navbar from "../components/Navbar";
 
+// renders the full map page with navbar and approved story markers
 export default function MapPage() {
+    // builds a short preview for each story popup
     const getStoryPreview = (story) => {
         if (!story.content) {
             return "No story content available yet.";
@@ -18,14 +20,18 @@ export default function MapPage() {
             : story.content;
     };
 
+    // centers the map on cyprus and keeps panning inside island bounds
     const CyprusCenter = [35.1264, 33.4299];
     const bounds = [
-        [34.5, 32.0], // Southwest
-        [35.7, 34.8], // Northeast
+        [34.5, 32.0], // southwest map limit
+        [35.7, 34.8], // northeast map limit
     ];
 
+    // stores approved stories loaded from the api
     const [stories, setStories] = useState([]);
-        useEffect(() => {
+
+    // loads approved stories when the page first renders
+    useEffect(() => {
         const fetchStories = async () => {
             try {
                 const res = await API.get("/stories");
@@ -40,12 +46,17 @@ export default function MapPage() {
 
     return(
         <div className="map-container">
+            {/* shows the shared site navigation */}
             <Navbar/>
+
+            {/* renders the map with a custom zoom control placement */}
             <MapContainer center={CyprusCenter} zoom={9}  maxBounds={bounds} maxBoundsViscosity={1.0}
-            zoomControl={false} // disable default
+            zoomControl={false}
             style={{ height: "100vh" }}
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+
+                {/* renders markers only for stories with valid coordinates */}
                 {stories
                     .filter((story) => Number.isFinite(Number(story.latitude)) && Number.isFinite(Number(story.longitude)))
                     .map((story) => (
@@ -54,20 +65,21 @@ export default function MapPage() {
                     >
                         <Popup>
                             <div className="popup-card">
-                                {/* Image */}
+                                {/* shows a placeholder popup image */}
                                 <div className="popup-image">
+                                    {/* uses a temporary image until story media is available */}
                                     <img
-                                        src={popup} // temporary static image
+                                        src={popup}
                                         alt="story"
                                     />
                                 </div>
 
-                                {/* Content */}
+                                {/* shows the story title, preview, and action */}
                                 <div className="popup-content">
                                     <h5>{story.title}</h5>
                                     <p>{getStoryPreview(story)}</p>
 
-                                    {/* Media link */}
+                                    {/* opens the linked media when one exists */}
                                     {story.media_url && (
                                         <a
                                             href={story.media_url}
@@ -78,6 +90,8 @@ export default function MapPage() {
                                             Open Media
                                         </a>
                                     )}
+
+                                    {/* shows the current fallback action when no media link exists */}
                                     {!story.media_url && (
                                         <Link to="/upload" className="popup-btn">
                                         View Full Story
@@ -90,7 +104,7 @@ export default function MapPage() {
                 ))}
                 
 
-                {/* Zoom on right */}
+                {/* shows zoom controls on the right side of the map */}
                 <ZoomControl position="topright" />
             </MapContainer>
         </div>

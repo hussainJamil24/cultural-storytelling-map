@@ -1,12 +1,15 @@
 import { Link } from "react-router-dom";
 import '../assets/styles/sidebar.css';
 
+// renders the story category sidebar and upload link
 export default function Sidebar() {
     return (
         <div className="sidebar d-flex flex-column bg-light p-4" style={{ width: "275px", height:"100vh" }}>
+            {/* shows the sidebar heading */}
             <h5>Categories</h5>
             <p className="text-muted small">Filter stories</p>
 
+            {/* lists the available story category links */}
             <ul className="sidebar-menu d-flex flex-column">
                 <li className='active'>
                     <Link to="/map" className="menu-link d-flex align-items-center">
@@ -44,6 +47,7 @@ export default function Sidebar() {
                 </li>
             </ul>
 
+            {/* links to the story upload page */}
             <Link to="/upload" className="upload-btn mt-auto">
                 <i className="bi bi-plus-lg"></i>
                 Upload Story

@@ -1,3 +1,4 @@
+/* resets the base box model and default font */
 * {
     margin: 0;
     padding: 0;
@@ -5,21 +6,25 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
 
+/* keeps the root containers stretched to the viewport */
 html, body, #root {
     height: 100%;
     width: 100%;
 }
 
+/* sizes the login page wrapper */
 .login-page {
     height: 100vh;
 }
 
+/* lays out the branding and form panels */
 .login-container {
     flex: 1;
-    height: calc(100vh - 70px);  /* Account for navbar */
+    height: calc(100vh - 70px);  /* accounts for navbar height */
     background-color: #f0f2f5;
 }
 
+/* styles the left branding panel */
 .login-left {
     flex: 1;
     padding: 60px 40px;
@@ -50,6 +55,7 @@ html, body, #root {
     margin-bottom: 50px;
 }
 
+/* styles the avatar preview group */
 .avatar {
     width: 50px;
     height: 50px;
@@ -84,12 +90,13 @@ html, body, #root {
     background-color: #d0d8e8;
 }
 
-/* right side */
+/* styles the right form panel */
 .login-right {
     flex: 1;
     padding: 60px 40px;
 }
 
+/* styles the login card shell */
 .login-card {
     background: white;
     padding: 60px 50px;
@@ -107,6 +114,7 @@ html, body, #root {
     line-height: 1.5;
 }
 
+/* styles the form labels */
 .form-group label {
     font-size: 12px;
     font-weight: 600;
@@ -115,10 +123,12 @@ html, body, #root {
     letter-spacing: 0.5px;
 }
 
+/* styles the password row label alignment */
 .password-label label {
     margin: 0;
 }
 
+/* styles the forgot password link */
 .forgot-link {
     font-size: 12px;
     color: #0066cc;
@@ -131,6 +141,7 @@ html, body, #root {
     position: relative;
 }
 
+/* reserves space for optional input icons */
 .input-icon {
     position: absolute;
     left: 16px;
@@ -141,6 +152,7 @@ html, body, #root {
     flex-shrink: 0;
 }
 
+/* styles the shared login inputs */
 .input-wrapper input {
     width: 100%;
     padding: 14px 16px 14px 48px;
@@ -162,6 +174,7 @@ html, body, #root {
     color: #a0a8b5;
 }
 
+/* styles the primary sign-in button */
 .signin-button {
     background: #007BFF;
     color: white;
@@ -174,17 +187,19 @@ html, body, #root {
     transition: all 0.3s ease;
 }
 
+/* styles the registration prompt area */
 .register-section {
     border-top: 2px solid #e0e6f0;
 }
 
+/* styles the registration link */
 .register-link {
     color: #0066cc;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-/* Tablet */
+/* adjusts the layout for tablet screens */
 @media (max-width: 1024px) {
     .login-container {
         flex-direction: column;
@@ -214,7 +229,7 @@ html, body, #root {
     }
 }
 
-/* Mobile (768px) */
+/* adjusts spacing and sizing for mobile screens */
 @media (max-width: 768px) {
     .login-container {
         flex-direction: column;
@@ -269,7 +284,7 @@ html, body, #root {
     }
 }
 
-/* Small Mobile (480px) */
+/* tightens the layout for small mobile screens */
 @media (max-width: 480px) {
     .login-page {
         height: 100%;
@@ -362,7 +377,7 @@ html, body, #root {
     }
 }
 
-/* Extra Small Devices */
+/* tightens the card further on extra small screens */
 @media (max-width: 360px) {
     .login-card {
         padding: 20px 12px;

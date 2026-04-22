@@ -6,7 +6,7 @@ from app.db.session import get_db
 from app.models.story_model import Story, StoryStatus
 from app.schemas.story_schema import StoryCreate, StoryResponse, StoryStatusUpdate
 
-# story api routes
+# registers story api routes
 router = APIRouter()
 
 
@@ -34,6 +34,7 @@ def create_story(story: StoryCreate, db: Session = Depends(get_db)):
     return new_story
 
 
+# returns approved stories or filters by review status
 @router.get("/stories", response_model=list[StoryResponse])
 def get_stories(
     status: StoryStatus | None = Query(None),
@@ -54,12 +55,12 @@ def get_stories(
         raise HTTPException(status_code=500, detail="Could not fetch stories")
 
 
+# returns one approved story by its database id
 @router.get("/stories/{story_id}", response_model=StoryResponse)
 def get_story(
     story_id: int = Path(..., gt=0),
     db: Session = Depends(get_db),
 ):
-    # returns one approved story by its database id
     try:
         story = (
             db.query(Story)
@@ -79,13 +80,13 @@ def get_story(
     return story
 
 
+# updates a story status for the moderation workflow
 @router.patch("/stories/{story_id}/status", response_model=StoryResponse)
 def update_story_status(
     status_update: StoryStatusUpdate,
     story_id: int = Path(..., gt=0),
     db: Session = Depends(get_db),
 ):
-    # updates a story status for the moderation workflow
     try:
         story = db.query(Story).filter(Story.id == story_id).first()
     except SQLAlchemyError:

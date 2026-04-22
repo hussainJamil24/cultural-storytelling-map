@@ -1,18 +1,22 @@
+/* keeps the default app wrapper centered */
 .App {
   text-align: center;
 }
 
+/* sizes the default app logo */
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
 
+/* animates the logo when reduced motion is not requested */
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
 
+/* styles the default app header */
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -24,10 +28,12 @@
   color: white;
 }
 
+/* styles the default app link */
 .App-link {
   color: #61dafb;
 }
 
+/* rotates the default app logo */
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

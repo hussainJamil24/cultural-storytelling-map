@@ -8,6 +8,7 @@ from app.models.story_model import StoryStatus
 
 # shared story fields used across story schemas
 class StoryBase(BaseModel):
+    # validates story title, content, and map coordinates
     title: str = Field(..., min_length=1, max_length=200)
     content: str = Field(..., min_length=1)
     media_url: Optional[str] = None
@@ -34,10 +35,11 @@ class StoryStatusUpdate(BaseModel):
     status: StoryStatus
 
 
-# data the API returns after reading or creating a story
+# data the api returns after reading or creating a story
 class StoryResponse(StoryBase):
     id: int
     status: StoryStatus
     created_at: datetime
 
+    # reads values directly from sqlalchemy model instances
     model_config = ConfigDict(from_attributes=True)

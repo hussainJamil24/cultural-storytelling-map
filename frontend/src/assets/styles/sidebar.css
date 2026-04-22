@@ -1,7 +1,9 @@
+/* positions the sidebar container */
 .sidebar {
     position: relative;
 }
 
+/* lays out the category links as a vertical list */
 .sidebar-menu {
     list-style: none;
     padding: 0;
@@ -12,6 +14,7 @@
     margin: 0;
 }
 
+/* highlights the active sidebar link */
 .sidebar-menu li.active .menu-link {
     color: #fff;
     background: #007BFF;
@@ -22,6 +25,7 @@
     -o-border-radius: 50px;
 }
 
+/* styles the shared sidebar link appearance */
 .menu-link {
     gap: 20px;
     padding: 12px 20px;
@@ -50,6 +54,7 @@
     font-size: 20px;
 }
 
+/* styles the upload action at the bottom of the sidebar */
 .upload-btn {
     width: 100%;
     background: #007BFF;
@@ -63,8 +68,7 @@
     -moz-border-radius: 50px;
     -ms-border-radius: 50px;
     -o-border-radius: 50px;
-    /* position: absolute;
-    bottom: 10px; */
+    /* keeps the button in normal flow instead of absolute positioning */
 }
 
 .upload-btn i {
