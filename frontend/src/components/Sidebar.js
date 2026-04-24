@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import '../assets/styles/sidebar.css';
 
 // renders the story category sidebar and upload link
-export default function Sidebar() {
+export default function Sidebar({type}) {
     return (
         <div className="sidebar d-flex flex-column bg-light p-4" style={{ width: "275px", height:"100vh" }}>
             {/* shows the sidebar heading */}
@@ -48,10 +48,12 @@ export default function Sidebar() {
             </ul>
 
             {/* links to the story upload page */}
-            <Link to="/upload" className="upload-btn mt-auto">
-                <i className="bi bi-plus-lg"></i>
-                Upload Story
-            </Link>
+            {type !== "admin" && (
+                <Link to="/upload" className="upload-btn mt-auto">
+                    <i className="bi bi-plus-lg"></i>
+                    Upload Story
+                </Link>
+            )}
         </div>
     );
 }
