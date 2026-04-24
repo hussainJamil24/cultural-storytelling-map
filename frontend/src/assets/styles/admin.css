@@ -1,0 +1,85 @@
+.tabs-container {
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: #e9edf5;
+    color: #555;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: #007bff;
+    color: white;
+}
+
+.tab-btn:hover {
+    background: #007bff;
+    color: white;
+}
+
+.admin-card {
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.admin-card-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+
+.badge {
+    background: #b2d7fe;
+    color: #007bff !important;
+}
+
+.approve-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.reject-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.approve-btn i,
+.reject-btn i {
+    margin-right: 5px;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+
+/* responsive */
+
+/* Tablet */
+@media (max-width: 992px) {
+    .admin-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+}
