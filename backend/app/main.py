@@ -3,8 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.session import Base, engine
 # imports story model so sqlalchemy registers the table before creation
-from app.models import story_model
-from app.routes import stories
+from app.models import story_model, user_model
+from app.routes import stories, users
 
 
 # creates database tables from the registered models
@@ -31,3 +31,5 @@ def root():
 
 # registers story routes after middleware setup
 app.include_router(stories.router)
+# registers user routes after middleware setup
+app.include_router(users.router)
