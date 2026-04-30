@@ -249,14 +249,16 @@ html, body, #root {
         height: auto;
     }
 
-    .login-left {
+    .login-container .login-left {
         padding: 30px 20px;
         min-height: auto;
+        display: none !important;
     }
 
     .login-right {
         padding: 30px 20px;
         min-height: auto;
+        width: 100% !important;
     }
 
     .login-card {
