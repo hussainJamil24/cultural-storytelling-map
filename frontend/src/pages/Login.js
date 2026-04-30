@@ -1,12 +1,19 @@
 import Navbar from '../components/Navbar';
 import { useState } from 'react';
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import '../assets/styles/login.css';
 import API from "../services/Api";
 
 
 // renders the login page layout and form shell
 export default function Login() {
+    // navigation (redirect after login)
+    const navigate = useNavigate();
+
+    // error
+    const [error, setError] = useState("");
+
     // stores the local login form values
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -14,6 +21,7 @@ export default function Login() {
     // prevents page refresh until authentication is implemented
     const handleSignIn = async (e) => {
     e.preventDefault();
+    setError("");
 
     try{
         const form = new FormData();
@@ -29,13 +37,15 @@ export default function Login() {
         console.log(res.data);
 
         if (res.data.error) {
-            alert(res.data.error);
+            setError(res.data.error);
             return;
         }
 
         alert("Login successful!");
-        // later we redirect
-        // navigate(/map page)
+        
+        // save data on localstorage & redirict to map page
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        navigate("/map");
 
     } catch (err) {
         console.error(err);
@@ -44,6 +54,8 @@ export default function Login() {
 
     // console.log('Sign in with:', { email, password });
     };
+
+    const disabled = !email || !password;
 
     return (
         <div className="login-page d-flex flex-column">
@@ -71,6 +83,9 @@ export default function Login() {
                             <h1 className='text-center mb-3 fw-semibold'>Welcome Back</h1>
                             <p className="login-subtitle text-center mb-5 fw-lighter">Enter your credentials to access your heritage collection.</p>
                             
+                            {/* show error */}
+                            {error && <p className="text-danger">{error}</p>}
+
                             {/* collects email and password inputs */}
                             <form onSubmit={handleSignIn}
                             className='d-flex flex-column gap-3'>
@@ -100,7 +115,7 @@ export default function Login() {
                                 </div>
 
                                 {/* submits the login form */}
-                                <button type="submit" className="signin-button mt-3">
+                                <button type="submit" className="signin-button mt-3" disabled={disabled}>
                                     SIGN IN
                                 </button>
                             </form>
