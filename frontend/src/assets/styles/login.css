@@ -199,6 +199,19 @@ html, body, #root {
     transition: color 0.3s ease;
 }
 
+/* registraion page */
+.reg-button {
+    background: #007BFF;
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
 /* adjusts the layout for tablet screens */
 @media (max-width: 1024px) {
     .login-container {
