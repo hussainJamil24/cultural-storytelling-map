@@ -6,6 +6,11 @@ from app.db.session import Base, engine
 from app.models import story_model
 from app.routes import stories
 
+# imports user routes (registration, authentication endpoints)
+from app.routes import users
+# imports user model so SQLAlchemy registers the users table
+from app.models import user_model
+
 
 # creates database tables from the registered models
 Base.metadata.create_all(bind=engine)
@@ -28,6 +33,8 @@ app.add_middleware(
 def root():
     return {"message": "API is working"}
 
+# users registration
+app.include_router(users.router)
 
 # registers story routes after middleware setup
 app.include_router(stories.router)
