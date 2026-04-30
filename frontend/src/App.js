@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Upload from "./pages/Upload";
 import MapPage from "./pages/MapPage";
 import AdminPage from "./pages/AdminPage";
+import Register from "./pages/Register";
 import './App.css';
 
 // renders the main application routes
@@ -17,6 +18,7 @@ function App() {
         <Route path="/upload" element={<Upload />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );

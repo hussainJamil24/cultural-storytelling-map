@@ -1,5 +1,6 @@
 import Navbar from '../components/Navbar';
 import { useState } from 'react';
+import { Link } from "react-router-dom";
 import '../assets/styles/login.css';
 
 // renders the login page layout and form shell
@@ -77,7 +78,7 @@ export default function Login() {
                             {/* shows the register prompt */}
                             <div className="register-section fw-light text-center mt-4 pt-3">
                                 <span>New to the archive? </span>
-                                <a href="#register" className="register-link fw-semibold">Register</a>
+                                <Link to="/register" className="register-link fw-semibold">Register</Link>
                             </div>
                         </div>
                 </div>
