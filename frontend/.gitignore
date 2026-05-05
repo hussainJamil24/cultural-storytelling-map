@@ -21,3 +21,22 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+# ======================
+# Python / Backend
+# ======================
+__pycache__/
+*.pyc
+*.pyo
+
+# virtual environment
+.venv/
+
+# database
+*.db
+
+# ======================
+# OS / misc
+# ======================
+Thumbs.db
