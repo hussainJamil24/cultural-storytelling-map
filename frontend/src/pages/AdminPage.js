@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import image from'../assets/images/old-nicosia.jpg';
 import '../assets/styles/admin.css'
 import { useEffect, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
 import API from "../services/Api";
 
 export default function AdminPage() {
@@ -16,19 +17,56 @@ export default function AdminPage() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
+    // add loading state
+    const [loading, setLoading] = useState(true);
+
     const [stories, setStories] = useState([]);
+
+    const [activeTab, setActiveTab] = useState("pending");
+
     useEffect(() => {
         const fetchStories = async () => {
+            setLoading(true); // start loading
             try {
-                const res = await API.get("/stories");
+                const res = await API.get(`/stories?status=${activeTab}`);
                 setStories(res.data);
             } catch (err) {
                 console.error("Error fetching stories", err);
+            } finally {
+                setLoading(true); // start loading
             }
         };
 
         fetchStories();
-    }, []);
+    }, [activeTab]);
+
+    // add approve / reject logic
+    const handleApprove = async (id) => {
+        try {
+            await API.patch(`/stories/${id}/status`, {
+                status: "approved"
+            });
+
+            setStories(prev => prev.filter(s => s.id !== id))
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    const handleReject = async (id) => {
+        try {
+            await API.patch(`/stories/${id}/status`, { status: "rejected" },
+            {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            setStories(prev => prev.filter(s => s.id !== id))
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     return(
         <div>
@@ -51,10 +89,28 @@ export default function AdminPage() {
 
                     {/* Tabs */}
                     <div className="tabs-container d-flex flex-wrap gap-2 mb-5">
-                        <button className="tab-btn active fw-semibold">Pending Review (12)</button>
-                        <button className="tab-btn fw-semibold">Recently Approved</button>
-                        <button className="tab-btn fw-semibold">Flagged</button>
+                        <button className={`tab-btn active fw-semibold ${activeTab === "pending" ? "active" : ""}`}
+                            onClick={() => setActiveTab("pending")}
+                        >
+                            Pending Review
+                        </button>
+
+                        <button className={`tab-btn fw-semibold ${activeTab === "approved" ? "active" : ""}`}
+                            onClick={() => setActiveTab("approved")}
+                        >
+                            Recently Approved
+                        </button>
+
+                        <button className={`tab-btn fw-semibold ${activeTab === "flagged" ? "active" : ""}`}
+                            onClick={() => setActiveTab("rejected")}
+                        >
+                            Flagged
+                        </button>
+
                     </div>
+
+                    {/* show loading */}
+                    {loading && <p>Loading stories...</p>}
 
                     {/* Cards */}
                     <div className="admin-grid mt-3">
@@ -63,7 +119,7 @@ export default function AdminPage() {
                             <div className="admin-card" key={story.id}>
                                 {/* Image */}
                                 <img 
-                                    src={image}
+                                    src={story.media_url || image}
                                     alt="story"
                                     className="admin-card-img"
                                 />
@@ -74,7 +130,9 @@ export default function AdminPage() {
                                     {/* Category + time */}
                                     <div className="d-flex justify-content-between mb-2">
                                         <span className="badge">ORAL HISTORY</span>
-                                        <small className="text-muted">2 hours ago</small>
+                                        <small className="text-muted">
+                                            {formatDistanceToNow(new Date(story.created_at), { addSuffix: true })}
+                                        </small>
                                     </div>
 
                                     {/* Title */}
@@ -82,16 +140,16 @@ export default function AdminPage() {
 
                                     {/* Description */}
                                     <p className="text-muted small">
-                                        {story.narrative?.slice(0, 120)}...
+                                        {story.content?.slice(0, 120)}...
                                     </p>
 
                                     {/* Buttons */}
                                     <div className="d-flex justify-content-around mt-3">
-                                        <button className="approve-btn">
+                                        <button className="approve-btn"  onClick={() => handleApprove(story.id)}>
                                             <i className="bi bi-check-lg"></i> Approve
                                         </button>
 
-                                        <button className="reject-btn">
+                                        <button className="reject-btn" onClick={() => handleReject(story.id)}>
                                             <i className="bi bi-x-lg"></i> Reject
                                         </button>
                                     </div>
