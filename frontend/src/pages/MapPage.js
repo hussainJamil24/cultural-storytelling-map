@@ -44,6 +44,7 @@ export default function MapPage() {
         fetchStories();
     }, []);
 
+
     return(
         <div className="map-container">
             {/* shows the shared site navigation */}

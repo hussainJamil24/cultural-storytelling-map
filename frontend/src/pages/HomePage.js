@@ -12,7 +12,7 @@ export default function HomePage() {
             <div className="main-layout d-flex" style={{ height: "100vh" }}>
                 {/* shows the sidebar column */}
                 <div className="sidebar-wrapper">
-                    <Sidebar />
+                    <Sidebar/>
                 </div>
 
                 {/* shows the main map area */}
