@@ -8,7 +8,12 @@ import { useEffect, useState } from "react";
 import API from "../services/Api";
 
 // renders the reusable story map with approved story markers
-export default function MapView() {
+// renders category filters instead of navigation links
+// clicking a category updates the selected category in the parent component
+// receives the selected category and updates map content accordingly
+export default function MapView({ activeCategory }) {
+    console.log(activeCategory);
+
     // builds a short preview for each story popup
     const getStoryPreview = (story) => {
         if (!story.content) {
@@ -28,21 +33,33 @@ export default function MapView() {
     ];
 
     // stores approved stories loaded from the api
+    // stores stories fetched from the backend based on selected category
     const [stories, setStories] = useState([]);
 
     // loads approved stories when the map first renders
+    // fetches stories whenever the selected category changes
+    // if "all" is selected, fetches all approved stories
+    // otherwise, fetches stories filtered by category
     useEffect(() => {
         const fetchStories = async () => {
             try {
-                const res = await API.get("/stories");
+                let url = "/stories";
+                if (activeCategory !== "all") {
+                    url += `?category=${activeCategory}`;
+                }
+
+                const res = await API.get(url);
                 setStories(res.data);
+
+                console.log(res.data);
+
             } catch (err) {
                 console.error("Error fetching stories", err);
             }
         };
 
         fetchStories();
-    }, []);
+    }, [activeCategory]);
 
     return (
         <div className="map-container">

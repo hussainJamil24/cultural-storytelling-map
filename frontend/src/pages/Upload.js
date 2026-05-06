@@ -53,11 +53,12 @@ export default function Upload() {
         images:null,
         audio:null,
         location: null,
+        category: "",
     });
 
     // disables submit until the required text and location are filled
     const btnDisable =
-    formData.title === "" || formData.narrative === ""  ||formData.location == null ;
+    formData.title === "" || formData.narrative === ""  ||formData.location == null || formData.category === "" ;
     
     // saves the selected map coordinates into the form data
     const handleLocationSelect = (coords) => {
@@ -99,6 +100,7 @@ export default function Upload() {
                 media_url: null,
                 latitude: formData.location?.lat,
                 longitude: formData.location?.lng,
+                category: formData.category,
             };
 
             const res = await API.post("/stories", payload, {
@@ -159,6 +161,23 @@ export default function Upload() {
                         value={formData.narrative} onChange={handleInputChange}
                         >
                         </textarea>
+                    </div>
+
+                    {/* lets the user select a story category */}
+                    <div className="form-section">
+                        <label className='form-label d-block text-uppercase mb-2 fw-medium'>
+                            Category
+                        </label>
+                        <select name="category" className="form-control p-3"
+                        value={formData.category}
+                        onChange={handleInputChange}
+                        >
+                            <option value="">Select category</option>
+                            <option value="heritage">Heritage</option>
+                            <option value="landmarks">Landmarks</option>
+                            <option value="oral">Oral Histories</option>
+                            <option value="customs">Customs</option>
+                        </select>
                     </div>
 
                     {/* shows the placeholder media upload boxes */}

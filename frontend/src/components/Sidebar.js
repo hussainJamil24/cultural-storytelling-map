@@ -2,48 +2,52 @@ import { Link } from "react-router-dom";
 import '../assets/styles/sidebar.css';
 
 // renders the story category sidebar and upload link
-export default function Sidebar({type}) {
+// passes the category change handler to the sidebar
+// allows sidebar clicks to update the selected category
+export default function Sidebar({type,  onCategoryChange}) {
     return (
         <div className="sidebar d-flex flex-column bg-light p-4" style={{ width: "275px", height:"100vh" }}>
             {/* shows the sidebar heading */}
             <h5>Categories</h5>
             <p className="text-muted small">Filter stories</p>
 
-            {/* lists the available story category links */}
+            {/*  category list used to filter stories on the map
+             replaces route-based navigation with dynamic filtering */}
             <ul className="sidebar-menu d-flex flex-column">
-                <li className='active'>
-                    <Link to="/map" className="menu-link d-flex align-items-center">
+                <li className='active' onClick={() => onCategoryChange("all")}>
+                    {/* triggers category change when clicked, updates activeCategory in HomePage*/}
+                    <div className="menu-link d-flex align-items-center">
                         <i className="bi bi-grid-fill"></i>
                         <span>All</span>
-                    </Link>
+                    </div>
                 </li>
 
-                <li>
-                    <Link to="/heritage" className="menu-link d-flex align-items-center">
+                <li onClick={() => onCategoryChange("heritage")}>
+                    <div className="menu-link d-flex align-items-center">
                         <i className="bi bi-journal-bookmark"></i>
                         <span>Heritage</span>
-                    </Link>
+                    </div>
                 </li>
 
-                <li>
-                    <Link to="/landmarks" className="menu-link d-flex align-items-center">
+                <li onClick={() => onCategoryChange("landmarks")}>
+                    <div className="menu-link d-flex align-items-center">
                         <i className="bi bi-bank2"></i>
                         <span>Landmarks</span>
-                    </Link>
+                    </div>
                 </li>
 
-                <li>
-                    <Link to="/oral" className="menu-link d-flex align-items-center">
+                <li onClick={() => onCategoryChange("oral")}>
+                    <div className="menu-link d-flex align-items-center">
                         <i className="bi bi-mic-fill"></i>
                         <span>Oral Histories</span>
-                    </Link>
+                    </div>
                 </li>
 
-                <li>
-                    <Link to="/customs" className="menu-link d-flex align-items-center">
+                <li onClick={() => onCategoryChange("customs")}>
+                    <div className="menu-link d-flex align-items-center">
                         <i className="bi bi-stars"></i>
                         <span>Customs</span>
-                    </Link>
+                    </div>
                 </li>
             </ul>
 

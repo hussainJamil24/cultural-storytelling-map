@@ -25,6 +25,7 @@ class Story(Base):
     media_url = Column(String, nullable=True)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
+    category = Column(String, nullable=False)
 
     # stores moderation status and submission time
     status = Column(String, nullable=False, default=StoryStatus.PENDING.value)
