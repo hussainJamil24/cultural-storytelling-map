@@ -14,6 +14,7 @@ class StoryBase(BaseModel):
     media_url: Optional[str] = None
     latitude: float = Field(..., ge=-90, le=90)
     longitude: float = Field(..., ge=-180, le=180)
+    category: str = Field(..., min_length=1)
 
     # removes blank-only title and content values
     @field_validator("title", "content")
@@ -22,6 +23,15 @@ class StoryBase(BaseModel):
         value = value.strip()
         if not value:
             raise ValueError("must not be empty")
+        return value
+    
+    # Validate allowed categories
+    @field_validator("category")
+    @classmethod
+    def validate_category(cls, value: str) -> str:
+        allowed = {"heritage", "landmarks", "oral", "customs"}
+        if value not in allowed:
+            raise ValueError("Invalid category")
         return value
 
 

@@ -21,6 +21,7 @@ def create_story(story: StoryCreate, db: Session = Depends(get_db)):
         latitude=story.latitude,
         longitude=story.longitude,
         status=StoryStatus.PENDING.value,
+        category=story.category,
     )
 
     try:
