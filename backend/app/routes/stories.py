@@ -39,6 +39,7 @@ def create_story(story: StoryCreate, db: Session = Depends(get_db)):
 @router.get("/stories", response_model=list[StoryResponse])
 def get_stories(
     status: StoryStatus | None = Query(None),
+    category: str | None = Query(None),
     db: Session = Depends(get_db),
 ):
     # returns approved stories by default and can filter by a specific status
@@ -50,6 +51,10 @@ def get_stories(
             query = query.filter(Story.status == StoryStatus.APPROVED.value)
         else:
             query = query.filter(Story.status == status.value)
+
+        # category filter
+        if category is not None:
+            query = query.filter(Story.category == category)
 
         return query.order_by(Story.created_at.desc()).all()
     except SQLAlchemyError:
