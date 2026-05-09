@@ -1,11 +1,37 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { ZoomControl } from "react-leaflet";
 import { Link } from "react-router-dom";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import '../assets/styles/mapview.css';
 import popup from'../assets/images/old-nicosia.jpg';
 import { useEffect, useState } from "react";
 import API from "../services/Api";
+
+// create colored marker icon
+const createIcon = (color) =>
+    new L.Icon({
+        iconUrl: `https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-${color}.png`,
+        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+    });
+
+    // map category → color
+    const getMarkerIcon = (category) => {
+        switch (category) {
+            case "heritage":
+                return createIcon("blue");
+            case "landmarks":
+                return createIcon("red");
+            case "oral":
+                return createIcon("green");
+            case "customs":
+                return createIcon("yellow");
+            default:
+                return createIcon("blue");
+        }
+    };
 
 // renders the reusable story map with approved story markers
 // renders category filters instead of navigation links
@@ -93,6 +119,7 @@ export default function MapView({ activeCategory }) {
                     .map((story) => (
                     <Marker key={story.id}
                         position={[Number(story.latitude), Number(story.longitude)]}
+                        icon={getMarkerIcon(story.category)}
                     >
                         <Popup>
                             <div className="popup-card">
