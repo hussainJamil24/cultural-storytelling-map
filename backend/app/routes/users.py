@@ -58,6 +58,9 @@ def login(
 
     if user.password != password:
         return {"error": "Incorrect password"}
+    
+    # only this email is admin
+    is_admin = user.email == "admin@gmail.com"
 
     return {
         "message": "Login successful",
@@ -65,5 +68,6 @@ def login(
             "id": user.id,
             "name": user.name,
             "email": user.email
-        }
+        },
+        "is_admin": is_admin
     }
