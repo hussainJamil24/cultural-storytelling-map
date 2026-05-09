@@ -1,13 +1,25 @@
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import image from'../assets/images/old-nicosia.jpg';
-import '../assets/styles/admin.css'
+import '../assets/styles/admin.css';
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import API from "../services/Api";
 
 export default function AdminPage() {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    const navigate = useNavigate();
+    useEffect(() => {
+        const isAdmin = localStorage.getItem("isAdmin");
+
+        if (isAdmin !== "true") {
+        navigate("/login");
+        }
+    }, [navigate]);
+
+
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth <= 768);
@@ -33,7 +45,7 @@ export default function AdminPage() {
             } catch (err) {
                 console.error("Error fetching stories", err);
             } finally {
-                setLoading(true); // start loading
+                setLoading(false); // start loading
             }
         };
 
@@ -101,7 +113,7 @@ export default function AdminPage() {
                             Recently Approved
                         </button>
 
-                        <button className={`tab-btn fw-semibold ${activeTab === "flagged" ? "active" : ""}`}
+                        <button className={`tab-btn fw-semibold ${activeTab === "rejected" ? "active" : ""}`}
                             onClick={() => setActiveTab("rejected")}
                         >
                             Flagged
@@ -111,6 +123,11 @@ export default function AdminPage() {
 
                     {/* show loading */}
                     {loading && <p>Loading stories...</p>}
+
+                    {/* If no stories */}
+                    {!loading && stories.length === 0 && (
+                        <p className="text-muted">No stories found.</p>
+                    )}
 
                     {/* Cards */}
                     <div className="admin-grid mt-3">
@@ -129,7 +146,7 @@ export default function AdminPage() {
 
                                     {/* Category + time */}
                                     <div className="d-flex justify-content-between mb-2">
-                                        <span className="badge">ORAL HISTORY</span>
+                                        <span className="badge">{story.category?.toUpperCase()}</span>
                                         <small className="text-muted">
                                             {formatDistanceToNow(new Date(story.created_at), { addSuffix: true })}
                                         </small>
@@ -144,16 +161,17 @@ export default function AdminPage() {
                                     </p>
 
                                     {/* Buttons */}
-                                    <div className="d-flex justify-content-around mt-3">
-                                        <button className="approve-btn"  onClick={() => handleApprove(story.id)}>
-                                            <i className="bi bi-check-lg"></i> Approve
-                                        </button>
+                                    {activeTab === "pending" && (
+                                            <div className="d-flex justify-content-around mt-3">
+                                                <button className="approve-btn"  onClick={() => handleApprove(story.id)}>
+                                                    <i className="bi bi-check-lg"></i> Approve
+                                                </button>
 
-                                        <button className="reject-btn" onClick={() => handleReject(story.id)}>
-                                            <i className="bi bi-x-lg"></i> Reject
-                                        </button>
-                                    </div>
-
+                                                <button className="reject-btn" onClick={() => handleReject(story.id)}>
+                                                    <i className="bi bi-x-lg"></i> Reject
+                                                </button>
+                                            </div>
+                                    )}
                                 </div>
                             </div>
                         ))}

@@ -4,6 +4,15 @@ import Logo from '../assets/images/logo.png';
 
 // renders the top navigation bar
 export default function Navbar() {
+    const user = localStorage.getItem("user");
+    
+    // logout function
+    const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("isAdmin");
+    window.location.href = "/login";
+    };
+
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-2 px-md-4">
             {/* links the brand back to the map page */}
@@ -37,9 +46,19 @@ export default function Navbar() {
 
                 {/* shows the login button */}
                 <div className="d-flex">
-                    <Link className="btn btn-outline-primary rounded-pill px-3" to="/login">
-                        Log in
-                    </Link>
+                    {!user ? (
+                        <Link className="btn btn-outline-primary rounded-pill px-3" to="/login">
+                            Log in
+                        </Link>
+                    ): (
+                        <button
+                        className="btn btn-outline-danger rounded-pill px-3"
+                        onClick={handleLogout}
+                        >
+                            Logout
+                        </button>
+                    )}
+                    
                 </div>
             </div>
         </nav>

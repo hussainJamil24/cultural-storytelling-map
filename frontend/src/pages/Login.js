@@ -1,5 +1,5 @@
 import Navbar from '../components/Navbar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import '../assets/styles/login.css';
@@ -32,28 +32,58 @@ export default function Login() {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
+            
         });
 
-        console.log(res.data);
+        // console.log(res.data);
 
-        if (res.data.error) {
-            setError(res.data.error);
+        if (res.data.error || res.data.detail) {
+            setError(res.data.error || res.data.detail);
             return;
         }
 
-        alert("Login successful!");
+        // Clear inputs after success
+        setEmail("");
+        setPassword("");
+
+        // alert("Login successful!");
         
         // save data on localstorage & redirict to map page
         localStorage.setItem("user", JSON.stringify(res.data.user));
-        navigate("/map");
+        localStorage.setItem("isAdmin", res.data.is_admin);
+
+        // redirect after login
+        if (res.data.is_admin === true) {
+            navigate("/admin");
+        } else {
+            navigate("/");
+        }
 
     } catch (err) {
         console.error(err);
-        alert("Login failed");
+        // alert("Login failed");
+        const message = err.response?.data?.detail || "Invalid email or password";
+
+        setError(message);
     }
 
     // console.log('Sign in with:', { email, password });
     };
+
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        const isAdmin = localStorage.getItem("isAdmin");
+
+
+        // BLOCK access without login
+        if (user) {
+            if (isAdmin === "true") {
+                navigate("/admin");
+            } else {
+                navigate("/");
+            }
+        }
+    }, [navigate]);
 
     const disabled = !email || !password;
 
