@@ -9,7 +9,12 @@ import Navbar from "../components/Navbar";
 import L from "leaflet";
 
 
-const createIcon = (color) =>
+
+
+// renders the full map page with navbar and approved story markers
+export default function MapPage() {
+
+    const createIcon = (color) =>
     new L.Icon({
         iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
         shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
@@ -33,8 +38,6 @@ const getMarkerIcon = (category) => {
     }
 };
 
-// renders the full map page with navbar and approved story markers
-export default function MapPage() {
     // builds a short preview for each story popup
     const getStoryPreview = (story) => {
         if (!story.content) {

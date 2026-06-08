@@ -10,20 +10,43 @@ export default function HomePage() {
     // used to filter stories displayed on the map
     const [activeCategory, setActiveCategory] = useState("all");
     console.log(activeCategory);
+
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     return(
         <div className="app-container">
             <Navbar />
+
+            {/* MOBILE MENU BUTTON */}
+            {!isSidebarOpen && (
+                    <button
+                        className="menu-btn"
+                        onClick={() => setIsSidebarOpen(true)}
+                    >
+                        ☰
+                    </button>
+            )}
+
             {/* lays out the sidebar beside the map */}
             <div className="main-layout d-flex" style={{ height: "100vh" }}>
                 {/* shows the sidebar column */}
-                <div className="sidebar-wrapper">
-                    <Sidebar type="user" onCategoryChange={setActiveCategory}/>
+                <div className={`sidebar-wrapper ${isSidebarOpen ? "open" : ""}`}>
+                    <Sidebar type="user" onCategoryChange={setActiveCategory}
+                    isOpen={isSidebarOpen}
+                    onClose={() => setIsSidebarOpen(false)}
+                    />
                 </div>
 
                 {/* shows the main map area */}
                 <div className="map-wrapper flex-grow-1">
                     <MapView activeCategory={activeCategory}/>
                 </div>
+
+                {isSidebarOpen && (
+                    <div
+                        className="overlay"
+                        onClick={() => setIsSidebarOpen(false)}
+                    ></div>
+                )}
             </div>
         </div>
     );

@@ -4,9 +4,15 @@ import '../assets/styles/sidebar.css';
 // renders the story category sidebar and upload link
 // passes the category change handler to the sidebar
 // allows sidebar clicks to update the selected category
-export default function Sidebar({type,  onCategoryChange}) {
+export default function Sidebar({type,  onCategoryChange, onClose }) {
     return (
         <div className="sidebar d-flex flex-column bg-light p-4" style={{ width: "275px", height:"100vh" }}>
+            {onClose && (
+                <button className="close-btn" onClick={onClose}>
+                ✖
+                </button>
+            )}
+
             {/* shows the sidebar heading */}
             <h5>Categories</h5>
             <p className="text-muted small">Filter stories</p>
