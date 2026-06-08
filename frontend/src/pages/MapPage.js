@@ -6,6 +6,32 @@ import { useEffect, useState } from "react";
 import popup from'../assets/images/old-nicosia.jpg';
 import API from "../services/Api";
 import Navbar from "../components/Navbar";
+import L from "leaflet";
+
+
+const createIcon = (color) =>
+    new L.Icon({
+        iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
+        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+    });
+
+const getMarkerIcon = (category) => {
+    switch (category) {
+        case "heritage":
+            return createIcon("blue");
+        case "landmarks":
+            return createIcon("red");
+        case "oral":
+            return createIcon("green");
+        case "customs":
+            return createIcon("yellow");
+        default:
+            return createIcon("blue");
+    }
+};
 
 // renders the full map page with navbar and approved story markers
 export default function MapPage() {
@@ -63,6 +89,7 @@ export default function MapPage() {
                     .map((story) => (
                     <Marker key={story.id}
                         position={[Number(story.latitude), Number(story.longitude)]}
+                        icon={getMarkerIcon(story.category)}
                     >
                         <Popup>
                             <div className="popup-card">
