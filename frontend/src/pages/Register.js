@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "../assets/styles/login.css";
 import API from "../services/Api";
 
 export default function Register() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -36,12 +38,20 @@ export default function Register() {
 
             const res = await API.post("/register", form, {
                 headers: {
-                    "Content-Tup": "multipart/form-data",
+                    "Content-Type": "multipart/form-data",
                 },
             });
 
+            if (res.data.error) {
+                alert(res.data.error);
+                return;
+            }
+
             console.log(res.data);
             alert("Registered successfully!");
+
+            navigate("/login")
+
         } catch (err) {
             console.error(err);
         alert("Registration failed");
