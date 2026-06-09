@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import Column, DateTime, Float, Integer, String, Text
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text
 
 from app.db.session import Base
 
@@ -26,6 +26,9 @@ class Story(Base):
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
     category = Column(String, nullable=False)
+
+    # links the story to the user who submitted it (nullable so old stories are kept)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     # stores moderation status and submission time
     status = Column(String, nullable=False, default=StoryStatus.PENDING.value)

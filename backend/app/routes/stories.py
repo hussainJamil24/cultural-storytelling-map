@@ -3,17 +3,23 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
+from app.dependencies import get_current_admin, get_current_user
 from app.models.story_model import Story, StoryStatus
+from app.models.user_model import User
 from app.schemas.story_schema import StoryCreate, StoryResponse, StoryStatusUpdate
 
 # registers story api routes
 router = APIRouter()
 
 
-# creates a new story submission
+# creates a new story submission — requires a logged-in user
 @router.post("/stories", response_model=StoryResponse, status_code=http_status.HTTP_201_CREATED)
-def create_story(story: StoryCreate, db: Session = Depends(get_db)):
-    # creates a new story record in the database
+def create_story(
+    story: StoryCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),  # 401 if not logged in
+):
+    # creates a new story record, stamping it with the submitting user's id
     new_story = Story(
         title=story.title,
         content=story.content,
@@ -22,6 +28,7 @@ def create_story(story: StoryCreate, db: Session = Depends(get_db)):
         longitude=story.longitude,
         status=StoryStatus.PENDING.value,
         category=story.category,
+        user_id=current_user.id,
     )
 
     try:
@@ -86,12 +93,13 @@ def get_story(
     return story
 
 
-# updates a story status for the moderation workflow
+# updates a story status — requires admin
 @router.patch("/stories/{story_id}/status", response_model=StoryResponse)
 def update_story_status(
     status_update: StoryStatusUpdate,
     story_id: int = Path(..., gt=0),
     db: Session = Depends(get_db),
+    _admin: User = Depends(get_current_admin),  # 401 if not logged in, 403 if not admin
 ):
     try:
         story = db.query(Story).filter(Story.id == story_id).first()

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.models.user_model import User
-from app.security import hash_password, verify_password
+from app.security import create_access_token, hash_password, verify_password
 
 router = APIRouter()
 
@@ -59,8 +59,13 @@ def login(
             detail="Incorrect email or password",
         )
 
+    # create a signed JWT the client stores and sends with future requests
+    token = create_access_token(user_id=user.id, is_admin=user.is_admin)
+
     return {
         "message": "Login successful",
+        "access_token": token,
+        "token_type": "bearer",
         "user": {
             "id": user.id,
             "name": user.name,

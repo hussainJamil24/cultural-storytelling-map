@@ -1,4 +1,9 @@
+from datetime import datetime, timedelta, timezone
+
+from jose import JWTError, jwt
 from passlib.context import CryptContext
+
+# ── Password hashing ──────────────────────────────────────────────────────────
 
 # tells passlib to use bcrypt as the hashing algorithm.
 # bcrypt is slow by design — it makes brute-force attacks expensive.
@@ -14,3 +19,34 @@ def hash_password(plain_password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Return True if the plain-text password matches the stored hash."""
     return pwd_context.verify(plain_password, hashed_password)
+
+
+# ── JWT tokens ────────────────────────────────────────────────────────────────
+
+# Secret key used to sign tokens. In production move this to an env variable
+# (e.g. python-dotenv) so it is never committed to source control.
+SECRET_KEY = "change-me-in-production"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
+
+
+def create_access_token(user_id: int, is_admin: bool) -> str:
+    """
+    Build a signed JWT containing the user's id and admin flag.
+    The token expires after ACCESS_TOKEN_EXPIRE_MINUTES minutes.
+    """
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    payload = {
+        "sub": str(user_id),   # 'sub' (subject) is the standard JWT claim for user identity
+        "is_admin": is_admin,
+        "exp": expire,
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_access_token(token: str) -> dict:
+    """
+    Verify the token signature and expiry, then return its payload.
+    Raises JWTError if the token is invalid or expired.
+    """
+    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

@@ -50,6 +50,7 @@ class StoryResponse(StoryBase):
     id: int
     status: StoryStatus
     created_at: datetime
+    user_id: Optional[int] = None  # None for stories submitted before auth was added
 
     # reads values directly from sqlalchemy model instances
     model_config = ConfigDict(from_attributes=True)
