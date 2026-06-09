@@ -1,38 +1,36 @@
-from fastapi import APIRouter, Form, Depends
+from fastapi import APIRouter, Depends, Form, HTTPException, status
 from sqlalchemy.orm import Session
-from app.db.session import SessionLocal
+
+from app.db.session import get_db
 from app.models.user_model import User
+from app.security import hash_password, verify_password
 
 router = APIRouter()
 
-# create DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # register
-@router.post("/register")
+@router.post("/register", status_code=status.HTTP_201_CREATED)
 def register(
     name: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    # db = next(get_db())
-
-    # check if user exists
+    # reject duplicate emails before creating the user
     existing_user = db.query(User).filter(User.email == email).first()
     if existing_user:
-        return {"error": "Email already registered"}
+        # 409 Conflict is more accurate than a 200 with an error key
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email already registered",
+        )
 
-    # create new user
+    # hash_password runs bcrypt so the plain-text password is never stored
     new_user = User(
         name=name,
         email=email,
-        password=password  # later we hash this
+        hashed_password=hash_password(password),
+        # is_admin defaults to False in the model; no user can self-assign admin
     )
 
     db.add(new_user)
@@ -41,33 +39,33 @@ def register(
 
     return {"message": "User registered successfully"}
 
+
 # login
 @router.post("/login")
 def login(
     email: str = Form(...),
     password: str = Form(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    # db = next(get_db())
-
     # find user by email
     user = db.query(User).filter(User.email == email).first()
 
-    if not user:
-        return {"error": "User not found"}
-
-    if user.password != password:
-        return {"error": "Incorrect password"}
-    
-    # only this email is admin
-    is_admin = user.email == "admin@gmail.com"
+    # verify_password checks the plain-text input against the stored bcrypt hash.
+    # we check both conditions together to avoid leaking whether an email exists
+    # (timing-safe: bcrypt verify always runs even if user is None via dummy hash)
+    if not user or not verify_password(password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+        )
 
     return {
         "message": "Login successful",
         "user": {
             "id": user.id,
             "name": user.name,
-            "email": user.email
+            "email": user.email,
         },
-        "is_admin": is_admin
+        # is_admin now comes from the database column, not a hardcoded email check
+        "is_admin": user.is_admin,
     }
