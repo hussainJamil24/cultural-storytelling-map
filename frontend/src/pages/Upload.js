@@ -2,7 +2,8 @@ import { MapContainer, TileLayer, Marker, useMapEvents  } from "react-leaflet";
 import { ZoomControl } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../services/Api";
 import Navbar from '../components/Navbar';
 import '../assets/styles/uploadstory.css';
@@ -35,6 +36,16 @@ function LocationMarker({ setPosition, onSelectLocation  }) {
 
 // renders the story upload form and location picker
 export default function Upload() {
+    const navigate = useNavigate();
+
+    // redirect to login if not logged in — no point filling the form if you can't submit
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        if (!user) {
+            navigate("/login");
+        }
+    }, [navigate]);
+
     // tracks the marker position selected on the map
     const [position, setPosition] = useState(null);
 
@@ -123,7 +134,8 @@ export default function Upload() {
 
         } catch(err) {
             console.error(err);
-            alert("Upload failed");
+            const message = err.response?.data?.detail || "Upload failed. Please try again.";
+            alert(message);
         }
 
 
