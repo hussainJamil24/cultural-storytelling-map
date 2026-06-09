@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.session import Base, engine
-from app.models import comment_model, like_model, story_model, user_model
-from app.routes import comments, likes, stories, users
+from app.models import comment_model, like_model, story_model, tag_model, user_model
+from app.routes import comments, likes, stories, tags, users
 
 
 # creates database tables from the registered models
@@ -31,3 +31,4 @@ app.include_router(users.router)
 app.include_router(stories.router)
 app.include_router(comments.router)
 app.include_router(likes.router)
+app.include_router(tags.router)
