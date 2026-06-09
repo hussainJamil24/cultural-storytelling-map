@@ -89,7 +89,9 @@ The frontend and backend currently use:
 - [ ] Re-enable media upload after backend support exists
 
 ### Developer 3
-
+- [x] User authentication (register/login)
+- [x] Comments model, schema and routes
+- [x] Likes & Tags model, schema and routes
 - [ ] Define moderation rules
 - [ ] Finalize content categories
 - [ ] Prepare demo stories
