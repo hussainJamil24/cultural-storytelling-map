@@ -185,7 +185,7 @@ export default function Upload() {
                         {/* shows the disabled image upload field */}
                         <div className="upload-box text-center">
                             <input type="file" id="images-input" multiple accept="image/*"
-                            disabled
+                            // disabled
                             onChange={(e)=> handleFileChange(e, 'images')}
                             />
                             <label htmlFor="images-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
@@ -200,7 +200,7 @@ export default function Upload() {
                         {/* shows the disabled audio upload field */}
                         <div className="upload-box text-center">
                             <input type="file" id="audio-input" accept="audio/*"
-                            disabled
+                            // disabled
                             onChange={(e)=> handleFileChange(e, 'audio')}
                             />
                             <label htmlFor="audio-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">

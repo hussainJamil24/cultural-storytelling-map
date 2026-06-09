@@ -151,8 +151,8 @@ export default function MapView({ activeCategory }) {
 
                                     {/* shows the current fallback action when no media link exists */}
                                     {!story.media_url && (
-                                        <Link to="/upload" className="popup-btn">
-                                        View Full Story
+                                        <Link to={`/story/${story.id}`} className="popup-btn">
+                                            View Full Story
                                         </Link>
                                     )}
                                 </div>
