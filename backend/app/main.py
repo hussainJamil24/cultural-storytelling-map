@@ -2,14 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.session import Base, engine
-# imports story model so sqlalchemy registers the table before creation
-from app.models import story_model
-from app.routes import stories
-
-# imports user routes (registration, authentication endpoints)
-from app.routes import users
-# imports user model so SQLAlchemy registers the users table
-from app.models import user_model
+from app.models import comment_model, story_model, user_model
+from app.routes import comments, stories, users
 
 
 # creates database tables from the registered models
@@ -33,8 +27,6 @@ app.add_middleware(
 def root():
     return {"message": "API is working"}
 
-# users registration
 app.include_router(users.router)
-
-# registers story routes after middleware setup
 app.include_router(stories.router)
+app.include_router(comments.router)
