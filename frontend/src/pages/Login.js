@@ -37,20 +37,14 @@ export default function Login() {
 
         // console.log(res.data);
 
-        if (res.data.error || res.data.detail) {
-            setError(res.data.error || res.data.detail);
-            return;
-        }
+        // save the JWT token — Api.js interceptor will attach it to future requests
+        localStorage.setItem("access_token", res.data.access_token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        localStorage.setItem("isAdmin", res.data.is_admin);
 
         // Clear inputs after success
         setEmail("");
         setPassword("");
-
-        // alert("Login successful!");
-        
-        // save data on localstorage & redirict to map page
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        localStorage.setItem("isAdmin", res.data.is_admin);
 
         // redirect after login
         if (res.data.is_admin === true) {

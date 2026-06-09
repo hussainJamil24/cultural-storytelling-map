@@ -7,6 +7,7 @@ import API from "../services/Api";
 
 export default function Register() {
     const navigate = useNavigate();
+    const [error, setError] = useState("");
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -24,9 +25,10 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
 
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match");
+            setError("Passwords do not match");
             return;
         }
 
@@ -36,25 +38,15 @@ export default function Register() {
             form.append("email", formData.email);
             form.append("password", formData.password);
 
-            const res = await API.post("/register", form, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            await API.post("/register", form);
 
-            if (res.data.error) {
-                alert(res.data.error);
-                return;
-            }
-
-            console.log(res.data);
-            alert("Registered successfully!");
-
-            navigate("/login")
+            navigate("/login");
 
         } catch (err) {
-            console.error(err);
-        alert("Registration failed");
+            // pull the detail message from the backend (e.g. "Email already registered")
+            // or fall back to a generic message if the server is unreachable
+            const message = err.response?.data?.detail || "Registration failed. Is the server running?";
+            setError(message);
         }
 
         // console.log("Register data:", formData);
@@ -75,6 +67,9 @@ export default function Register() {
             <div className="container d-flex justify-content-center align-items-center vh-100">
                 <div className="card p-4 shadow" style={{ width: "400px" }}>
                     <h3 className="text-center mb-4">Create Account</h3>
+
+                    {/* show error message from server or validation */}
+                    {error && <p className="text-danger">{error}</p>}
 
                     {/* form registration */}
                     <form onSubmit={handleSubmit}>

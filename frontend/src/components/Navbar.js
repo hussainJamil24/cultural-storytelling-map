@@ -10,6 +10,7 @@ export default function Navbar() {
     const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("isAdmin");
+    localStorage.removeItem("access_token");
     window.location.href = "/login";
     };
 
