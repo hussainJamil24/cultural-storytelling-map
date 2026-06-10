@@ -1,105 +1,234 @@
 # Cultural Inclusion Storytelling Map
 
-Map-based platform for cultural stories linked to real locations.
+A map-based platform for collecting and sharing the cultural stories of
+**minority communities**, pinned to the real locations they belong to.
 
-Current MVP focus:
-- Cyprus
-- Greece next
-- Europe later
+Mission focus:
+- **Cyprus** first
+- **Greece** next
+- **Europe** later
+
+---
 
 ## Current Status
 
-- Backend and frontend run locally
-- Story upload works from the UI
-- Uploaded stories appear on the map in local demo mode
-- Story statuses exist: `pending`, `approved`, `rejected`
+- Full stack running locally (FastAPI backend + React frontend)
+- User registration and login with JWT authentication
+- Story submission requires login and goes through admin moderation
+- Admin moderation dashboard (approve / reject stories)
+- Anonymous posting (author hidden from the public, retained for moderators)
+- Comments, likes, and tags supported at the API level
+- Map displays approved stories with category-based marker colors
+- Demo stories and an admin-promotion script for quick setup
 
-## Important Local Note
+---
 
-For local UI testing, new stories are auto-approved in:
+## Tech Stack
 
-- [backend/app/routes/stories.py](backend/app/routes/stories.py)
+| Layer | Technology |
+|-------|------------|
+| Backend | FastAPI (Python) |
+| Database | SQLite + SQLAlchemy |
+| Auth | JWT (python-jose) + bcrypt password hashing |
+| Frontend | React + React Router |
+| Map | React-Leaflet (OpenStreetMap tiles) |
 
-```python
-AUTO_APPROVE_NEW_STORIES = True
+---
+
+## Backend Setup (First Time)
+
+The database file (`storymap.db`) is **not** committed to git — each developer
+runs their own local copy. The tables are created automatically from the models
+on first run, so setting up a fresh database takes a few steps:
+
+### 1. Install dependencies
+
+```bash
+cd backend
+python -m venv .venv                          # create a virtual environment (first time only)
+.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-Turn this off when the real moderation flow is ready.
+### 2. Create your environment file
 
-## Run Locally
+Copy the example file and set a secret key:
 
-### Backend
-
-```powershell
-cd "C:\Users\nadio\Documents\02_Projects_&_Code\cultural-storytelling-map\backend"
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+```bash
+copy .env.example .env
 ```
+
+Then open `.env` and replace the placeholder with a real key. Generate one with:
+
+```bash
+.venv\Scripts\python.exe -c "import secrets; print(secrets.token_urlsafe(48))"
+```
+
+The app will refuse to start if `SECRET_KEY` is missing.
+
+### 3. Run the server
+
+```bash
+.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+```
+
+On first run this creates `storymap.db` with all tables (users, stories,
+comments, likes, tags).
 
 - API: `http://127.0.0.1:8000`
-- Docs: `http://127.0.0.1:8000/docs`
+- Interactive docs: `http://127.0.0.1:8000/docs`
 
-### Frontend
+### 4. (Optional) Add demo data
 
-```powershell
-cd "C:\Users\nadio\Documents\02_Projects_&_Code\cultural-storytelling-map\frontend"
+With the server set up, you can seed demo content and create an admin:
+
+```bash
+.venv\Scripts\python.exe seed_stories.py              # 6 demo Cyprus stories
+.venv\Scripts\python.exe make_admin.py your@email.com # promote a user to admin
+```
+
+> **Note:** `make_admin.py` only works after you've registered that email
+> through the app first.
+
+---
+
+## Frontend Setup
+
+```bash
+cd frontend
+npm install        # first time only
 npm start
 ```
 
 - App: `http://localhost:3000`
-- If busy: `http://localhost:3001`
 
-## Current Story Fields
+---
 
-The frontend and backend currently use:
+## Database
+
+SQLite + SQLAlchemy. The schema is defined by the models and created
+automatically on first run. The `storymap.db` file is local only and gitignored.
+
+| Table | Description |
+|-------|-------------|
+| `users` | Registered users with bcrypt-hashed passwords and an admin flag |
+| `stories` | Submitted stories with coordinates, category, moderation status, and anonymity flag |
+| `comments` | User comments on approved stories |
+| `likes` | One like per user per story (toggle) |
+| `tags` | Admin-managed tags (e.g. festival, music) |
+| `story_tags` | Many-to-many join between stories and tags |
+
+---
+
+## Authentication
+
+- Register: `POST /register`
+- Login: `POST /login` — returns a JWT token
+- The frontend stores the token and sends it as `Authorization: Bearer <token>`
+- Admin-only routes return `403` if the user is not an admin
+
+### Promoting a user to admin
+
+```bash
+cd backend
+.venv\Scripts\python.exe make_admin.py your@email.com           # grant admin
+.venv\Scripts\python.exe make_admin.py your@email.com --remove  # revoke admin
+```
+
+---
+
+## API Overview
+
+### Stories
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| GET | `/stories` | Public (supports `?status=`, `?category=`) |
+| GET | `/stories/{id}` | Public |
+| POST | `/stories` | Login required |
+| PATCH | `/stories/{id}/status` | Admin only |
+
+### Comments
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| GET | `/stories/{id}/comments` | Public |
+| POST | `/stories/{id}/comments` | Login required |
+| DELETE | `/comments/{id}` | Author or admin |
+
+### Likes
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| GET | `/stories/{id}/likes` | Public |
+| POST | `/stories/{id}/like` | Login required (toggles) |
+
+### Tags
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| GET | `/tags` | Public |
+| POST | `/tags` | Admin only |
+| GET | `/stories/{id}/tags` | Public |
+| POST | `/stories/{id}/tags` | Admin only |
+| DELETE | `/stories/{id}/tags/{tag_id}` | Admin only |
+| GET | `/tags/{id}/stories` | Public |
+
+---
+
+## Story Fields
 
 - `title`
 - `content`
-- `media_url`
-- `latitude`
-- `longitude`
-- `status`
+- `media_url` (optional)
+- `latitude` / `longitude`
+- `category` — `heritage`, `landmarks`, `oral`, `customs`
+- `status` — `pending`, `approved`, `rejected`
+- `user_id` — the submitting user (hidden from public API when anonymous)
+- `is_anonymous` — hides the author from the public
+- `created_at`
 
-## What Is Done
+Map marker colors by category: heritage = blue, landmarks = red,
+oral = green, customs = yellow.
 
-- Story backend wired with FastAPI + SQLite + SQLAlchemy
-- Story upload connected from frontend to backend
-- Map pages read backend story data correctly
-- API import casing fixed to match `Api.js`
-- Local demo flow works end to end
+---
 
 ## Team Checklist
 
-### Backend Dev 1
-
-- [x] Database/session setup
+### Backend / Database
+- [x] Database setup (SQLite + SQLAlchemy)
 - [x] Story model, schema, and routes
-- [x] Status update route
+- [x] User registration and login
+- [x] Password hashing (bcrypt)
+- [x] JWT authentication + secret key in `.env`
+- [x] Admin moderation route
+- [x] Anonymous posting
+- [x] Comments, likes, tags
+- [x] Demo data + admin scripts
+- [x] `requirements.txt`
 - [ ] Backend tests
-- [ ] Replace local auto-approve with proper config
-- [ ] Add submitter support without blocking anonymous posting
-- [ ] Plan real media storage
+- [ ] Media file storage
+- [ ] Database migrations (Alembic) — when schema changes must preserve data
 
-### Developer 2
-
-- [x] Frontend/backend story contract aligned
-- [x] Map pages connected to backend
-- [x] Upload flow connected to backend
+### Frontend
+- [x] Map page connected to backend
+- [x] Upload form connected to backend (login required + anonymous option)
+- [x] Login and registration pages
+- [x] Admin moderation dashboard
+- [ ] Comments UI on story popups
+- [ ] Like button on story popups
+- [ ] Category legend / labels on the map
 - [ ] Story detail page
-- [ ] Loading and error states
-- [ ] Re-enable media upload after backend support exists
+- [ ] Loading and error states across all pages
+- [ ] Re-enable media upload after backend storage exists
 
-### Developer 3
-
+### Content & Design
 - [ ] Define moderation rules
-- [ ] Finalize content categories
-- [ ] Prepare demo stories
-- [ ] Review wording and cultural-sensitivity copy
-- [ ] Help define anonymous posting and version history
+- [ ] Prepare more demo stories
+- [ ] Review cultural-sensitivity copy
+- [ ] Define minority community classification (future feature)
+
+---
 
 ## Current Limitations
 
-- Media upload is not implemented yet
-- No authentication yet
-- No moderation dashboard yet
-- No comments/reactions yet
+- Media upload is not implemented yet (UI placeholders exist)
 - No story detail page yet
+- Comments, likes, and tags exist in the backend but are not wired to the frontend UI yet
+- No backend tests yet
+- Stories are classified only by general category, not yet by minority community
