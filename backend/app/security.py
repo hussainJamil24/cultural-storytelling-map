@@ -1,7 +1,12 @@
+import os
 from datetime import datetime, timedelta, timezone
 
+from dotenv import load_dotenv
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+
+# loads variables from the .env file into the environment
+load_dotenv()
 
 # ── Password hashing ──────────────────────────────────────────────────────────
 
@@ -23,9 +28,15 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 # ── JWT tokens ────────────────────────────────────────────────────────────────
 
-# Secret key used to sign tokens. In production move this to an env variable
-# (e.g. python-dotenv) so it is never committed to source control.
-SECRET_KEY = "change-me-in-production"
+# Secret key used to sign tokens — loaded from the .env file, never committed.
+# Fail loudly at startup if it is missing, rather than silently using a weak default.
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError(
+        "SECRET_KEY is not set. Copy backend/.env.example to backend/.env "
+        "and set a SECRET_KEY value."
+    )
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 
