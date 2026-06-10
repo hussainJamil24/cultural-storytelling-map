@@ -29,6 +29,7 @@ def create_story(
         status=StoryStatus.PENDING.value,
         category=story.category,
         user_id=current_user.id,
+        is_anonymous=story.is_anonymous,
     )
 
     try:

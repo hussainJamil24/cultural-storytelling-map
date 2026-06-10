@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
 
 from app.db.session import Base
 
@@ -29,6 +29,10 @@ class Story(Base):
 
     # links the story to the user who submitted it (nullable so old stories are kept)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+
+    # when True the author is hidden from the public api, but user_id is still
+    # stored so admins keep accountability for moderation
+    is_anonymous = Column(Boolean, nullable=False, default=False)
 
     # stores moderation status and submission time
     status = Column(String, nullable=False, default=StoryStatus.PENDING.value)

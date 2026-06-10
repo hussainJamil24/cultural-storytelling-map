@@ -112,6 +112,7 @@ export default function Upload() {
                 latitude: formData.location?.lat,
                 longitude: formData.location?.lng,
                 category: formData.category,
+                is_anonymous: formData.anonymous,
             };
 
             const res = await API.post("/stories", payload, {
