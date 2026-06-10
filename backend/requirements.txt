@@ -22,3 +22,7 @@ python-jose[cryptography]==3.5.0
 
 # Loads secrets (SECRET_KEY etc.) from a .env file
 python-dotenv==1.2.2
+
+# Testing
+pytest==9.0.3
+httpx==0.28.1
