@@ -90,18 +90,21 @@ The frontend and backend currently use:
 
 ### Developer 3
 - [x] User authentication (register/login)
+- [x] Password hashing (bcrypt) + JWT auth with secret key in `.env`
+- [x] Admin role (`is_admin`) and admin-only moderation route
 - [x] Comments model, schema and routes
 - [x] Likes & Tags model, schema and routes
+- [x] Anonymous posting (author hidden from public, kept for moderators)
+- [x] Demo stories + admin-promotion scripts
+- [x] `requirements.txt` for reproducible backend setup
 - [ ] Define moderation rules
-- [ ] Finalize content categories
-- [ ] Prepare demo stories
 - [ ] Review wording and cultural-sensitivity copy
-- [ ] Help define anonymous posting and version history
+- [ ] Backend tests
+- [ ] Database migrations (Alembic) for schema changes that must keep data
 
 ## Current Limitations
 
 - Media upload is not implemented yet
-- No authentication yet
-- No moderation dashboard yet
-- No comments/reactions yet
+- Comments, likes, and tags exist in the backend but are not wired to the frontend UI yet
 - No story detail page yet
+- No backend tests yet
