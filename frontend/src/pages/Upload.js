@@ -89,11 +89,7 @@ export default function Upload() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            if (formData.images || formData.audio) {
-                alert("Media file upload is coming soon. For now, submit text and location only.");
-                return;
-            }
-
+            
             const payload = {
                 title: formData.title.trim(),
                 content: formData.narrative.trim(),
