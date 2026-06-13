@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import API from "../services/Api";
 import Navbar from "../components/Navbar";
-// import popup from '../assets/images/old-nicosia.jpg';
+import popup from '../assets/images/old-nicosia.jpg';
 
 export default function StoryPage() {
     const {id} = useParams();
@@ -34,15 +34,13 @@ export default function StoryPage() {
                     Category: {story.category}
                 </p>
 
-                {story.media_url && (
                     <img
-                        src={story.media_url}
-                        // src={story.media_url || popup}
+                        // src={story.media_url}
+                        src={story.media_url || popup}
                         alt="story"
                         style={{width:"100%", maxHeight:"400px", objectFit:"cover"}}
                     />
-                )}
-
+                
                 <p className="mt-3">{story.content}</p>
             </div>
         </div>
