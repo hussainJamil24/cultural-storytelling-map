@@ -122,7 +122,8 @@ export default function Login() {
                                 {/* collects the email address */}
                                 <div className="form-group d-flex flex-column gap-1">
                                     <label htmlFor="email">EMAIL ADDRESS</label>
-                                    <div className="input-wrapper">
+                                    <div className="input-wrapper d-flex align-items-center">
+                                        <i className="bi bi-envelope input-icon"></i>
                                         <input type="email" placeholder="example@gmail.com"
                                             id="email" value={email}
                                             onChange={(e) => setEmail(e.target.value)}
@@ -137,6 +138,7 @@ export default function Login() {
                                         <a href="#forgot" className="forgot-link">Forgot?</a>
                                     </div>
                                     <div className="input-wrapper d-flex align-items-center">
+                                        <i className="bi bi-lock input-icon"></i>
                                         <input type="password" placeholder="••••••••"
                                             id="password" value={password}
                                             onChange={(e) => setPassword(e.target.value)}
