@@ -1,5 +1,4 @@
 import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
 import image from'../assets/images/old-nicosia.jpg';
 import '../assets/styles/admin.css';
 import { useNavigate } from "react-router-dom";
@@ -8,7 +7,6 @@ import { formatDistanceToNow } from "date-fns";
 import API from "../services/Api";
 
 export default function AdminPage() {
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
     const navigate = useNavigate();
     useEffect(() => {
@@ -18,16 +16,6 @@ export default function AdminPage() {
         navigate("/login");
         }
     }, [navigate]);
-
-
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768);
-        };
-
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
 
     // add loading state
     const [loading, setLoading] = useState(true);
@@ -87,8 +75,6 @@ export default function AdminPage() {
 
             {/* sidebar + content */}
             <div className="d-flex">
-                {!isMobile && <Sidebar type="admin" />}
-
                 <div className="flex-grow-1 p-4">
                     {/* Header */}
                     <div className="mb-4">
