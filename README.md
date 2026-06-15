@@ -91,6 +91,10 @@ sort order) seeded with `heritage`, `landmarks`, `oral`, and `customs`. Stories
 still reference a category by its slug. The list is served at `GET /categories`,
 and new stories are validated against it on submission.
 
+Comments live in a `comments` table linked to a story and its author. They are
+always attributed to a logged-in user and shown immediately (no moderation).
+Endpoints: `GET /stories/{id}/comments` and `POST /stories/{id}/comments`.
+
 ## What Is Done
 
 - Story backend wired with FastAPI + SQLite + SQLAlchemy
@@ -135,5 +139,6 @@ and new stories are validated against it on submission.
 - Media upload is not implemented yet
 - No authentication yet
 - No moderation dashboard yet
-- No comments/reactions yet
+- Comments backend exists (GET/POST `/stories/{id}/comments`); not wired in the UI yet
+- No likes/reactions yet
 - No story detail page yet

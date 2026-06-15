@@ -9,6 +9,9 @@ from app.routes import users
 # imports category routes (list of story categories)
 from app.routes import categories
 
+# imports comment routes (story comments)
+from app.routes import comments
+
 
 # database schema is managed by Alembic migrations (run "alembic upgrade head"),
 # so the app no longer creates tables on startup.
@@ -39,3 +42,6 @@ app.include_router(stories.router)
 
 # registers category routes
 app.include_router(categories.router)
+
+# registers comment routes
+app.include_router(comments.router)

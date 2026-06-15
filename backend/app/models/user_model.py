@@ -13,3 +13,10 @@ class User(Base):
 
     # stories submitted by this user (user_id is cleared if the user is deleted)
     stories = relationship("Story", back_populates="author")
+
+    # comments written by this user (removed if the user is deleted)
+    comments = relationship(
+        "Comment",
+        back_populates="author",
+        cascade="all, delete-orphan",
+    )
