@@ -2,6 +2,7 @@ from fastapi import APIRouter, Form, Depends
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
 from app.models.user_model import User
+from app.security import hash_password, verify_password
 
 router = APIRouter()
 
@@ -28,11 +29,11 @@ def register(
     if existing_user:
         return {"error": "Email already registered"}
 
-    # create new user
+    # create new user with a hashed password
     new_user = User(
         name=name,
         email=email,
-        password=password  # later we hash this
+        password=hash_password(password)
     )
 
     db.add(new_user)
@@ -56,7 +57,7 @@ def login(
     if not user:
         return {"error": "User not found"}
 
-    if user.password != password:
+    if not verify_password(password, user.password):
         return {"error": "Incorrect password"}
     
     # only this email is admin

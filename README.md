@@ -26,6 +26,34 @@ AUTO_APPROVE_NEW_STORIES = True
 
 Turn this off when the real moderation flow is ready.
 
+## Prerequisites
+
+- Python 3.11+ (the backend is developed on Python 3.14)
+- Node.js 18+ and npm (for the frontend)
+
+### Backend dependencies
+
+All backend dependencies are pinned in [backend/requirements.txt](backend/requirements.txt)
+and installed with `pip install -r requirements.txt` (see below). They are:
+
+- `fastapi`, `uvicorn` — web framework and dev server
+- `SQLAlchemy` — ORM / database models
+- `alembic` — database migrations
+- `pydantic` — request/response validation
+- `python-multipart` — form parsing (used by the login/register endpoints)
+- `passlib` + `bcrypt` — password hashing
+
+If you are not using `requirements.txt`, install them directly:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install fastapi uvicorn SQLAlchemy alembic pydantic python-multipart passlib bcrypt
+```
+
+### Frontend dependencies
+
+Installed from [frontend/package.json](frontend/package.json) with `npm install`
+(see below).
+
 ## Run Locally
 
 ### Backend
@@ -62,6 +90,7 @@ Always review the generated file under `backend/alembic/versions/` before commit
 
 ```powershell
 cd "C:\Users\nadio\Documents\02_Projects_&_Code\cultural-storytelling-map\frontend"
+npm install
 npm start
 ```
 
@@ -143,7 +172,9 @@ unique constraint so a user can like a story only once. Endpoints return
 ## Current Limitations
 
 - Media upload is not implemented yet
-- No authentication yet
+- Passwords are hashed (bcrypt), but there is no token/session auth yet, so
+  request author ids (e.g. `user_id` on stories/comments/likes) are still
+  client-supplied and not server-verified
 - No moderation dashboard yet
 - Comments backend exists (GET/POST `/stories/{id}/comments`); not wired in the UI yet
 - Likes backend exists (`/stories/{id}/likes`); not wired in the UI yet
