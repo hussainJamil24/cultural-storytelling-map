@@ -3,10 +3,6 @@
     height: calc(100vh - 70px); /* adjust based on navbar height */
 }
 
-/* fixes the sidebar column width */
-.sidebar-wrapper {
-    width: 275px;
-}
 
 /* lets the map fill the remaining space */
 .map-wrapper {
@@ -27,18 +23,21 @@
 
 /* sidebar mobile */
 .sidebar-wrapper {
+    width: 0;
+    overflow: hidden;
     position: fixed;
     left: -260px;
     top: 0;
     height: 100%;
     width: 260px;
     z-index: 1000;
-    transition: 0.3s;
+    transition: all 0.3s ease;
     background: white;
 }
 
 .sidebar-wrapper.open {
     left: 0;
+    width: 275px;
 }
 
 /* overlay */
@@ -66,10 +65,16 @@
 @media (max-width: 768px) {
     /* keeps the sidebar visible while leaving the old fallback commented out */
     /* .sidebar-wrapper {
-            display: none; 
+            display: none;
+    } */
+
+    /* .sidebar-wrapper.open {
+        left: 0;
     } */
 
     .main-layout {
         height: calc(100vh - 70px);
     }
 }
+
+

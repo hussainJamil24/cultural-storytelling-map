@@ -29,7 +29,7 @@ export default function HomePage() {
             {/* lays out the sidebar beside the map */}
             <div className="main-layout d-flex" style={{ height: "100vh" }}>
                 {/* shows the sidebar column */}
-                <div className={`sidebar-wrapper ${isSidebarOpen ? "open" : ""}`}>
+                <div className={`sidebar-wrapper ${isSidebarOpen ? "open" : "closed"}`}>
                     <Sidebar type="user" onCategoryChange={setActiveCategory}
                     activeCategory={activeCategory}
                     isOpen={isSidebarOpen}
