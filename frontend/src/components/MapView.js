@@ -38,6 +38,7 @@ const createIcon = (color) =>
 // clicking a category updates the selected category in the parent component
 // receives the selected category and updates map content accordingly
 export default function MapView({ activeCategory }) {
+    
     console.log(activeCategory);
 
     // builds a short preview for each story popup
@@ -87,14 +88,27 @@ export default function MapView({ activeCategory }) {
         fetchStories();
     }, [activeCategory]);
 
+    // saerch by title
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredStories = stories.filter((story) => {
+        const hasValidCoords = Number.isFinite(Number(story.latitude)) &&
+        Number.isFinite(Number(story.longitude));
+
+        const matchesSearch = story.title?.toLowerCase().includes(searchTerm.trim().toLowerCase());
+        return hasValidCoords && matchesSearch;
+    });
+
     return (
         <div className="map-container">
             {/* shows a placeholder search input */}
             <div className="map-search">
                 <input
                     type="text"
-                    placeholder="Search location..."
+                    placeholder="Search stories..."
                     className="form-control shadow"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
 
@@ -106,6 +120,11 @@ export default function MapView({ activeCategory }) {
                 </Link>
             </div>
 
+            {/* show message when no result */}
+            {searchTerm && filteredStories.length === 0 && (
+                <p className="no-results">No stories found</p>
+            )}
+
             {/* renders the map with a custom zoom control placement */}
             <MapContainer center={CyprusCenter} zoom={9}  maxBounds={bounds} maxBoundsViscosity={1.0}
             zoomControl={false}
@@ -114,9 +133,7 @@ export default function MapView({ activeCategory }) {
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
 
                 {/* renders markers only for stories with valid coordinates */}
-                {stories
-                    .filter((story) => Number.isFinite(Number(story.latitude)) && Number.isFinite(Number(story.longitude)))
-                    .map((story) => (
+                    {filteredStories.map((story) => (
                     <Marker key={story.id}
                         position={[Number(story.latitude), Number(story.longitude)]}
                         icon={getMarkerIcon(story.category)}
