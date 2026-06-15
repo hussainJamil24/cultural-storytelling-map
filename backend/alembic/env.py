@@ -17,6 +17,7 @@ from app.db.session import Base, DATABASE_URL
 # imports models so their tables register on Base.metadata for autogenerate
 from app.models import story_model  # noqa: F401
 from app.models import user_model  # noqa: F401
+from app.models import media_model  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

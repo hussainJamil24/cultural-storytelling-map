@@ -17,7 +17,6 @@ def create_story(story: StoryCreate, db: Session = Depends(get_db)):
     new_story = Story(
         title=story.title,
         content=story.content,
-        media_url=story.media_url,
         latitude=story.latitude,
         longitude=story.longitude,
         status=StoryStatus.PENDING.value,

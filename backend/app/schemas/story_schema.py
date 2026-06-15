@@ -11,7 +11,6 @@ class StoryBase(BaseModel):
     # validates story title, content, and map coordinates
     title: str = Field(..., min_length=1, max_length=200)
     content: str = Field(..., min_length=1)
-    media_url: Optional[str] = None
     latitude: float = Field(..., ge=-90, le=90)
     longitude: float = Field(..., ge=-180, le=180)
     category: str = Field(..., min_length=1)
@@ -45,11 +44,23 @@ class StoryStatusUpdate(BaseModel):
     status: StoryStatus
 
 
+# a single image or audio item attached to a story
+class MediaResponse(BaseModel):
+    id: int
+    url: str
+    media_type: str
+    caption: Optional[str] = None
+
+    # reads values directly from sqlalchemy model instances
+    model_config = ConfigDict(from_attributes=True)
+
+
 # data the api returns after reading or creating a story
 class StoryResponse(StoryBase):
     id: int
     status: StoryStatus
     created_at: datetime
+    media: list[MediaResponse] = []
 
     # reads values directly from sqlalchemy model instances
     model_config = ConfigDict(from_attributes=True)

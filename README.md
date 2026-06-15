@@ -74,10 +74,13 @@ The frontend and backend currently use:
 
 - `title`
 - `content`
-- `media_url`
+- `category`
 - `latitude`
 - `longitude`
 - `status`
+
+Media (images/audio) now lives in a separate `media` table, returned on each
+story as a `media` list. The old single `media_url` column has been removed.
 
 ## What Is Done
 

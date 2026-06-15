@@ -93,7 +93,6 @@ export default function Upload() {
             const payload = {
                 title: formData.title.trim(),
                 content: formData.narrative.trim(),
-                media_url: null,
                 latitude: formData.location?.lat,
                 longitude: formData.location?.lng,
                 category: formData.category,
