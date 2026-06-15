@@ -32,11 +32,31 @@ Turn this off when the real moderation flow is ready.
 
 ```powershell
 cd "C:\Users\nadio\Documents\02_Projects_&_Code\cultural-storytelling-map\backend"
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m alembic upgrade head
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
 ```
 
 - API: `http://127.0.0.1:8000`
 - Docs: `http://127.0.0.1:8000/docs`
+
+### Database migrations (Alembic)
+
+The database schema is managed by Alembic, not by the app at startup.
+
+```powershell
+# apply all migrations (run once after pulling new changes)
+.\.venv\Scripts\python.exe -m alembic upgrade head
+
+# after changing a model, generate a new migration
+.\.venv\Scripts\python.exe -m alembic revision --autogenerate -m "describe change"
+
+# inspect current / available revisions
+.\.venv\Scripts\python.exe -m alembic current
+.\.venv\Scripts\python.exe -m alembic history
+```
+
+Always review the generated file under `backend/alembic/versions/` before committing it.
 
 ### Frontend
 

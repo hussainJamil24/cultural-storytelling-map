@@ -1,19 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.db.session import Base, engine
-# imports story model so sqlalchemy registers the table before creation
-from app.models import story_model
 from app.routes import stories
 
 # imports user routes (registration, authentication endpoints)
 from app.routes import users
-# imports user model so SQLAlchemy registers the users table
-from app.models import user_model
 
 
-# creates database tables from the registered models
-Base.metadata.create_all(bind=engine)
+# database schema is managed by Alembic migrations (run "alembic upgrade head"),
+# so the app no longer creates tables on startup.
 
 # creates the main fastapi application
 app = FastAPI()
