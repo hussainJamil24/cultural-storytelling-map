@@ -86,6 +86,11 @@ Stories also track a submitter via `user_id` (nullable, for logged-out posts)
 and an `is_anonymous` flag. Responses expose `author_name` (null when the story
 is anonymous) but never the raw `user_id`.
 
+Categories live in a managed `categories` table (slug, label, icon, description,
+sort order) seeded with `heritage`, `landmarks`, `oral`, and `customs`. Stories
+still reference a category by its slug. The list is served at `GET /categories`,
+and new stories are validated against it on submission.
+
 ## What Is Done
 
 - Story backend wired with FastAPI + SQLite + SQLAlchemy

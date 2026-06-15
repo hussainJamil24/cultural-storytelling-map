@@ -18,6 +18,7 @@ from app.db.session import Base, DATABASE_URL
 from app.models import story_model  # noqa: F401
 from app.models import user_model  # noqa: F401
 from app.models import media_model  # noqa: F401
+from app.models import category_model  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

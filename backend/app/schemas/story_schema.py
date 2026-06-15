@@ -24,15 +24,13 @@ class StoryBase(BaseModel):
         if not value:
             raise ValueError("must not be empty")
         return value
-    
-    # Validate allowed categories
+
+    # normalizes the category slug; existence is validated against the
+    # categories table in the create route (the managed source of truth)
     @field_validator("category")
     @classmethod
-    def validate_category(cls, value: str) -> str:
-        allowed = {"heritage", "landmarks", "oral", "customs"}
-        if value not in allowed:
-            raise ValueError("Invalid category")
-        return value
+    def normalize_category(cls, value: str) -> str:
+        return value.strip().lower()
 
 
 # data the client sends when creating a story

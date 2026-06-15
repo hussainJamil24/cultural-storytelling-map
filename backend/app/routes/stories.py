@@ -3,6 +3,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
+from app.models.category_model import Category
 from app.models.story_model import Story, StoryStatus
 from app.schemas.story_schema import StoryCreate, StoryResponse, StoryStatusUpdate
 
@@ -13,6 +14,13 @@ router = APIRouter()
 # creates a new story submission
 @router.post("/stories", response_model=StoryResponse, status_code=http_status.HTTP_201_CREATED)
 def create_story(story: StoryCreate, db: Session = Depends(get_db)):
+    # rejects stories whose category is not in the managed categories table
+    category_exists = (
+        db.query(Category.id).filter(Category.slug == story.category).first()
+    )
+    if category_exists is None:
+        raise HTTPException(status_code=400, detail="Invalid category")
+
     # creates a new story record in the database
     new_story = Story(
         title=story.title,

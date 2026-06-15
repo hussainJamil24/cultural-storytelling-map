@@ -3,3 +3,4 @@
 from app.models.user_model import User  # noqa: F401
 from app.models.story_model import Story, StoryStatus  # noqa: F401
 from app.models.media_model import Media, MediaType  # noqa: F401
+from app.models.category_model import Category  # noqa: F401
