@@ -43,6 +43,9 @@ export default function Navbar() {
                     <li className="nav-item">
                         <Link className="nav-link fw-bold" to="/upload">Upload Story</Link>
                     </li>
+                    <li className="nav-item">
+                        <Link className="nav-link fw-bold" to="/about">About</Link>
+                    </li>
                 </ul>
 
                 {/* shows the login button */}

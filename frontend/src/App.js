@@ -6,6 +6,7 @@ import MapPage from "./pages/MapPage";
 import AdminPage from "./pages/AdminPage";
 import Register from "./pages/Register";
 import StoryPage from "./pages/StoryPage";
+import About from "./pages/About";
 import './App.css';
 
 // renders the main application routes
@@ -21,6 +22,7 @@ function App() {
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/story/:id" element={<StoryPage />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </BrowserRouter>
   );
