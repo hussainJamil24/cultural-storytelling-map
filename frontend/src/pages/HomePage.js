@@ -31,6 +31,7 @@ export default function HomePage() {
                 {/* shows the sidebar column */}
                 <div className={`sidebar-wrapper ${isSidebarOpen ? "open" : ""}`}>
                     <Sidebar type="user" onCategoryChange={setActiveCategory}
+                    activeCategory={activeCategory}
                     isOpen={isSidebarOpen}
                     onClose={() => setIsSidebarOpen(false)}
                     />

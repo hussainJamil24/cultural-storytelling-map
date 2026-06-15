@@ -4,7 +4,7 @@ import '../assets/styles/sidebar.css';
 // renders the story category sidebar and upload link
 // passes the category change handler to the sidebar
 // allows sidebar clicks to update the selected category
-export default function Sidebar({type,  onCategoryChange, onClose }) {
+export default function Sidebar({type,  onCategoryChange, onClose, activeCategory }) {
     return (
         <div className="sidebar d-flex flex-column bg-light p-4" style={{ width: "275px", height:"100vh" }}>
             {onClose && (
@@ -20,7 +20,7 @@ export default function Sidebar({type,  onCategoryChange, onClose }) {
             {/*  category list used to filter stories on the map
              replaces route-based navigation with dynamic filtering */}
             <ul className="sidebar-menu d-flex flex-column">
-                <li className='active' onClick={() => onCategoryChange("all")}>
+                <li className={activeCategory === "all" ? "active" : ""} onClick={() => onCategoryChange("all")}>
                     {/* triggers category change when clicked, updates activeCategory in HomePage*/}
                     <div className="menu-link d-flex align-items-center">
                         <i className="bi bi-grid-fill"></i>
@@ -28,28 +28,36 @@ export default function Sidebar({type,  onCategoryChange, onClose }) {
                     </div>
                 </li>
 
-                <li onClick={() => onCategoryChange("heritage")}>
+                <li onClick={() => onCategoryChange("heritage")}
+                    className={activeCategory === "heritage" ? "active" : ""}
+                >
                     <div className="menu-link d-flex align-items-center">
                         <i className="bi bi-journal-bookmark"></i>
                         <span>Heritage</span>
                     </div>
                 </li>
 
-                <li onClick={() => onCategoryChange("landmarks")}>
+                <li onClick={() => onCategoryChange("landmarks")}
+                    className={activeCategory === "landmarks" ? "active" : ""}
+                >
                     <div className="menu-link d-flex align-items-center">
                         <i className="bi bi-bank2"></i>
                         <span>Landmarks</span>
                     </div>
                 </li>
 
-                <li onClick={() => onCategoryChange("oral")}>
+                <li onClick={() => onCategoryChange("oral")}
+                    className={activeCategory === "oral" ? "active" : ""}
+                >
                     <div className="menu-link d-flex align-items-center">
                         <i className="bi bi-mic-fill"></i>
                         <span>Oral Histories</span>
                     </div>
                 </li>
 
-                <li onClick={() => onCategoryChange("customs")}>
+                <li onClick={() => onCategoryChange("customs")}
+                    className={activeCategory === "customs" ? "active" : ""}
+                >
                     <div className="menu-link d-flex align-items-center">
                         <i className="bi bi-stars"></i>
                         <span>Customs</span>

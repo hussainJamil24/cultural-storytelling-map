@@ -87,7 +87,7 @@ export default function AdminPage() {
 
                     {/* Tabs */}
                     <div className="tabs-container d-flex flex-wrap gap-2 mb-5">
-                        <button className={`tab-btn active fw-semibold ${activeTab === "pending" ? "active" : ""}`}
+                        <button className={`tab-btn  fw-semibold ${activeTab === "pending" ? "active" : ""}`}
                             onClick={() => setActiveTab("pending")}
                         >
                             Pending Review
