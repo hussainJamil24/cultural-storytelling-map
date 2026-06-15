@@ -54,7 +54,8 @@ export default function Register() {
 
         } catch (err) {
             console.error(err);
-        alert("Registration failed");
+            const message = err.response?.data?.detail || "Registration failed";
+            alert(message);
         }
 
         // console.log("Register data:", formData);

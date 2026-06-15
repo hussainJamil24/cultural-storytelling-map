@@ -49,6 +49,7 @@ export default function Login() {
         // alert("Login successful!");
         
         // save data on localstorage & redirict to map page
+        localStorage.setItem("access_token", res.data.access_token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
         localStorage.setItem("isAdmin", res.data.is_admin);
 

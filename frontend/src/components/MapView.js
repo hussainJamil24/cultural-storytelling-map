@@ -24,7 +24,7 @@ const createIcon = (color) =>
                 return createIcon("blue");
             case "landmarks":
                 return createIcon("red");
-            case "oral":
+            case "oral_history":
                 return createIcon("green");
             case "customs":
                 return createIcon("yellow");

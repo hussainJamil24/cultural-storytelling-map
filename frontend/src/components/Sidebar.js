@@ -46,8 +46,8 @@ export default function Sidebar({type,  onCategoryChange, onClose, activeCategor
                     </div>
                 </li>
 
-                <li onClick={() => onCategoryChange("oral")}
-                    className={activeCategory === "oral" ? "active" : ""}
+                <li onClick={() => onCategoryChange("oral_history")}
+                    className={activeCategory === "oral_history" ? "active" : ""}
                 >
                     <div className="menu-link d-flex align-items-center">
                         <i className="bi bi-mic-fill"></i>

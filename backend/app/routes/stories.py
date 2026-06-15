@@ -2,26 +2,44 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query, status as ht
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user, get_optional_current_user, require_admin
 from app.db.session import get_db
-from app.models.story_model import Story, StoryStatus
-from app.schemas.story_schema import StoryCreate, StoryResponse, StoryStatusUpdate
+from app.models.story_model import Story, StoryCategory, StoryStatus
+from app.models.user_model import User, UserRole
+from app.schemas.story_schema import (
+    StoryCreate,
+    StoryPrivateResponse,
+    StoryPublicResponse,
+    StoryStatusUpdate,
+)
 
-# registers story api routes
 router = APIRouter()
 
 
-# creates a new story submission
-@router.post("/stories", response_model=StoryResponse, status_code=http_status.HTTP_201_CREATED)
-def create_story(story: StoryCreate, db: Session = Depends(get_db)):
-    # creates a new story record in the database
+def _raise_missing_token() -> None:
+    raise HTTPException(
+        status_code=http_status.HTTP_401_UNAUTHORIZED,
+        detail="Not authenticated",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+
+@router.post("/stories", response_model=StoryPrivateResponse, status_code=http_status.HTTP_201_CREATED)
+def create_story(
+    story: StoryCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     new_story = Story(
+        user_id=current_user.id,
         title=story.title,
         content=story.content,
         media_url=story.media_url,
         latitude=story.latitude,
         longitude=story.longitude,
         status=StoryStatus.PENDING.value,
-        category=story.category,
+        category=story.category.value,
+        is_anonymous=story.is_anonymous,
     )
 
     try:
@@ -35,34 +53,39 @@ def create_story(story: StoryCreate, db: Session = Depends(get_db)):
     return new_story
 
 
-# returns approved stories or filters by review status
-@router.get("/stories", response_model=list[StoryResponse])
+@router.get("/stories", response_model=list[StoryPublicResponse])
 def get_stories(
     status: StoryStatus | None = Query(None),
-    category: str | None = Query(None),
+    category: StoryCategory | None = Query(None),
     db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
 ):
-    # returns approved stories by default and can filter by a specific status
+    if status is not None and status != StoryStatus.APPROVED:
+        if current_user is None:
+            _raise_missing_token()
+        if current_user.role != UserRole.ADMIN.value:
+            raise HTTPException(
+                status_code=http_status.HTTP_403_FORBIDDEN,
+                detail="Admin role required",
+            )
+
     try:
         query = db.query(Story)
 
-        # public api shows only approved stories by default
         if status is None:
             query = query.filter(Story.status == StoryStatus.APPROVED.value)
         else:
             query = query.filter(Story.status == status.value)
 
-        # category filter
         if category is not None:
-            query = query.filter(Story.category == category)
+            query = query.filter(Story.category == category.value)
 
         return query.order_by(Story.created_at.desc()).all()
     except SQLAlchemyError:
         raise HTTPException(status_code=500, detail="Could not fetch stories")
 
 
-# returns one approved story by its database id
-@router.get("/stories/{story_id}", response_model=StoryResponse)
+@router.get("/stories/{story_id}", response_model=StoryPublicResponse)
 def get_story(
     story_id: int = Path(..., gt=0),
     db: Session = Depends(get_db),
@@ -79,26 +102,24 @@ def get_story(
     except SQLAlchemyError:
         raise HTTPException(status_code=500, detail="Could not fetch story")
 
-    # returns 404 when the story id does not exist
     if story is None:
         raise HTTPException(status_code=404, detail="Story not found")
 
     return story
 
 
-# updates a story status for the moderation workflow
-@router.patch("/stories/{story_id}/status", response_model=StoryResponse)
+@router.patch("/stories/{story_id}/status", response_model=StoryPrivateResponse)
 def update_story_status(
     status_update: StoryStatusUpdate,
     story_id: int = Path(..., gt=0),
     db: Session = Depends(get_db),
+    _admin_user: User = Depends(require_admin),
 ):
     try:
         story = db.query(Story).filter(Story.id == story_id).first()
     except SQLAlchemyError:
         raise HTTPException(status_code=500, detail="Could not fetch story")
 
-    # returns 404 when the story id does not exist
     if story is None:
         raise HTTPException(status_code=404, detail="Story not found")
 

@@ -1,0 +1,4 @@
+backend/storymap.db
+*.db
+__pycache__/
+*.py[cod]

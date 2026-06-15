@@ -50,8 +50,6 @@ export default function Upload() {
         title:'',
         narrative:'',
         anonymous: false,
-        images:null,
-        audio:null,
         location: null,
         category: "",
     });
@@ -77,14 +75,6 @@ export default function Upload() {
         }));
     };
 
-    // stores selected files even though uploads are currently disabled
-    const handleFileChange = (e, fieldName) => {
-        setFormData(prev => ({
-            ...prev,
-            [fieldName]: e.target.files
-        }));
-    };
-
     // submits the story payload to the backend api
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -97,6 +87,7 @@ export default function Upload() {
                 latitude: formData.location?.lat,
                 longitude: formData.location?.lng,
                 category: formData.category,
+                is_anonymous: formData.anonymous,
             };
 
             const res = await API.post("/stories", payload, {
@@ -111,9 +102,8 @@ export default function Upload() {
                 title: '',
                 narrative: '',
                 anonymous: false,
-                images: null,
-                audio: null,
                 location: null,
+                category: "",
             });
             setPosition(null);
 
@@ -171,7 +161,7 @@ export default function Upload() {
                             <option value="">Select category</option>
                             <option value="heritage">Heritage</option>
                             <option value="landmarks">Landmarks</option>
-                            <option value="oral">Oral Histories</option>
+                            <option value="oral_history">Oral Histories</option>
                             <option value="customs">Customs</option>
                         </select>
                     </div>
@@ -181,8 +171,7 @@ export default function Upload() {
                         {/* shows the disabled image upload field */}
                         <div className="upload-box text-center">
                             <input type="file" id="images-input" multiple accept="image/*"
-                            // disabled
-                            onChange={(e)=> handleFileChange(e, 'images')}
+                            disabled
                             />
                             <label htmlFor="images-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
                                 <div className="upload-icon d-flex align-items-center justify-content-center">
@@ -196,8 +185,7 @@ export default function Upload() {
                         {/* shows the disabled audio upload field */}
                         <div className="upload-box text-center">
                             <input type="file" id="audio-input" accept="audio/*"
-                            // disabled
-                            onChange={(e)=> handleFileChange(e, 'audio')}
+                            disabled
                             />
                             <label htmlFor="audio-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
                                 <div className="upload-icon d-flex align-items-center justify-content-center">
