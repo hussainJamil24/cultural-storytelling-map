@@ -17,7 +17,7 @@ export default function Navbar() {
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-2 px-md-4">
             {/* links the brand back to the map page */}
-            <Link to="/map" className="navbar-brand d-flex align-items-center fw-bold">
+            <Link to="/" className="navbar-brand d-flex align-items-center fw-bold">
                 <img src={Logo} alt="StoryTelling"
                     style={{ width: "50px", marginRight: "10px" }}/>
                     StoryTelling
