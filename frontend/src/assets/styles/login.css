@@ -375,8 +375,13 @@ html, body, #root {
     }
 
     .input-wrapper input {
-        padding: 10px 12px;
+        padding: 10px 12px 10px 36px;
         font-size: 13px;
+    }
+
+    .input-icon {
+        left: 10px;       
+        font-size: 14px; 
     }
 
     .signin-button {
