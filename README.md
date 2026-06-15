@@ -95,6 +95,12 @@ Comments live in a `comments` table linked to a story and its author. They are
 always attributed to a logged-in user and shown immediately (no moderation).
 Endpoints: `GET /stories/{id}/comments` and `POST /stories/{id}/comments`.
 
+Likes live in a `likes` table with one row per (story, user), enforced by a
+unique constraint so a user can like a story only once. Endpoints return
+`{ story_id, like_count, liked }`: `GET /stories/{id}/likes` (optional
+`?user_id=`), `POST /stories/{id}/likes`, and `DELETE /stories/{id}/likes`
+(both idempotent).
+
 ## What Is Done
 
 - Story backend wired with FastAPI + SQLite + SQLAlchemy
@@ -140,5 +146,5 @@ Endpoints: `GET /stories/{id}/comments` and `POST /stories/{id}/comments`.
 - No authentication yet
 - No moderation dashboard yet
 - Comments backend exists (GET/POST `/stories/{id}/comments`); not wired in the UI yet
-- No likes/reactions yet
+- Likes backend exists (`/stories/{id}/likes`); not wired in the UI yet
 - No story detail page yet

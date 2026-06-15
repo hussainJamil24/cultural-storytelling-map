@@ -57,6 +57,13 @@ class Story(Base):
         cascade="all, delete-orphan",
     )
 
+    # links each story to its likes
+    likes = relationship(
+        "Like",
+        back_populates="story",
+        cascade="all, delete-orphan",
+    )
+
     # links each story to its submitting user
     author = relationship("User", back_populates="stories")
 

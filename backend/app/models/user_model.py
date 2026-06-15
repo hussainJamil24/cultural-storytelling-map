@@ -20,3 +20,10 @@ class User(Base):
         back_populates="author",
         cascade="all, delete-orphan",
     )
+
+    # likes made by this user (removed if the user is deleted)
+    likes = relationship(
+        "Like",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
