@@ -90,12 +90,18 @@ export default function Upload() {
         e.preventDefault();
         try {
             
+            // reads the logged-in user id from storage; null when posting logged out
+            const storedUser = localStorage.getItem("user");
+            const userId = storedUser ? JSON.parse(storedUser).id : null;
+
             const payload = {
                 title: formData.title.trim(),
                 content: formData.narrative.trim(),
                 latitude: formData.location?.lat,
                 longitude: formData.location?.lng,
                 category: formData.category,
+                user_id: userId,
+                is_anonymous: formData.anonymous,
             };
 
             const res = await API.post("/stories", payload, {

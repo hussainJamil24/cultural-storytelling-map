@@ -21,6 +21,8 @@ def create_story(story: StoryCreate, db: Session = Depends(get_db)):
         longitude=story.longitude,
         status=StoryStatus.PENDING.value,
         category=story.category,
+        user_id=story.user_id,
+        is_anonymous=story.is_anonymous,
     )
 
     try:

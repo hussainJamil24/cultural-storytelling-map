@@ -14,6 +14,7 @@ class StoryBase(BaseModel):
     latitude: float = Field(..., ge=-90, le=90)
     longitude: float = Field(..., ge=-180, le=180)
     category: str = Field(..., min_length=1)
+    is_anonymous: bool = False
 
     # removes blank-only title and content values
     @field_validator("title", "content")
@@ -36,7 +37,8 @@ class StoryBase(BaseModel):
 
 # data the client sends when creating a story
 class StoryCreate(StoryBase):
-    pass
+    # optional submitter id; null for logged-out (anonymous) posts
+    user_id: Optional[int] = None
 
 
 # data used to approve or reject a submitted story
@@ -61,6 +63,8 @@ class StoryResponse(StoryBase):
     status: StoryStatus
     created_at: datetime
     media: list[MediaResponse] = []
+    # submitter name, or null when the story is anonymous (user_id is never exposed)
+    author_name: Optional[str] = None
 
     # reads values directly from sqlalchemy model instances
     model_config = ConfigDict(from_attributes=True)

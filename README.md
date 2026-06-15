@@ -82,6 +82,10 @@ The frontend and backend currently use:
 Media (images/audio) now lives in a separate `media` table, returned on each
 story as a `media` list. The old single `media_url` column has been removed.
 
+Stories also track a submitter via `user_id` (nullable, for logged-out posts)
+and an `is_anonymous` flag. Responses expose `author_name` (null when the story
+is anonymous) but never the raw `user_id`.
+
 ## What Is Done
 
 - Story backend wired with FastAPI + SQLite + SQLAlchemy
@@ -99,7 +103,7 @@ story as a `media` list. The old single `media_url` column has been removed.
 - [x] Status update route
 - [ ] Backend tests
 - [ ] Replace local auto-approve with proper config
-- [ ] Add submitter support without blocking anonymous posting
+- [x] Add submitter support without blocking anonymous posting
 - [ ] Plan real media storage
 
 ### Developer 2
