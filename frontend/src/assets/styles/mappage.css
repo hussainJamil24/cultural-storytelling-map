@@ -12,13 +12,19 @@
 
 .menu-btn {
     position: absolute;
-    top: 55px;
-    left: 10px;
+    top: 60px;
+    left: 0;
     z-index: 2000;
+    font-size: 40px;
+    font-weight: bold;
     background: white;
     border: none;
     padding: 8px 12px;
-    border-radius: 8px;
+    border-radius: 15px;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    -ms-border-radius: 15px;
+    -o-border-radius: 15px;
 }
 
 /* sidebar mobile */

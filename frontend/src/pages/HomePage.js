@@ -22,7 +22,7 @@ export default function HomePage() {
                         className="menu-btn"
                         onClick={() => setIsSidebarOpen(true)}
                     >
-                        ☰
+                        ›
                     </button>
             )}
 
