@@ -1,73 +1,138 @@
-from fastapi import APIRouter, Form, Depends
+from fastapi import APIRouter, Depends, Form, HTTPException, status
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
-from app.db.session import SessionLocal
-from app.models.user_model import User
+
+from app.core.security import create_access_token, hash_password, verify_password
+from app.db.session import get_db
+from app.models.user_model import User, UserRole
 
 router = APIRouter()
 
-# create DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
-# register
-@router.post("/register")
+def _normalize_email(email: str) -> str:
+    return email.strip().lower()
+
+
+def _serialize_user(user: User) -> dict:
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role,
+    }
+
+
+def _validate_register_input(name: str, email: str, password: str) -> tuple[str, str]:
+    name = name.strip()
+    email = _normalize_email(email)
+
+    if not name or len(name) > 100:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Name is required and must be 100 characters or fewer",
+        )
+
+    if not email or len(email) > 255 or "@" not in email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Valid email is required",
+        )
+
+    if not password or not password.strip() or len(password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 8 characters",
+        )
+
+    return name, email
+
+
+@router.post("/register", status_code=status.HTTP_201_CREATED)
 def register(
     name: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    # db = next(get_db())
+    name, email = _validate_register_input(name, email, password)
 
-    # check if user exists
     existing_user = db.query(User).filter(User.email == email).first()
     if existing_user:
-        return {"error": "Email already registered"}
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email already registered",
+        )
 
-    # create new user
     new_user = User(
         name=name,
         email=email,
-        password=password  # later we hash this
+        password_hash=hash_password(password),
+        role=UserRole.USER.value,
     )
 
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email already registered",
+        )
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Could not register user",
+        )
 
-    return {"message": "User registered successfully"}
+    return {
+        "message": "User registered successfully",
+        "user": _serialize_user(new_user),
+    }
 
-# login
+
 @router.post("/login")
 def login(
     email: str = Form(...),
     password: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    # db = next(get_db())
+    email = _normalize_email(email)
 
-    # find user by email
+    if not email or not password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email and password are required",
+        )
+
     user = db.query(User).filter(User.email == email).first()
 
-    if not user:
-        return {"error": "User not found"}
+    if user is None or not verify_password(password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-    if user.password != password:
-        return {"error": "Incorrect password"}
-    
-    # only this email is admin
-    is_admin = user.email == "admin@gmail.com"
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Inactive user",
+        )
+
+    is_admin = user.role == UserRole.ADMIN.value
+    access_token = create_access_token(
+        {
+            "sub": str(user.id),
+            "role": user.role,
+        }
+    )
 
     return {
-        "message": "Login successful",
-        "user": {
-            "id": user.id,
-            "name": user.name,
-            "email": user.email
-        },
-        "is_admin": is_admin
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": _serialize_user(user),
+        "is_admin": is_admin,
     }

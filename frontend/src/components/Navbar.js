@@ -8,9 +8,10 @@ export default function Navbar() {
     
     // logout function
     const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("isAdmin");
-    window.location.href = "/login";
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("isAdmin");
+        window.location.href = "/login";
     };
 
     return (

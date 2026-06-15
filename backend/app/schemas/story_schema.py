@@ -3,53 +3,52 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from app.models.story_model import StoryStatus
+from app.models.story_model import StoryCategory, StoryStatus
 
 
-# shared story fields used across story schemas
 class StoryBase(BaseModel):
-    # validates story title, content, and map coordinates
-    title: str = Field(..., min_length=1, max_length=200)
-    content: str = Field(..., min_length=1)
-    media_url: Optional[str] = None
+    title: str = Field(..., min_length=1, max_length=160)
+    content: str = Field(..., min_length=1, max_length=10000)
+    media_url: Optional[str] = Field(default=None, max_length=2048)
     latitude: float = Field(..., ge=-90, le=90)
     longitude: float = Field(..., ge=-180, le=180)
-    category: str = Field(..., min_length=1)
+    category: StoryCategory
+    is_anonymous: bool = False
 
-    # removes blank-only title and content values
-    @field_validator("title", "content")
+    @field_validator("title", "content", mode="before")
     @classmethod
-    def validate_text_fields(cls, value: str) -> str:
+    def validate_text_fields(cls, value):
+        if not isinstance(value, str):
+            return value
         value = value.strip()
         if not value:
             raise ValueError("must not be empty")
         return value
-    
-    # Validate allowed categories
-    @field_validator("category")
+
+    @field_validator("media_url", mode="before")
     @classmethod
-    def validate_category(cls, value: str) -> str:
-        allowed = {"heritage", "landmarks", "oral", "customs"}
-        if value not in allowed:
-            raise ValueError("Invalid category")
-        return value
+    def normalize_media_url(cls, value):
+        if value is None or not isinstance(value, str):
+            return value
+        value = value.strip()
+        return value or None
 
 
-# data the client sends when creating a story
 class StoryCreate(StoryBase):
     pass
 
 
-# data used to approve or reject a submitted story
 class StoryStatusUpdate(BaseModel):
     status: StoryStatus
 
 
-# data the api returns after reading or creating a story
-class StoryResponse(StoryBase):
+class StoryPublicResponse(StoryBase):
     id: int
     status: StoryStatus
     created_at: datetime
 
-    # reads values directly from sqlalchemy model instances
     model_config = ConfigDict(from_attributes=True)
+
+
+class StoryPrivateResponse(StoryPublicResponse):
+    user_id: int
