@@ -1,0 +1,17 @@
+# Runtime dependencies — everything needed to run the API server.
+# Each package below is directly imported by the app (verified against the code).
+
+# Web framework & ASGI server
+fastapi==0.136.3
+uvicorn[standard]==0.49.0
+python-multipart==0.0.32      # form/file uploads in routes/users.py
+
+# Database (schema is created at startup via init_db())
+SQLAlchemy==2.0.50
+
+# Request/response validation (app/schemas)
+pydantic==2.13.4
+
+# Auth: JWT tokens (app/core/security.py) & password hashing (pwdlib)
+PyJWT==2.13.0
+pwdlib[argon2]==0.3.0

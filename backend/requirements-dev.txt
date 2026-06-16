@@ -1,0 +1,7 @@
+# Development / migration tooling — not required to run the server.
+# Install with: pip install -r requirements.txt -r requirements-dev.txt
+
+-r requirements.txt
+
+# Database migrations (alembic/ directory)
+alembic==1.18.4
