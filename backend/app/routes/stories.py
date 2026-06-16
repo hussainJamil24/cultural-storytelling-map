@@ -13,7 +13,7 @@ from app.schemas.story_schema import (
     StoryStatusUpdate,
 )
 
-router = APIRouter()
+router = APIRouter(tags=["stories"])
 
 
 def _raise_missing_token() -> None:

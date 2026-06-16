@@ -6,7 +6,7 @@ from app.core.security import create_access_token, hash_password, verify_passwor
 from app.db.session import get_db
 from app.models.user_model import User, UserRole
 
-router = APIRouter()
+router = APIRouter(tags=["users"])
 
 
 def _normalize_email(email: str) -> str:
