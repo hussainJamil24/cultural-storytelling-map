@@ -1,6 +1,7 @@
 /* positions the sidebar container */
 .sidebar {
     position: relative;
+    height: 100vh;
 }
 
 /* lays out the category links as a vertical list */
@@ -8,6 +9,8 @@
     list-style: none;
     padding: 0;
     gap: 8px;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .sidebar-menu li {
