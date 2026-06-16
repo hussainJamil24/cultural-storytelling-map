@@ -8,11 +8,14 @@ from app.db.session import init_db
 # imports story model so sqlalchemy registers the table before creation
 from app.models import story_model
 from app.routes import stories
+from app.routes import comments
 
 # imports user routes (registration, authentication endpoints)
 from app.routes import users
 # imports user model so SQLAlchemy registers the users table
 from app.models import user_model
+# imports comment model so SQLAlchemy registers the comments table
+from app.models import comment_model
 
 
 # creates database tables from the registered models
@@ -49,3 +52,6 @@ app.include_router(users.router)
 
 # registers story routes after middleware setup
 app.include_router(stories.router)
+
+# registers comment routes
+app.include_router(comments.router)
