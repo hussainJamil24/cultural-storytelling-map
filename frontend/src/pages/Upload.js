@@ -49,7 +49,6 @@ export default function Upload() {
     const [formData, setFormData] = useState({
         title:'',
         narrative:'',
-        anonymous: false,
         location: null,
         category: "",
     });
@@ -87,7 +86,6 @@ export default function Upload() {
                 latitude: formData.location?.lat,
                 longitude: formData.location?.lng,
                 category: formData.category,
-                is_anonymous: formData.anonymous,
             };
 
             const res = await API.post("/stories", payload, {
@@ -101,7 +99,6 @@ export default function Upload() {
             setFormData({
                 title: '',
                 narrative: '',
-                anonymous: false,
                 location: null,
                 category: "",
             });
@@ -225,22 +222,6 @@ export default function Upload() {
                                 <i className="bi bi-geo-alt-fill"></i>
                                 <p className="fw-medium">Click to pinpoint location</p>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* lets the user submit anonymously */}
-                    <div className="form-section checkbox-section">
-                        <div className="form-check d-flex align-items-center gap-2">
-                            <input
-                                className="form-check-input"
-                                type="checkbox"
-                                id="anonymous"
-                                name="anonymous"
-                                checked={formData.anonymous} onChange={handleInputChange}
-                            />
-                            <label className="form-check-label fw-medium" htmlFor="anonymous">
-                                Post story anonymously
-                            </label>
                         </div>
                     </div>
 
