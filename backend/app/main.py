@@ -9,6 +9,7 @@ from app.db.session import init_db
 from app.models import story_model
 from app.routes import stories
 from app.routes import comments
+from app.routes import likes
 
 # imports user routes (registration, authentication endpoints)
 from app.routes import users
@@ -16,6 +17,8 @@ from app.routes import users
 from app.models import user_model
 # imports comment model so SQLAlchemy registers the comments table
 from app.models import comment_model
+# imports like model so SQLAlchemy registers the likes table
+from app.models import like_model
 
 
 # creates database tables from the registered models
@@ -55,3 +58,6 @@ app.include_router(stories.router)
 
 # registers comment routes
 app.include_router(comments.router)
+
+# registers like routes
+app.include_router(likes.router)

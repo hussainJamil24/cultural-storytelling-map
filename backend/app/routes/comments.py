@@ -9,7 +9,7 @@ from app.models.story_model import Story, StoryStatus
 from app.models.user_model import User, UserRole
 from app.schemas.comment_schema import CommentCreate, CommentResponse
 
-router = APIRouter()
+router = APIRouter(tags=["comments"])
 
 
 def _get_approved_story(db: Session, story_id: int) -> Story:
