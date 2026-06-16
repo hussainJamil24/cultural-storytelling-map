@@ -63,6 +63,42 @@ export default function Sidebar({type,  onCategoryChange, onClose, activeCategor
                         <span>Customs</span>
                     </div>
                 </li>
+
+                <li onClick={() => onCategoryChange("migration")}
+                    className={activeCategory === "migration" ? "active" : ""}
+                >
+                    <div className="menu-link d-flex align-items-center">
+                        <i className="bi bi-globe"></i>
+                        <span>Migration</span>
+                    </div>
+                </li>
+
+                <li onClick={() => onCategoryChange("religion")}
+                    className={activeCategory === "religion" ? "active" : ""}
+                >
+                    <div className="menu-link d-flex align-items-center">
+                        <i className="bi bi-book"></i>
+                        <span>Religion</span>
+                    </div>
+                </li>
+
+                <li onClick={() => onCategoryChange("music")}
+                    className={activeCategory === "music" ? "active" : ""}
+                >
+                    <div className="menu-link d-flex align-items-center">
+                        <i className="bi bi-music-note-beamed"></i>
+                        <span>Music</span>
+                    </div>
+                </li>
+
+                <li onClick={() => onCategoryChange("food")}
+                    className={activeCategory === "food" ? "active" : ""}
+                >
+                    <div className="menu-link d-flex align-items-center">
+                        <i className="bi bi-cup-hot-fill"></i> 
+                        <span>Food</span>
+                    </div>
+                </li>
             </ul>
 
             {/* links to the story upload page */}
