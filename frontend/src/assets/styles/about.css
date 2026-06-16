@@ -1,0 +1,49 @@
+/* HERO SECTION */
+.about-hero {
+    background: linear-gradient(135deg, #007BFF, #0056b3);
+    color: white;
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.about-hero h1 {
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+
+.about-hero p {
+    font-size: 18px;
+    max-width: 600px;
+    margin: auto;
+}
+
+/* MAIN CONTAINER */
+.about-container {
+    padding: 50px 20px;
+    max-width: 900px;
+    margin: auto;
+}
+
+/* CARDS */
+.about-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ALTERNATE BACKGROUND */
+.about-card.alt {
+    background: #f8f9fa;
+}
+
+/* HEADINGS */
+.about-card h3 {
+    margin-bottom: 10px;
+}
+
+/* LIST */
+.about-card ul {
+    padding-left: 20px;
+}
