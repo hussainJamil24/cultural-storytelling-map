@@ -3,6 +3,8 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
 from app.db.session import init_db
 # imports story model so sqlalchemy registers the table before creation
@@ -10,6 +12,7 @@ from app.models import story_model
 from app.routes import stories
 from app.routes import comments
 from app.routes import likes
+from app.routes import media
 
 from fastapi.staticfiles import StaticFiles
 
@@ -29,17 +32,22 @@ init_db()
 
 # creates the main fastapi application
 app = FastAPI()
+UPLOADS_DIR = Path(__file__).resolve().parents[1] / "uploads"
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # adds cors middleware before routes are registered
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # allows the local frontend during development
+    # allows the local frontend during development, including CRA fallback ports
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
 
 
 @app.exception_handler(RequestValidationError)
@@ -69,6 +77,9 @@ app.include_router(comments.router)
 
 # registers like routes
 app.include_router(likes.router)
+
+# registers media upload routes
+app.include_router(media.router)
 
 from app.routes import ai
 
