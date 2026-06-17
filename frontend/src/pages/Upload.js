@@ -82,7 +82,7 @@ export default function Upload() {
             const payload = {
                 title: formData.title.trim(),
                 content: formData.narrative.trim(),
-                media_url: null,
+                media_url: mediaUrl,
                 latitude: formData.location?.lat,
                 longitude: formData.location?.lng,
                 category: formData.category,
@@ -102,7 +102,17 @@ export default function Upload() {
                 location: null,
                 category: "",
             });
+
+            // reset form
+            setFormData({
+                title: '',
+                narrative: '',
+                location: null,
+                category: "",
+            });
+
             setPosition(null);
+            setMediaUrl(null);
 
         } catch(err) {
             console.error(err);
@@ -111,6 +121,37 @@ export default function Upload() {
 
 
         // console.log('Form submitted:', formData);
+    };
+
+    // loading state for AI btn
+    const [loadingAI, setLoadingAI] = useState(false);
+
+    // store the video in state
+    const [mediaUrl, setMediaUrl] = useState(null);
+
+    const handleGenerateAI = async () => {
+            setLoadingAI(true);
+
+            try {
+                const res = await API.post("/ai/generate-video", {
+                    title: formData.title,
+                    content: formData.narrative,
+                    category: formData.category,
+                });
+
+                console.log(res.data);
+
+                // SAVE video URL
+                setMediaUrl(res.data.video_url);
+
+                alert("AI video generated successfully!");
+
+            } catch (err) {
+                console.error(err);
+                alert("Failed to generate AI video");
+            } finally {
+                setLoadingAI(false);
+            }
     };
 
     return (
@@ -230,15 +271,30 @@ export default function Upload() {
                     </div>
 
                     {/* submits the story once required fields are complete */}
-                    <div className="form-section submit-section d-flex justify-content-center mt-5">
+                    <div className="form-section submit-section d-flex justify-content-center mt-5 gap-2">
                         <button type="submit" id="submit-btn" className= "main-btn rounded-pill" 
                             disabled={btnDisable}
                         >
                             SUBMIT STORY
                         </button>
+
+                        <button type="button" className= "main-btn rounded-pill" id="ai-btn"
+                            onClick={handleGenerateAI}
+                        >
+                            {loadingAI ? "Generating..." : "✨ Generate AI Story"}
+                        </button>
+
                     </div>
+
+                    {loadingAI && (
+                        <p className="text-primary mt-2">
+                            ✨ Weaving your visual story... (this may take up to 2 minutes)
+                        </p>
+)}
                 </form>
             </div>
+
+            
 
             {/* shows the closing page quote */}
             <div className="story-footer text-center fst-italic fw-lighter">

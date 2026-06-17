@@ -61,3 +61,7 @@ app.include_router(comments.router)
 
 # registers like routes
 app.include_router(likes.router)
+
+from app.routes import ai
+
+app.include_router(ai.router, prefix="/ai", tags=["AI"])
