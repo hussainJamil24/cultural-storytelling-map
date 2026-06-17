@@ -201,10 +201,10 @@ export default function Upload() {
                             <option value="landmarks">Landmarks</option>
                             <option value="oral_history">Oral Histories</option>
                             <option value="customs">Customs</option>
-                            <option value="customs">Migration</option>
-                            <option value="customs">Religion</option>
-                            <option value="customs">Music</option>
-                            <option value="customs">Food</option>
+                            <option value="migration">Migration</option>
+                            <option value="religion">Religion</option>
+                            <option value="music">Music</option>
+                            <option value="food">Food</option>
                         </select>
                     </div>
 
