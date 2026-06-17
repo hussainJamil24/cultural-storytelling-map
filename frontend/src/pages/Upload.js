@@ -269,8 +269,8 @@ export default function Upload() {
                                 <h6>Upload Images</h6>
                                 <p className='fw-lighter'>
                                     {selectedImages.length > 0
-                                        ? `${selectedImages.length} image file selected`
-                                        : "Choose image files"}
+                                        ? `${selectedImages.length} image${selectedImages.length === 1 ? "" : "s"} ready to upload`
+                                        : "Select images to upload with this story"}
                                 </p>
                             </label>
                         </div>
@@ -291,7 +291,9 @@ export default function Upload() {
                                 </div>
                                 <h6>Add Oral History</h6>
                                 <p className='fw-lighter'>
-                                    {selectedAudio ? selectedAudio.name : "Choose an audio file"}
+                                    {selectedAudio
+                                        ? `${selectedAudio.name} ready to upload`
+                                        : "Select audio to upload with this story"}
                                 </p>
                             </label>
                         </div>
