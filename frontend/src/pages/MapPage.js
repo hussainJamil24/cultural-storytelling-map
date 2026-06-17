@@ -3,12 +3,9 @@ import { ZoomControl } from "react-leaflet";
 import { Link } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
-import popup from'../assets/images/old-nicosia.jpg';
 import API from "../services/Api";
 import Navbar from "../components/Navbar";
 import L from "leaflet";
-
-
 
 
 // renders the full map page with navbar and approved story markers
@@ -107,10 +104,29 @@ const getMarkerIcon = (category) => {
                                 {/* shows a placeholder popup image */}
                                 <div className="popup-image">
                                     {/* uses a temporary image until story media is available */}
-                                    <img
-                                        src={popup}
-                                        alt="story"
-                                    />
+                                    {story.image_url && (
+                                        <img
+                                            src={`http://127.0.0.1:8000/${story.image_url}`}
+                                            alt={story.title}
+                                        />
+                                    )}
+
+                                    {story.audio_url && (
+                                        <audio controls style={{ width: "100%", marginTop: "8px" }}>
+                                            <source
+                                                src={`http://127.0.0.1:8000/${story.audio_url}`}
+                                                type="audio/mpeg"
+                                            />
+                                            Your browser does not support audio.
+                                        </audio>
+                                    )}
+
+                                    {!story.image_url && !story.audio_url && (
+                                        <img
+                                            src="https://via.placeholder.com/300"
+                                            alt="placeholder"
+                                        />
+                                    )}
                                 </div>
 
                                 {/* shows the story title, preview, and action */}
@@ -118,24 +134,10 @@ const getMarkerIcon = (category) => {
                                     <h5>{story.title}</h5>
                                     <p>{getStoryPreview(story)}</p>
 
-                                    {/* opens the linked media when one exists */}
-                                    {story.media_url && (
-                                        <a
-                                            href={story.media_url}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="popup-btn"
-                                        >
-                                            Open Media
-                                        </a>
-                                    )}
-
                                     {/* shows the current fallback action when no media link exists */}
-                                    {!story.media_url && (
-                                        <Link to={`/story/${story.id}`} className="popup-btn">
+                                    <Link to={`/story/${story.id}`} className="popup-btn">
                                         View Full Story
-                                        </Link>
-                                    )}
+                                    </Link>
                                 </div>
                             </div>
                         </Popup>
