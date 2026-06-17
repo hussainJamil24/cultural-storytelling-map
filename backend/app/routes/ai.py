@@ -26,10 +26,10 @@ async def generate_video(data: AIRequest):
 
     print(prompt)
 
-    #simulate waiting (replace with real API)
+    # simulate waiting (replace with real API)
     time.sleep(5)
 
-    # 🎬 fake response (replace later)
+    # fake response (replace later)
     video_url = "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
 
     return {
