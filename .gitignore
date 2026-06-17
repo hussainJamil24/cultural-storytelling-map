@@ -2,3 +2,4 @@
 !backend/storymap.db
 __pycache__/
 *.py[cod]
+backend/uploads/
