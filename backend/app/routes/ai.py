@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
-import time
+import replicate
+import os
 
 router = APIRouter()
 
@@ -13,7 +14,6 @@ class AIRequest(BaseModel):
 @router.post("/generate-video")
 async def generate_video(data: AIRequest):
 
-    # 🔥 Build prompt
     prompt = f"""
     Create a cinematic storytelling video about:
     Title: {data.title}
@@ -24,14 +24,24 @@ async def generate_video(data: AIRequest):
     Include visuals, narration, and background music
     """
 
-    print(prompt)
+    try:
+        output = replicate.run(
+            "lucataco/text-to-video",
+            input={
+                "prompt": prompt,
+                "num_frames": 24
+            }
+        )
 
-    # simulate waiting (replace with real API)
-    time.sleep(5)
+        video_url = output[0]  # ✅ REAL URL
 
-    # fake response (replace later)
-    video_url = "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        return {
+            "video_url": video_url
+        }
 
-    return {
-        "video_url": video_url
-    }
+    except Exception as e:
+        print("AI ERROR:", e)
+        return {
+            "video_url": None,
+            "error": "AI generation failed"
+        }
