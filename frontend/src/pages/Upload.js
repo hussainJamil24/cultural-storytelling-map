@@ -35,6 +35,8 @@ function LocationMarker({ setPosition, onSelectLocation  }) {
 
 // renders the story upload form and location picker
 export default function Upload() {
+    const [selectedFile, setSelectedFile] = useState(null);
+
     // tracks the marker position selected on the map
     const [position, setPosition] = useState(null);
 
@@ -78,32 +80,38 @@ export default function Upload() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            
+            let imageUrl = mediaUrl; // keep AI video if exists
+
+            // STEP 1: upload image
+            if (selectedFile) {
+                const form = new FormData();
+                form.append("file", selectedFile);
+
+                const uploadRes = await API.post("/upload-image", form, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+
+                imageUrl = uploadRes.data.url; // save image path
+            }
+
+            // STEP 2: send story
             const payload = {
                 title: formData.title.trim(),
                 content: formData.narrative.trim(),
-                media_url: mediaUrl,
+                media_url: imageUrl,   // now image OR AI video
                 latitude: formData.location?.lat,
                 longitude: formData.location?.lng,
                 category: formData.category,
             };
 
-            const res = await API.post("/stories", payload, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const res = await API.post("/stories", payload);
 
             console.log("SUCCESS:", res.data);
-            alert("Story submitted successfully and is now pending review.");
-            setFormData({
-                title: '',
-                narrative: '',
-                location: null,
-                category: "",
-            });
+            alert("Story submitted successfully!");
 
-            // reset form
+            // reset
             setFormData({
                 title: '',
                 narrative: '',
@@ -113,6 +121,7 @@ export default function Upload() {
 
             setPosition(null);
             setMediaUrl(null);
+            setSelectedFile(null);
 
         } catch(err) {
             console.error(err);
@@ -213,6 +222,7 @@ export default function Upload() {
                         {/* shows the disabled image upload field */}
                         <div className="upload-box text-center">
                             <input type="file" id="images-input" multiple accept="image/*"
+                                onChange={(e) => setSelectedFile(e.target.files[0])}
                             />
                             <label htmlFor="images-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
                                 <div className="upload-icon d-flex align-items-center justify-content-center">

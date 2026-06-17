@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import '../assets/styles/mapview.css';
-import popup from'../assets/images/old-nicosia.jpg';
 import { useEffect, useState } from "react";
 import API from "../services/Api";
 
@@ -152,7 +151,7 @@ export default function MapView({ activeCategory }) {
                                 <div className="popup-image">
                                     {/* uses a temporary image until story media is available */}
                                     <img
-                                        src={popup}
+                                        src={story.media_url? `http://127.0.0.1:8000/${story.media_url}` : "https://via.placeholder.com/300"}
                                         alt="story"
                                     />
                                 </div>
