@@ -114,31 +114,35 @@ export default function Upload() {
         const data = new FormData();
         data.append("file", file);
 
-        const res = await API.post("/media/upload", data, {
+        const res = await API.post("/upload-image", data, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         });
 
-        return res.data.media_url;
+        console.log("UPLOAD RESPONSE:", res.data);
+
+        return res.data.url;
     };
 
     // submits the story payload to the backend api
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setSubmitting(true);
-
+        // setSubmitting(true);
+        
         try {
-            const mediaUrl = await uploadSelectedMedia();
+            const media_url = await uploadSelectedMedia();
 
             const payload = {
                 title: formData.title.trim(),
                 content: formData.narrative.trim(),
-                media_url: mediaUrl,
+                media_url: media_url,
                 latitude: formData.location?.lat,
                 longitude: formData.location?.lng,
                 category: formData.category,
             };
+
+            console.log("mediaUrl:", media_url);
 
             const res = await API.post("/stories", payload);
 
@@ -165,6 +169,8 @@ export default function Upload() {
         } finally {
             setSubmitting(false);
         }
+
+        
     };
 
     const handleGenerateAI = async () => {

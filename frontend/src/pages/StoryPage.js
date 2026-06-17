@@ -34,8 +34,7 @@ export default function StoryPage() {
                 </p>
 
                     <img
-                        src={story.media_url}
-                        // src={story.media_url || popup}
+                        src={`http://127.0.0.1:8000/${story.media_url}`}
                         alt="story"
                         style={{width:"100%", maxHeight:"400px", objectFit:"cover"}}
                     />

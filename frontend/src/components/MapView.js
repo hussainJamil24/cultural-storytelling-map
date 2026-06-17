@@ -161,24 +161,12 @@ export default function MapView({ activeCategory }) {
                                     <h5>{story.title}</h5>
                                     <p>{getStoryPreview(story)}</p>
 
-                                    {/* opens the linked media when one exists */}
-                                    {story.media_url && (
-                                        <a
-                                            href={story.media_url}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="popup-btn"
-                                        >
-                                            Open Media
-                                        </a>
-                                    )}
-
                                     {/* shows the current fallback action when no media link exists */}
-                                    {!story.media_url && (
+                                    
                                         <Link to={`/story/${story.id}`} className="popup-btn">
                                             View Full Story
                                         </Link>
-                                    )}
+                                    
                                 </div>
                             </div>
                         </Popup>
