@@ -35,8 +35,6 @@ function LocationMarker({ setPosition, onSelectLocation  }) {
 
 // renders the story upload form and location picker
 export default function Upload() {
-    const [selectedFile, setSelectedFile] = useState(null);
-
     // tracks the marker position selected on the map
     const [position, setPosition] = useState(null);
 
@@ -55,52 +53,88 @@ export default function Upload() {
         category: "",
     });
 
+    const [companionCard, setCompanionCard] = useState(null);
+    const [selectedImages, setSelectedImages] = useState([]);
+    const [selectedAudio, setSelectedAudio] = useState(null);
+    const [mediaInputKey, setMediaInputKey] = useState(0);
+    const [submitting, setSubmitting] = useState(false);
+    const [loadingAI, setLoadingAI] = useState(false);
+
     // disables submit until the required text and location are filled
     const btnDisable =
-    formData.title === "" || formData.narrative === ""  ||formData.location == null || formData.category === "" ;
-    
+        submitting ||
+        formData.title.trim() === "" ||
+        formData.narrative.trim() === "" ||
+        formData.location == null ||
+        formData.category === "";
+
+    const aiDisabled =
+        loadingAI ||
+        formData.title.trim() === "" ||
+        formData.narrative.trim() === "" ||
+        formData.category === "";
+
     // saves the selected map coordinates into the form data
     const handleLocationSelect = (coords) => {
-    setFormData(prev => ({
-        ...prev,
-        location: coords
-    }));
-};
+        setFormData(prev => ({
+            ...prev,
+            location: coords
+        }));
+    };
 
     // updates text fields and checkbox values
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
+        setCompanionCard(null);
         setFormData(prev => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value
         }));
     };
 
+    const handleMediaChange = (e) => {
+        const { name, files } = e.target;
+        const selectedFiles = Array.from(files || []);
+
+        if (name === "images") {
+            setSelectedImages(selectedFiles);
+        }
+
+        if (name === "audio") {
+            setSelectedAudio(selectedFiles[0] || null);
+        }
+    };
+
+    const uploadSelectedMedia = async () => {
+        const file = selectedImages[0] || selectedAudio;
+        if (!file) {
+            return null;
+        }
+
+        const data = new FormData();
+        data.append("file", file);
+
+        const res = await API.post("/media/upload", data, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+
+        return res.data.media_url;
+    };
+
     // submits the story payload to the backend api
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitting(true);
+
         try {
-            let imageUrl = mediaUrl; // keep AI video if exists
+            const mediaUrl = await uploadSelectedMedia();
 
-            // STEP 1: upload image
-            if (selectedFile) {
-                const form = new FormData();
-                form.append("file", selectedFile);
-
-                const uploadRes = await API.post("/upload-image", form, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                });
-
-                imageUrl = uploadRes.data.url; // save image path
-            }
-
-            // STEP 2: send story
             const payload = {
                 title: formData.title.trim(),
                 content: formData.narrative.trim(),
-                media_url: imageUrl,   // now image OR AI video
+                media_url: mediaUrl,
                 latitude: formData.location?.lat,
                 longitude: formData.location?.lng,
                 category: formData.category,
@@ -109,9 +143,8 @@ export default function Upload() {
             const res = await API.post("/stories", payload);
 
             console.log("SUCCESS:", res.data);
-            alert("Story submitted successfully!");
+            alert("Story submitted successfully and is now pending review.");
 
-            // reset
             setFormData({
                 title: '',
                 narrative: '',
@@ -120,47 +153,46 @@ export default function Upload() {
             });
 
             setPosition(null);
-            setMediaUrl(null);
-            setSelectedFile(null);
+            setCompanionCard(null);
+            setSelectedImages([]);
+            setSelectedAudio(null);
+            setMediaInputKey((key) => key + 1);
 
         } catch(err) {
             console.error(err);
-            alert("Upload failed");
+            const message = err.response?.data?.detail || "Upload failed";
+            alert(message);
+        } finally {
+            setSubmitting(false);
         }
-
-
-        // console.log('Form submitted:', formData);
     };
 
-    // loading state for AI btn
-    const [loadingAI, setLoadingAI] = useState(false);
-
-    // store the video in state
-    const [mediaUrl, setMediaUrl] = useState(null);
-
     const handleGenerateAI = async () => {
-            setLoadingAI(true);
+        if (aiDisabled) {
+            alert("Add a title, narrative, and category before generating the companion card.");
+            return;
+        }
 
-            try {
-                const res = await API.post("/ai/generate-video", {
-                    title: formData.title,
-                    content: formData.narrative,
-                    category: formData.category,
-                });
+        setLoadingAI(true);
 
-                console.log(res.data);
+        try {
+            const res = await API.post("/ai/generate-companion-card", {
+                title: formData.title.trim(),
+                content: formData.narrative.trim(),
+                category: formData.category,
+            });
 
-                // SAVE video URL
-                setMediaUrl(res.data.video_url);
+            console.log(res.data);
+            setCompanionCard(res.data);
 
-                alert("AI video generated successfully!");
-
-            } catch (err) {
-                console.error(err);
-                alert("Failed to generate AI video");
-            } finally {
-                setLoadingAI(false);
-            }
+        } catch (err) {
+            console.error(err);
+            const message =
+                err.response?.data?.detail || err.message || "Failed to generate companion card";
+            alert(message);
+        } finally {
+            setLoadingAI(false);
+        }
     };
 
     return (
@@ -217,32 +249,52 @@ export default function Upload() {
                         </select>
                     </div>
 
-                    {/* shows the placeholder media upload boxes */}
+                    {/* shows the media upload fields */}
                     <div className="upload-boxes">
-                        {/* shows the disabled image upload field */}
+                        {/* shows the image upload field */}
                         <div className="upload-box text-center">
-                            <input type="file" id="images-input" multiple accept="image/*"
-                                onChange={(e) => setSelectedFile(e.target.files[0])}
+                            <input
+                                key={`images-${mediaInputKey}`}
+                                type="file"
+                                id="images-input"
+                                name="images"
+                                multiple
+                                accept="image/*"
+                                onChange={handleMediaChange}
                             />
                             <label htmlFor="images-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
                                 <div className="upload-icon d-flex align-items-center justify-content-center">
                                     <i className="bi bi-image"></i>
                                 </div>
                                 <h6>Upload Images</h6>
-                                <p className='fw-lighter'>Media upload coming soon</p>
+                                <p className='fw-lighter'>
+                                    {selectedImages.length > 0
+                                        ? `${selectedImages.length} image${selectedImages.length === 1 ? "" : "s"} ready to upload`
+                                        : "Select images to upload with this story"}
+                                </p>
                             </label>
                         </div>
 
-                        {/* shows the disabled audio upload field */}
+                        {/* shows the audio upload field */}
                         <div className="upload-box text-center">
-                            <input type="file" id="audio-input" accept="audio/*"
+                            <input
+                                key={`audio-${mediaInputKey}`}
+                                type="file"
+                                id="audio-input"
+                                name="audio"
+                                accept="audio/*"
+                                onChange={handleMediaChange}
                             />
                             <label htmlFor="audio-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
                                 <div className="upload-icon d-flex align-items-center justify-content-center">
                                     <i className="bi bi-mic"></i>
                                 </div>
                                 <h6>Add Oral History</h6>
-                                <p className='fw-lighter'>Media upload coming soon</p>
+                                <p className='fw-lighter'>
+                                    {selectedAudio
+                                        ? `${selectedAudio.name} ready to upload`
+                                        : "Select audio to upload with this story"}
+                                </p>
                             </label>
                         </div>
                     </div>
@@ -259,8 +311,8 @@ export default function Upload() {
                                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
 
                                 {/* listens for clicks and updates the selected coordinates */}
-                                <LocationMarker setPosition={setPosition} 
-                                    onSelectLocation={handleLocationSelect} 
+                                <LocationMarker setPosition={setPosition}
+                                    onSelectLocation={handleLocationSelect}
                                 />
 
                                 {/* shows a marker only after a location is selected */}
@@ -280,29 +332,63 @@ export default function Upload() {
 
                     {/* submits the story once required fields are complete */}
                     <div className="form-section submit-section d-flex justify-content-center mt-5 gap-2">
-                        <button type="submit" id="submit-btn" className= "main-btn rounded-pill" 
+                        <button type="submit" id="submit-btn" className= "main-btn rounded-pill"
                             disabled={btnDisable}
                         >
-                            SUBMIT STORY
+                            {submitting ? "SAVING..." : "SUBMIT STORY"}
                         </button>
 
                         <button type="button" className= "main-btn rounded-pill" id="ai-btn"
                             onClick={handleGenerateAI}
+                            disabled={aiDisabled}
                         >
-                            {loadingAI ? "Generating..." : "✨ Generate AI Story"}
+                            {loadingAI ? (
+                                "Generating..."
+                            ) : (
+                                <><i className="bi bi-stars"></i> Generate Companion Card</>
+                            )}
                         </button>
 
                     </div>
 
                     {loadingAI && (
                         <p className="text-primary mt-2">
-                            ✨ Weaving your visual story... (this may take up to 2 minutes)
+                            Preparing companion card...
                         </p>
-)}
+                    )}
+
+                    {companionCard && (
+                        <div className="ai-companion-panel">
+                            <h5>Companion Card</h5>
+
+                            <p className="ai-companion-summary">{companionCard.short_summary}</p>
+
+                            <div className="ai-companion-tags">
+                                {companionCard.themes.map((theme) => (
+                                    <span key={theme}>{theme}</span>
+                                ))}
+                            </div>
+
+                            <div className="ai-companion-section">
+                                <h6>Timeline</h6>
+                                <ol>
+                                    {companionCard.timeline.map((item) => (
+                                        <li key={item}>{item}</li>
+                                    ))}
+                                </ol>
+                            </div>
+
+                            <div className="ai-companion-section">
+                                <h6>Cultural Value</h6>
+                                <p>{companionCard.cultural_value}</p>
+                            </div>
+
+                            <p className="ai-companion-note">{companionCard.respect_note}</p>
+                            <p className="ai-companion-note">{companionCard.safety_notice}</p>
+                        </div>
+                    )}
                 </form>
             </div>
-
-            
 
             {/* shows the closing page quote */}
             <div className="story-footer text-center fst-italic fw-lighter">

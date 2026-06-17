@@ -94,6 +94,20 @@
     font-size: 28px;
 }
 
+.upload-box h6 {
+    margin-bottom: 0;
+}
+
+.upload-box p {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+/* keeps native file controls from overflowing narrow upload boxes */
+.upload-box input[type="file"] {
+    max-width: 100%;
+}
+
 /* positions overlays relative to the map picker */
 .map-wrapper {
     position: relative;
@@ -154,9 +168,72 @@
     padding: 8px 15px;
 }
 
+.main-btn:disabled {
+    background: #8fa7c1;
+    cursor: not-allowed;
+}
+
 /* styles disabled actions with a muted color */
 .disabled {
     background: gray !important;
+}
+
+.ai-companion-panel {
+    border-top: 1px solid #e0e6f0;
+    margin-top: 28px;
+    padding-top: 24px;
+}
+
+.ai-companion-panel h5,
+.ai-companion-panel h6 {
+    color: #1a2634;
+    font-weight: 700;
+}
+
+.ai-companion-summary {
+    color: #31465c;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.ai-companion-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.ai-companion-tags span {
+    background: #eef6ff;
+    border: 1px solid #cfe4ff;
+    border-radius: 999px;
+    color: #165b9f;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 10px;
+}
+
+.ai-companion-section {
+    margin-bottom: 16px;
+}
+
+.ai-companion-section ol {
+    color: #31465c;
+    margin-bottom: 0;
+    padding-left: 20px;
+}
+
+.ai-companion-section p {
+    color: #31465c;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.ai-companion-note {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 6px;
 }
 
 
