@@ -213,7 +213,6 @@ export default function Upload() {
                         {/* shows the disabled image upload field */}
                         <div className="upload-box text-center">
                             <input type="file" id="images-input" multiple accept="image/*"
-                            disabled
                             />
                             <label htmlFor="images-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
                                 <div className="upload-icon d-flex align-items-center justify-content-center">
@@ -227,7 +226,6 @@ export default function Upload() {
                         {/* shows the disabled audio upload field */}
                         <div className="upload-box text-center">
                             <input type="file" id="audio-input" accept="audio/*"
-                            disabled
                             />
                             <label htmlFor="audio-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
                                 <div className="upload-icon d-flex align-items-center justify-content-center">
