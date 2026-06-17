@@ -1,4 +1,4 @@
-backend/storymap.db
 *.db
+!backend/storymap.db
 __pycache__/
 *.py[cod]
