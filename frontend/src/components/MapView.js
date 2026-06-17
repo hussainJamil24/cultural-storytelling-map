@@ -150,10 +150,15 @@ export default function MapView({ activeCategory }) {
                                 {/* shows a placeholder popup image */}
                                 <div className="popup-image">
                                     {/* uses a temporary image until story media is available */}
-                                    <img
-                                        src={story.media_url? `http://127.0.0.1:8000/${story.media_url}` : "https://via.placeholder.com/300"}
-                                        alt="story"
-                                    />
+                                    {story.image_url && (
+                                        <img src={`http://127.0.0.1:8000/${story.image_url}`}  alt={story.title}/>
+                                    )}
+
+                                    {story.audio_url && (
+                                        <audio controls>
+                                            <source src={`http://127.0.0.1:8000/${story.audio_url}`} />
+                                        </audio>
+                                    )}
                                 </div>
 
                                 {/* shows the story title, preview, and action */}

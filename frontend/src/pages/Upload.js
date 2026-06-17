@@ -105,44 +105,40 @@ export default function Upload() {
         }
     };
 
-    const uploadSelectedMedia = async () => {
-        const file = selectedImages[0] || selectedAudio;
-        if (!file) {
-            return null;
-        }
-
+    const uploadFile = async (file) => {
         const data = new FormData();
         data.append("file", file);
 
-        const res = await API.post("/upload-image", data, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
-
-        console.log("UPLOAD RESPONSE:", res.data);
-
+        const res = await API.post("/upload-image", data);
         return res.data.url;
     };
 
+    
     // submits the story payload to the backend api
     const handleSubmit = async (e) => {
         e.preventDefault();
         // setSubmitting(true);
         
         try {
-            const media_url = await uploadSelectedMedia();
+            const imageUrl = selectedImages[0]
+            ? await uploadFile(selectedImages[0])
+            : null;
+
+            const audioUrl = selectedAudio
+                ? await uploadFile(selectedAudio)
+                : null;
 
             const payload = {
                 title: formData.title.trim(),
                 content: formData.narrative.trim(),
-                media_url: media_url,
+                image_url: imageUrl,
+                audio_url: audioUrl,
                 latitude: formData.location?.lat,
                 longitude: formData.location?.lng,
                 category: formData.category,
             };
 
-            console.log("mediaUrl:", media_url);
+            // console.log("mediaUrl:", media_url);
 
             const res = await API.post("/stories", payload);
 

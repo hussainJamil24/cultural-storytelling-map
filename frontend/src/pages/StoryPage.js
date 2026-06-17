@@ -33,12 +33,31 @@ export default function StoryPage() {
                     Category: {story.category}
                 </p>
 
-                    <img
-                        src={`http://127.0.0.1:8000/${story.media_url}`}
-                        alt="story"
-                        style={{width:"100%", maxHeight:"400px", objectFit:"cover"}}
-                    />
-                
+                    {/* IMAGE */}
+                    {story.image_url && (
+                        <img
+                            src={`http://127.0.0.1:8000/${story.image_url}`}
+                            alt={story.title}
+                            style={{
+                                width: "100%",
+                                maxHeight: "400px",
+                                objectFit: "cover",
+                                marginTop: "15px"
+                            }}
+                        />
+                    )}
+
+                    {/* AUDIO */}
+                    {story.audio_url && (
+                        <audio controls style={{ width: "100%", marginTop: "15px" }}>
+                            <source
+                                src={`http://127.0.0.1:8000/${story.audio_url}`}
+                                type="audio/mpeg"
+                            />
+                            Your browser does not support audio.
+                        </audio>
+                    )}
+
                 <p className="mt-3">{story.content}</p>
             </div>
         </div>
