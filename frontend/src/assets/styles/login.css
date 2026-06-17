@@ -38,7 +38,6 @@ html, body, #root {
     width: 80px;
     height: 4px;
     background-color: #0066cc;
-    /* margin-bottom: 30px; */
     border-radius: 2px;
 }
 
@@ -55,27 +54,30 @@ html, body, #root {
     margin-bottom: 50px;
 }
 
-/* styles the avatar preview group */
-.avatar {
-    width: 50px;
-    height: 50px;
+/* styles the images preview group */
+.avatar-img {
+    width: 75px;
+    height: 75px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6b4423 0%, #8b5a2b 100%);
+    object-fit: cover;
     border: 3px solid white;
-}
-
-.avatar-1 {
-    background: linear-gradient(135deg, #6b4423 0%, #8b5a2b 100%);
-}
-
-.avatar-2 {
-    background: linear-gradient(135deg, #7a5c4d 0%, #9d7b6a 100%);
     margin-left: -15px;
+    transition: transform 0.2s ease;
+}
+
+/* ensures first avatar never shifts */
+.profile-avatars img:first-child {
+    margin-left: 0 !important;
+}
+
+/* hover effect */
+.avatar-img:hover {
+    transform: scale(1.1);
 }
 
 .avatar-add {
-    width: 50px;
-    height: 50px;
+    width: 75px;
+    height: 75px;
     border-radius: 50%;
     background-color: #e0e6f0;
     border: none;
@@ -274,7 +276,7 @@ html, body, #root {
         font-size: 14px;
     }
 
-    .avatar {
+    .avatar-img {
         width: 40px;
         height: 40px;
     }
@@ -340,19 +342,16 @@ html, body, #root {
         gap: 8px !important;
     }
 
-    .avatar {
+    .avatar-img {
         width: 35px;
         height: 35px;
+        margin-left: -10px !important;
     }
 
     .avatar-add {
         width: 35px;
         height: 35px;
         font-size: 16px;
-        margin-left: -10px !important;
-    }
-
-    .avatar-2 {
         margin-left: -10px !important;
     }
 
@@ -411,7 +410,7 @@ html, body, #root {
         font-size: 18px;
     }
 
-    .avatar {
+    .avatar-img {
         width: 32px;
         height: 32px;
     }

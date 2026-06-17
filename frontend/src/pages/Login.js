@@ -8,6 +8,22 @@ import API from "../services/Api";
 
 // renders the login page layout and form shell
 export default function Login() {
+
+    const [stories, setStories] = useState([]);
+
+    useEffect(() => {
+        const fetchStories = async () => {
+            try {
+                const res = await API.get("/stories");
+                setStories(res.data.filter(s => s.image_url).slice(0, 2)); // only 2 images
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchStories();
+    }, []);
+
     // navigation (redirect after login)
     const navigate = useNavigate();
 
@@ -101,8 +117,18 @@ export default function Login() {
                             <p className='fw-lighter'>Securely access your curated collection of oral histories and heritage landmarks.</p>
 
                             <div className="profile-avatars d-flex align-items-center gap-2">
-                                <div className="avatar avatar-1"></div>
-                                <div className="avatar avatar-2"></div>
+                                {stories.map((story, index) => (
+                                    <img
+                                        key={story.id}
+                                        src={
+                                            story.media_url
+                                                ? `http://127.0.0.1:8000/${story.media_url}`
+                                                : "https://via.placeholder.com/40"
+                                        }
+                                        alt={story.title}
+                                        className="avatar-img"
+                                    />
+                                ))}
                                 <button className="avatar-add d-flex align-items-center justify-content-center">+</button>
                             </div>
                         </div>
