@@ -1,5 +1,4 @@
 import Navbar from "../components/Navbar";
-import image from'../assets/images/old-nicosia.jpg';
 import '../assets/styles/admin.css';
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -121,11 +120,32 @@ export default function AdminPage() {
                         {stories.map((story) => (
                             <div className="admin-card" key={story.id}>
                                 {/* Image */}
-                                <img 
-                                    src={story.media_url || image}
-                                    alt="story"
-                                    className="admin-card-img"
-                                />
+                                {story.image_url && (
+                                    <img 
+                                        src={`http://127.0.0.1:8000/${story.image_url}`}
+                                        alt={story.title}
+                                        className="admin-card-img"
+                                    />
+                                )}
+
+                                {/* AUDIO */}
+                                {story.audio_url && (
+                                    <audio controls style={{ width: "100%", marginTop: "8px" }}>
+                                        <source
+                                            src={`http://127.0.0.1:8000/${story.audio_url}`}
+                                            type="audio/mpeg"
+                                        />
+                                    </audio>
+                                )}
+
+                                {/* FALLBACK */}
+                                {!story.image_url && !story.audio_url && (
+                                    <img 
+                                        src="https://via.placeholder.com/300"
+                                        alt="placeholder"
+                                        className="admin-card-img"
+                                    />
+                                )}
 
                                 {/* Content */}
                                 <div className="p-3">
