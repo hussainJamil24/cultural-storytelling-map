@@ -26,15 +26,23 @@ export default function MapPage() {
 const getMarkerIcon = (category) => {
     switch (category) {
         case "heritage":
-            return createIcon("blue");
-        case "landmarks":
-            return createIcon("red");
-        case "oral_history":
-            return createIcon("green");
-        case "customs":
-            return createIcon("yellow");
-        default:
-            return createIcon("blue");
+                return createIcon("blue");
+            case "landmarks":
+                return createIcon("red");
+            case "oral_history":
+                return createIcon("green");
+            case "customs":
+                return createIcon("yellow");
+            case "migration":
+                return createIcon("violet");
+            case "food":
+                return createIcon("orange");
+            case "music":
+                return createIcon("grey");
+            case "religion":
+                return createIcon("black");
+            default:
+                return createIcon("blue");
     }
 };
 
