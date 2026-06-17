@@ -9,7 +9,8 @@ from app.models.story_model import StoryCategory, StoryStatus
 class StoryBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=160)
     content: str = Field(..., min_length=1, max_length=10000)
-    media_url: Optional[str] = Field(default=None, max_length=2048)
+    image_url: Optional[str] = Field(default=None, max_length=2048)
+    audio_url: Optional[str] = Field(default=None, max_length=2048)
     latitude: float = Field(..., ge=-90, le=90)
     longitude: float = Field(..., ge=-180, le=180)
     category: StoryCategory
@@ -25,7 +26,7 @@ class StoryBase(BaseModel):
             raise ValueError("must not be empty")
         return value
 
-    @field_validator("media_url", mode="before")
+    @field_validator("image_url", "audio_url", mode="before")
     @classmethod
     def normalize_media_url(cls, value):
         if value is None or not isinstance(value, str):
