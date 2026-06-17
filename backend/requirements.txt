@@ -15,3 +15,6 @@ pydantic==2.13.4
 # Auth: JWT tokens (app/core/security.py) & password hashing (pwdlib)
 PyJWT==2.13.0
 pwdlib[argon2]==0.3.0
+
+# AI video generation (app/routes/ai.py)
+replicate==1.0.7
