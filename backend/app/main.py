@@ -11,6 +11,9 @@ from app.routes import stories
 from app.routes import comments
 from app.routes import likes
 
+from fastapi.staticfiles import StaticFiles
+
+
 # imports user routes (registration, authentication endpoints)
 from app.routes import users
 # imports user model so SQLAlchemy registers the users table
@@ -26,6 +29,8 @@ init_db()
 
 # creates the main fastapi application
 app = FastAPI()
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # adds cors middleware before routes are registered
 app.add_middleware(
@@ -44,6 +49,9 @@ async def validation_exception_handler(_request, exc):
         content=jsonable_encoder({"detail": exc.errors()}),
     )
 
+
+# mount uploads AFTER app exists
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # returns a basic health check response
 @app.get("/")
@@ -65,3 +73,4 @@ app.include_router(likes.router)
 from app.routes import ai
 
 app.include_router(ai.router, prefix="/ai", tags=["AI"])
+

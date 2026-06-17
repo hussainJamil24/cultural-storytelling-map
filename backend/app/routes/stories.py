@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status as http_status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+from fastapi import UploadFile, File
+import os
 
 from app.core.dependencies import get_current_user, get_optional_current_user, require_admin
 from app.db.session import get_db
@@ -132,3 +134,19 @@ def update_story_status(
         raise HTTPException(status_code=500, detail="Could not update story status")
 
     return story
+
+@router.post("/upload-image")
+def upload_image(file: UploadFile = File(...)):
+
+    upload_dir = "uploads"
+    os.makedirs(upload_dir, exist_ok=True)
+
+    file_path = f"{upload_dir}/{file.filename}"
+
+    with open(file_path, "wb") as f:
+        f.write(file.file.read())
+
+    return {
+        "url": file_path
+    }
+

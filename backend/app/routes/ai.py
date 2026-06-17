@@ -33,7 +33,7 @@ async def generate_video(data: AIRequest):
             }
         )
 
-        video_url = output[0]  # ✅ REAL URL
+        video_url = output[0]  # REAL URL
 
         return {
             "video_url": video_url
