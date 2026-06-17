@@ -119,14 +119,6 @@ export default function MapView({ activeCategory }) {
                 />
             </div>
 
-            {/* links to the story upload form */}
-            <div className="map-upload-btn">
-                <Link to="/upload" className="upload-btn mt-auto">
-                    <i className="bi bi-plus-lg"></i>
-                    Upload Story
-                </Link>
-            </div>
-
             {/* show message when no result */}
             {searchTerm && filteredStories.length === 0 && (
                 <p className="no-results">No stories found</p>
