@@ -19,9 +19,9 @@
 
 /* MAIN CONTAINER */
 .about-container {
-    padding: 50px 20px;
-    max-width: 900px;
-    margin: auto;
+    /* padding: 50px 20px; */
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
 /* CARDS */
@@ -46,4 +46,65 @@
 /* LIST */
 .about-card ul {
     padding-left: 20px;
+}
+
+/* .about-background {
+    width: 100%;
+    min-height: 100vh;
+    background: 
+        linear-gradient(rgba(26, 58, 82, 0.75), rgba(26, 58, 82, 0.75)),
+        url("../images/map.jpg");
+    
+    background-size: cover;
+    background-position: center;
+    padding: 80px 20px;
+    
+} */
+
+
+.about-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.hero-cta {
+    margin-top: 20px;
+}
+
+.about-steps {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.steps-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.step {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    width: 200px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.about-impact {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.about-cta {
+    margin-top: 50px;
+    text-align: center;
+}
+
+.step h4 i {
+    color: #007BFF;
+    font-size: 18px;
 }
