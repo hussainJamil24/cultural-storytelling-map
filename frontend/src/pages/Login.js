@@ -117,18 +117,22 @@ export default function Login() {
                             <p className='fw-lighter'>Securely access your curated collection of oral histories and heritage landmarks.</p>
 
                             <div className="profile-avatars d-flex align-items-center gap-2">
-                                {stories.map((story, index) => (
+                                {stories.map((story) => {
+                                    const isImage = story.media_url?.match(/\.(jpg|jpeg|png|webp|gif)$/i);
+
+                                    return (
                                     <img
                                         key={story.id}
                                         src={
-                                            story.media_url
-                                                ? `http://127.0.0.1:8000/${story.media_url}`
-                                                : "https://via.placeholder.com/40"
+                                        isImage
+                                            ? `http://127.0.0.1:8000/${story.media_url}`
+                                            : "https://via.placeholder.com/40"
                                         }
                                         alt={story.title}
                                         className="avatar-img"
                                     />
-                                ))}
+                                    );
+                                })}
                                 <button className="avatar-add d-flex align-items-center justify-content-center">+</button>
                             </div>
                         </div>
