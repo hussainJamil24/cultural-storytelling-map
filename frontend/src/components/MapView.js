@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { ZoomControl } from "react-leaflet";
 import { Link } from "react-router-dom";
 import L from "leaflet";
@@ -39,6 +39,24 @@ const createIcon = (color) =>
                 return createIcon("blue");
         }
     };
+
+// pans and zooms the map to a matching story when searching
+function FlyToStory({ story }) {
+    const map = useMap();
+    const id = story?.id;
+
+    useEffect(() => {
+        if (story) {
+            map.flyTo([Number(story.latitude), Number(story.longitude)], 14, {
+                duration: 1.2,
+            });
+        }
+        // only re-fly when the matched story changes
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
+
+    return null;
+}
 
 // renders the reusable story map with approved story markers
 // renders category filters instead of navigation links
@@ -130,6 +148,15 @@ export default function MapView({ activeCategory }) {
             style={{ height: "100vh" }}
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+
+                {/* flies to the first matching story when a search is active */}
+                <FlyToStory
+                    story={
+                        searchTerm.trim() && filteredStories.length > 0
+                            ? filteredStories[0]
+                            : null
+                    }
+                />
 
                 {/* renders markers only for stories with valid coordinates */}
                     {filteredStories.map((story) => (
