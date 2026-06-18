@@ -20,7 +20,7 @@ export default function Navbar() {
             <Link to="/" className="navbar-brand d-flex align-items-center fw-bold">
                 <img src={Logo} alt="StoryTelling"
                     style={{ width: "50px", marginRight: "10px" }}/>
-                    StoryTelling
+                    <span className="brand-text">Narrify</span>
             </Link>
             
              {/* toggles the collapsed menu on smaller screens */}

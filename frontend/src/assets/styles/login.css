@@ -24,6 +24,22 @@ html, body, #root {
     background-color: #f0f2f5;
 }
 
+.brand-text {
+    background: linear-gradient(90deg, #e0556b, #2c5f7c);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;  
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+}
+
+.brand-text:hover {
+    filter: brightness(1.2);
+    transform: scale(1.05);
+}
+
 /* styles the left branding panel */
 .login-left {
     flex: 1;
