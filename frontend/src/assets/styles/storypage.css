@@ -1,0 +1,151 @@
+/* constrains the story detail to a readable column */
+.story-detail {
+    max-width: 760px;
+}
+
+/* like button row under the story */
+.like-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border: 1px solid #e0556b;
+    border-radius: 50px;
+    background: #fff;
+    color: #e0556b;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.like-btn:hover {
+    background: #fdeef0;
+}
+
+.like-btn.liked {
+    background: #e0556b;
+    color: #fff;
+}
+
+.like-count {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+/* comments block */
+.comments-section {
+    margin-top: 40px;
+    border-top: 1px solid #eee;
+    padding-top: 24px;
+}
+
+.comments-section h4 {
+    margin-bottom: 16px;
+}
+
+.comment-form,
+.reply-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.comment-form textarea,
+.reply-form textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 12px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.btn-primary {
+    align-self: flex-start;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 50px;
+    background: #2c5f7c;
+    color: #fff;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.login-hint {
+    color: #666;
+    margin-bottom: 24px;
+}
+
+.no-comments {
+    color: #999;
+    font-style: italic;
+}
+
+/* individual comment */
+.comment {
+    padding: 14px 0;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.comment-reply {
+    margin-left: 28px;
+    border-left: 2px solid #eee;
+    padding-left: 14px;
+    border-bottom: none;
+}
+
+.comment-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.comment-author {
+    font-weight: 600;
+}
+
+.comment-date {
+    font-size: 0.8rem;
+    color: #999;
+}
+
+.comment-body {
+    margin: 0 0 6px;
+    white-space: pre-wrap;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 14px;
+}
+
+.link-btn {
+    border: none;
+    background: none;
+    padding: 0;
+    color: #2c5f7c;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.link-btn:hover {
+    text-decoration: underline;
+}
+
+.link-btn.danger {
+    color: #c0392b;
+}
