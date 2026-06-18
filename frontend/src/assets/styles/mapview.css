@@ -1,6 +1,8 @@
 /* positions floating map controls relative to the map */
 .map-container {
     position: relative;
+    height: calc(100vh - 60px);  
+    width: 100%;
 }
 
 /* anchors the upload button over the map */
@@ -21,8 +23,9 @@
 .map-search {
     position: absolute;
     top: 15px;
-    left: 70px;
-    z-index: 1100;
+    left: 15px; 
+    right: 15px;  
+    z-index: 500;
     width: 250px;
 }
 
@@ -108,6 +111,10 @@
 
 /* adjusts floating controls on smaller screens */
 @media (max-width: 768px) {
+    .map-container {
+        height: 100vh;
+    }
+
     .map-upload-btn {
         right: 10px;
         bottom: 15px;

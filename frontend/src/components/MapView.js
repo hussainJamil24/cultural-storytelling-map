@@ -145,7 +145,7 @@ export default function MapView({ activeCategory }) {
             {/* renders the map with a custom zoom control placement */}
             <MapContainer center={CyprusCenter} zoom={9}  maxBounds={bounds} maxBoundsViscosity={1.0}
             zoomControl={false}
-            style={{ height: "100vh" }}
+            style={{ height: "100vh", width: "100%" }}
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
 
