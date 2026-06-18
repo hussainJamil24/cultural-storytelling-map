@@ -131,21 +131,39 @@
 .comment-actions {
     display: flex;
     gap: 14px;
+    margin-top: 6px;
 }
 
 .link-btn {
-    border: none;
-    background: none;
-    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: #f5f7fa;
     color: #2c5f7c;
-    font-size: 0.85rem;
+    border: 1px solid transparent;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .link-btn:hover {
-    text-decoration: underline;
+    background: #e8f1f5;
+    border-color: #2c5f7c;
+}
+
+.link-btn:active {
+    transform: scale(0.95);
 }
 
 .link-btn.danger {
+    background: #fff5f5;
     color: #c0392b;
+}
+
+.link-btn.danger:hover {
+    background: #fdecea;
+    border-color: #c0392b;
 }

@@ -143,6 +143,7 @@ export default function StoryPage() {
                             setReplyTo(replyTo === comment.id ? null : comment.id)
                         }
                     >
+                        <i className="bi bi-reply"></i>
                         {replyTo === comment.id ? "Cancel" : "Reply"}
                     </button>
                 )}
@@ -152,6 +153,7 @@ export default function StoryPage() {
                         className="link-btn danger"
                         onClick={() => deleteComment(comment.id)}
                     >
+                        <i className="bi bi-trash"></i>
                         Delete
                     </button>
                 )}
