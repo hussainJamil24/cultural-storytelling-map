@@ -22,13 +22,28 @@
     position: absolute;
     top: 15px;
     left: 70px;
-    z-index: 500;
+    z-index: 1100;
     width: 250px;
 }
 
 .map-search input {
     border-radius: 50px;
     padding: 10px 15px;
+}
+
+/* floats the empty-state message under the search bar */
+.no-results {
+    position: absolute;
+    top: 60px;
+    left: 70px;
+    z-index: 1100;
+    width: 250px;
+    margin: 0;
+    padding: 8px 15px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    text-align: center;
 }
 
 /* removes the default leaflet popup wrapper spacing */
