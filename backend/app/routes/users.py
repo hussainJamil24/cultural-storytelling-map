@@ -109,6 +109,7 @@ def login(
 
     user = db.query(User).filter(User.email == email).first()
 
+
     if user is None or not verify_password(password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

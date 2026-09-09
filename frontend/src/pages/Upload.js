@@ -109,8 +109,8 @@ export default function Upload() {
         const data = new FormData();
         data.append("file", file);
 
-        const res = await API.post("/upload-image", data);
-        return res.data.url;
+        const res = await API.post("/media/upload", data);
+        return res.data.media_url;
     };
 
     

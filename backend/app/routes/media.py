@@ -80,7 +80,13 @@ async def upload_media(
     upload_path.write_bytes(content)
 
     return MediaUploadResponse(
-        media_url=str(request.url_for("uploads", path=stored_filename)),
+        media_url=f"uploads/{stored_filename}",
         filename=stored_filename,
         content_type=file.content_type or "application/octet-stream",
     )
+
+    # return MediaUploadResponse(
+    #     media_url=str(request.url_for("uploads", path=stored_filename)),
+    #     filename=stored_filename,
+    #     content_type=file.content_type or "application/octet-stream",
+    # )
