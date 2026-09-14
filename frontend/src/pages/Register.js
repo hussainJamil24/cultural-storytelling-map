@@ -68,13 +68,13 @@ export default function Register() {
     !formData.confirmPassword;
 
     return(
-        <div style={{background:"#f0f2f5"}}>
+        <div className="login-page d-flex flex-column">
             {/* navbar */}
             <Navbar/>
 
             {/* container */}
             <div className="register-container d-flex justify-content-center align-items-center vh-100">
-                <div className="card p-4 shadow" style={{ width: "400px" }}>
+                <div className="register-card">
                     <h3 className="text-center mb-4">Create Account</h3>
 
                     {/* form registration */}

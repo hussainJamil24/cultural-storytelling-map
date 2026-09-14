@@ -40,8 +40,6 @@ html, body, #root {
     color: transparent;  
     -webkit-text-fill-color: transparent;
     font-weight: bold;
-    -webkit-text-fill-color: transparent;
-    font-weight: bold;
 }
 
 .brand-text:hover {
@@ -86,14 +84,28 @@ html, body, #root {
     padding: 60px 40px;
 }
 
+.login-left,
+.login-right {
+    background: transparent;
+}
+
 /* styles the login card shell */
 .login-card {
-    background: white;
-    padding: 60px 50px;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+     width: 100%;
     max-width: 420px;
-    width: 100%;
+
+    padding: 60px 50px;
+
+    /* translucent glass effect */
+    background: rgba(255, 255, 255, 0.88);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 16px;
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
 }
 
 .login-card h1 {
@@ -146,22 +158,26 @@ html, body, #root {
 .input-wrapper input {
     width: 100%;
     padding: 14px 16px 14px 48px;
-    border: 1px solid #e0e6f0;
+
+    border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 8px;
+
     font-size: 15px;
     color: #1a3a52;
-    background-color: #f8f9fb;
+
+    background: rgba(248, 249, 251, 0.85);
+
     transition: all 0.3s ease;
 }
 
 .input-wrapper input:focus {
     outline: none;
     border-color: #0066cc;
-    background-color: white;
+    background: rgba(255, 255, 255, 0.95);
 }
 
 .input-wrapper input::placeholder {
-    color: #a0a8b5;
+    color:  #8d9aaa;
 }
 
 /* styles the primary sign-in button */
@@ -191,6 +207,60 @@ html, body, #root {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+
+    padding: 40px 20px;
+}
+
+/* registration card */
+.register-card {
+    width: 100%;
+    max-width: 400px;
+
+    padding: 45px 40px;
+
+    background: rgba(255, 255, 255, 0.88);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 16px;
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+}
+
+.register-card h3 {
+    color: #1a3a52;
+    font-weight: 600;
+}
+
+.register-card .form-control {
+    width: 100%;
+    padding: 12px 14px;
+
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+
+    background: rgba(248, 249, 251, 0.85);
+
+    font-size: 15px;
+    color: #1a3a52;
+
+    transition: all 0.3s ease;
+}
+
+.register-card .form-control:focus {
+    outline: none;
+
+    border-color: #0066cc;
+
+    background: rgba(255, 255, 255, 0.95);
+
+    box-shadow: none;
+}
+
+.register-card .form-control::placeholder {
+    color: #8d9aaa;
 }
 
 /* styles the registration prompt area */
@@ -297,6 +367,27 @@ html, body, #root {
 
 /* tightens the layout for small mobile screens */
 @media (max-width: 480px) {
+     .register-container {
+        min-height: calc(100vh - 70px);
+        padding: 25px 15px;
+
+        background:
+            linear-gradient(
+                rgba(240, 242, 245, 0.30),
+                rgba(240, 242, 245, 0.30)
+            ),
+            url("../images/nicosia-map.png") no-repeat center center;
+
+        background-size: cover;
+        background-position: center;
+    }
+
+    .register-card {
+        max-width: 100%;
+        padding: 30px 20px;
+        border-radius: 14px;
+    }
+
     .login-page {
         height: 100%;
     }
