@@ -73,7 +73,7 @@ export default function Register() {
             <Navbar/>
 
             {/* container */}
-            <div className="container d-flex justify-content-center align-items-center vh-100">
+            <div className="register-container d-flex justify-content-center align-items-center vh-100">
                 <div className="card p-4 shadow" style={{ width: "400px" }}>
                     <h3 className="text-center mb-4">Create Account</h3>
 
