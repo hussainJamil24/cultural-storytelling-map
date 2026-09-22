@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Logo from "../assets/images/logo.png";
 import "../assets/styles/login.css";
 import API from "../services/Api";
 
@@ -75,6 +76,10 @@ export default function Register() {
             {/* container */}
             <div className="register-container d-flex justify-content-center align-items-center vh-100">
                 <div className="register-card">
+                    <div className="register-brand">
+                        <img src={Logo} alt="" />
+                        <span>Narrify</span>
+                    </div>
                     <h3 className="text-center mb-4">Create Account</h3>
 
                     {/* form registration */}

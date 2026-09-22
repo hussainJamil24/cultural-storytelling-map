@@ -1,32 +1,47 @@
-import { MapContainer, TileLayer, Marker, useMapEvents  } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import { ZoomControl } from "react-leaflet";
-import L from "leaflet";
+import { Link } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import { useState } from "react";
 import API from "../services/Api";
-import Navbar from '../components/Navbar';
-import '../assets/styles/uploadstory.css';
+import Navbar from "../components/Navbar";
+import AiLoader from "../components/AiLoader";
+import { CATEGORIES, getMarkerIcon } from "../constants/categories";
+import "../assets/styles/uploadstory.css";
 
-// restores leaflet marker image paths inside the react build
-delete L.Icon.Default.prototype._getIconUrl;
+const COMPANION_CARD_MESSAGES = [
+    "Reading your story…",
+    "Finding the cultural themes…",
+    "Writing the companion card…",
+];
 
-// configures the default leaflet marker assets
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
-    iconUrl: require("leaflet/dist/images/marker-icon.png"),
-    shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
-});
+const SUBMIT_MESSAGES = [
+    "Saving your story…",
+    "Running a quick respectful-content check…",
+    "Almost there…",
+];
+
+// joins ["a title", "a category"] into "a title and a category", or with more
+// items "a title, a category, and a location on the map"
+const formatList = (items) => {
+    if (items.length === 1) return items[0];
+    if (items.length === 2) return `${items[0]} and ${items[1]}`;
+    return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
+};
+
+// centers the picker map on cyprus and keeps panning inside island bounds
+const CYPRUS_CENTER = [35.1264, 33.4299];
+const CYPRUS_BOUNDS = [
+    [34.5, 32.0], // southwest map limit
+    [35.7, 34.8], // northeast map limit
+];
 
 // captures map clicks and sends the selected coordinates to the form
-function LocationMarker({ setPosition, onSelectLocation  }) {
+function LocationMarker({ setPosition, onSelectLocation }) {
     useMapEvents({
         click(e) {
-            const coords = {
-                lat: e.latlng.lat,
-                lng: e.latlng.lng
-            };
-
-            setPosition([coords.lat, coords.lng]);   // shows the marker on the map
+            const coords = { lat: e.latlng.lat, lng: e.latlng.lng };
+            setPosition([coords.lat, coords.lng]); // shows the marker on the map
             onSelectLocation(coords); // saves the coordinates into the form state
         },
     });
@@ -38,19 +53,13 @@ export default function Upload() {
     // tracks the marker position selected on the map
     const [position, setPosition] = useState(null);
 
-    // centers the picker map on cyprus and keeps panning inside island bounds
-    const CyprusCenter = [35.1264, 33.4299];
-    const bounds = [
-        [34.5, 32.0], // southwest map limit
-        [35.7, 34.8], // northeast map limit
-    ];
-
     // stores the story form values before submission
     const [formData, setFormData] = useState({
-        title:'',
-        narrative:'',
+        title: "",
+        narrative: "",
         location: null,
         category: "",
+        isAnonymous: false,
     });
 
     const [companionCard, setCompanionCard] = useState(null);
@@ -59,14 +68,21 @@ export default function Upload() {
     const [mediaInputKey, setMediaInputKey] = useState(0);
     const [submitting, setSubmitting] = useState(false);
     const [loadingAI, setLoadingAI] = useState(false);
+    const [feedback, setFeedback] = useState(null);
+
+    const isLoggedIn = Boolean(localStorage.getItem("access_token"));
+
+    // lists what's still missing so the disabled submit button can explain
+    // itself instead of silently refusing to click -- this is exactly the trap
+    // a first-time user (and every real user) will otherwise hit
+    const missingFields = [];
+    if (formData.title.trim() === "") missingFields.push("a title");
+    if (formData.narrative.trim() === "") missingFields.push("your story");
+    if (formData.category === "") missingFields.push("a category");
+    if (formData.location == null) missingFields.push("a location on the map");
 
     // disables submit until the required text and location are filled
-    const btnDisable =
-        submitting ||
-        formData.title.trim() === "" ||
-        formData.narrative.trim() === "" ||
-        formData.location == null ||
-        formData.category === "";
+    const btnDisable = submitting || missingFields.length > 0;
 
     const aiDisabled =
         loadingAI ||
@@ -76,19 +92,16 @@ export default function Upload() {
 
     // saves the selected map coordinates into the form data
     const handleLocationSelect = (coords) => {
-        setFormData(prev => ({
-            ...prev,
-            location: coords
-        }));
+        setFormData((prev) => ({ ...prev, location: coords }));
     };
 
     // updates text fields and checkbox values
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setCompanionCard(null);
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: type === "checkbox" ? checked : value,
         }));
     };
 
@@ -96,13 +109,8 @@ export default function Upload() {
         const { name, files } = e.target;
         const selectedFiles = Array.from(files || []);
 
-        if (name === "images") {
-            setSelectedImages(selectedFiles);
-        }
-
-        if (name === "audio") {
-            setSelectedAudio(selectedFiles[0] || null);
-        }
+        if (name === "images") setSelectedImages(selectedFiles);
+        if (name === "audio") setSelectedAudio(selectedFiles[0] || null);
     };
 
     const uploadFile = async (file) => {
@@ -113,20 +121,18 @@ export default function Upload() {
         return res.data.media_url;
     };
 
-    
     // submits the story payload to the backend api
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // setSubmitting(true);
-        
+        setSubmitting(true);
+        setFeedback(null);
+
         try {
             const imageUrl = selectedImages[0]
-            ? await uploadFile(selectedImages[0])
-            : null;
-
-            const audioUrl = selectedAudio
-                ? await uploadFile(selectedAudio)
+                ? await uploadFile(selectedImages[0])
                 : null;
+
+            const audioUrl = selectedAudio ? await uploadFile(selectedAudio) : null;
 
             const payload = {
                 title: formData.title.trim(),
@@ -136,20 +142,23 @@ export default function Upload() {
                 latitude: formData.location?.lat,
                 longitude: formData.location?.lng,
                 category: formData.category,
+                is_anonymous: formData.isAnonymous,
             };
-
-            // console.log("mediaUrl:", media_url);
 
             const res = await API.post("/stories", payload);
 
-            console.log("SUCCESS:", res.data);
-            alert("Story submitted successfully and is now pending review.");
+            setFeedback({
+                type: "success",
+                storyId: res.data.id,
+                pending: res.data.status === "pending",
+            });
 
             setFormData({
-                title: '',
-                narrative: '',
+                title: "",
+                narrative: "",
                 location: null,
                 category: "",
+                isAnonymous: false,
             });
 
             setPosition(null);
@@ -157,25 +166,28 @@ export default function Upload() {
             setSelectedImages([]);
             setSelectedAudio(null);
             setMediaInputKey((key) => key + 1);
-
-        } catch(err) {
-            console.error(err);
-            const message = err.response?.data?.detail || "Upload failed";
-            alert(message);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch (err) {
+            const detail = err.response?.data?.detail;
+            setFeedback({
+                type: "error",
+                message:
+                    err.response?.status === 401
+                        ? "Please log in before sharing a story."
+                        : typeof detail === "string"
+                        ? detail
+                        : "Upload failed. Please check your details and try again.",
+            });
         } finally {
             setSubmitting(false);
         }
-
-        
     };
 
     const handleGenerateAI = async () => {
-        if (aiDisabled) {
-            alert("Add a title, narrative, and category before generating the companion card.");
-            return;
-        }
+        if (aiDisabled) return;
 
         setLoadingAI(true);
+        setFeedback(null);
 
         try {
             const res = await API.post("/ai/generate-companion-card", {
@@ -184,76 +196,153 @@ export default function Upload() {
                 category: formData.category,
             });
 
-            console.log(res.data);
             setCompanionCard(res.data);
-
         } catch (err) {
-            console.error(err);
-            const message =
-                err.response?.data?.detail || err.message || "Failed to generate companion card";
-            alert(message);
+            const detail = err.response?.data?.detail;
+            setFeedback({
+                type: "error",
+                message:
+                    typeof detail === "string"
+                        ? detail
+                        : "Could not generate the companion card. Please try again.",
+            });
         } finally {
             setLoadingAI(false);
         }
     };
 
     return (
-        <div className="upload-story-container bg-light">
-            {/* shows the shared site navigation */}
-            <Navbar/>
+        <div className="upload-story-container">
+            <Navbar />
 
             {/* introduces the upload page */}
-            <div className="story-header text-center mt-5">
-                <h1 className='fw-bolder mb-3'>Share a Fragment of History</h1>
-                <p className='fw-lighter m-0'>Pin your story to the living map of our collective heritage.</p>
+            <div className="story-header text-center">
+                <h1>
+                    Share a Fragment of <span className="gradient-text">History</span>
+                </h1>
+                <p>Pin your story to the living map of our collective heritage.</p>
             </div>
 
-            {/* contains the story submission form */}
             <div className="story-card">
+                {/* result banner replaces the old blocking alerts */}
+                {feedback?.type === "success" && (
+                    <div className="upload-banner upload-banner-success">
+                        <i className="bi bi-check-circle-fill"></i>
+                        <div>
+                            <strong>
+                                {feedback.pending ? "Your story is awaiting review." : "Your story is live."}
+                            </strong>
+                            <span>
+                                {feedback.pending
+                                    ? "It's queued for moderation and will appear once approved."
+                                    : "It's on the map now — thank you for sharing."}
+                            </span>
+                        </div>
+                        {feedback.pending ? (
+                            <Link to="/browse" className="upload-banner-btn">
+                                Browse stories
+                            </Link>
+                        ) : (
+                            <Link to={`/story/${feedback.storyId}`} className="upload-banner-btn">
+                                View it
+                            </Link>
+                        )}
+                    </div>
+                )}
+
+                {feedback?.type === "error" && (
+                    <div className="upload-banner upload-banner-error">
+                        <i className="bi bi-exclamation-circle-fill"></i>
+                        <div>
+                            <strong>Something went wrong.</strong>
+                            <span>{feedback.message}</span>
+                        </div>
+                    </div>
+                )}
+
+                {!isLoggedIn && (
+                    <div className="upload-banner upload-banner-info">
+                        <i className="bi bi-info-circle-fill"></i>
+                        <div>
+                            <strong>You're not signed in.</strong>
+                            <span>
+                                <Link to="/login">Log in</Link> to publish your story to the map.
+                            </span>
+                        </div>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit}>
                     {/* collects the story title */}
                     <div className="form-section">
-                        <label className='form-label d-block text-uppercase mb-2 fw-medium '>Story Title</label>
-                        <input type='text' name='title' className='form-control p-3'
-                        placeholder='Enter a memorable name for your story'
-                        value={formData.title} onChange={handleInputChange}
+                        <label className="form-label">Story Title</label>
+                        <input
+                            type="text"
+                            name="title"
+                            className="form-control p-3"
+                            placeholder="Enter a memorable name for your story"
+                            value={formData.title}
+                            onChange={handleInputChange}
                         />
                     </div>
 
                     {/* collects the main story narrative */}
                     <div className="form-section">
-                        <label className='form-label d-block text-uppercase mb-2 fw-medium'>The narrative</label>
-                        <textarea type='text' name='narrative' className='form-control textarea-large p-3' rows="6"
-                        placeholder='Describe the memory, the event, or the significance of this place....'
-                        value={formData.narrative} onChange={handleInputChange}
-                        >
-                        </textarea>
+                        <label className="form-label">The narrative</label>
+                        <textarea
+                            name="narrative"
+                            className="form-control textarea-large p-3"
+                            rows="6"
+                            placeholder="Describe the memory, the event, or the significance of this place…"
+                            value={formData.narrative}
+                            onChange={handleInputChange}
+                        />
+                        <span className="field-hint">
+                            {formData.narrative.trim().length} characters
+                        </span>
                     </div>
 
                     {/* lets the user select a story category */}
                     <div className="form-section">
-                        <label className='form-label d-block text-uppercase mb-2 fw-medium'>
-                            Category
-                        </label>
-                        <select name="category" className="form-control p-3"
-                        value={formData.category}
-                        onChange={handleInputChange}
-                        >
-                            <option value="">Select category</option>
-                            <option value="heritage">Heritage</option>
-                            <option value="landmarks">Landmarks</option>
-                            <option value="oral_history">Oral Histories</option>
-                            <option value="customs">Customs</option>
-                            <option value="migration">Migration</option>
-                            <option value="religion">Religion</option>
-                            <option value="music">Music</option>
-                            <option value="food">Food</option>
-                        </select>
+                        <label className="form-label">Category</label>
+                        <div className="category-picker">
+                            {CATEGORIES.map((category) => (
+                                <button
+                                    type="button"
+                                    key={category.key}
+                                    className={`category-option ${
+                                        formData.category === category.key ? "active" : ""
+                                    }`}
+                                    style={
+                                        formData.category === category.key
+                                            ? {
+                                                  borderColor: category.color,
+                                                  background: `${category.color}14`,
+                                              }
+                                            : undefined
+                                    }
+                                    onClick={() => {
+                                        setCompanionCard(null);
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            category: category.key,
+                                        }));
+                                    }}
+                                >
+                                    <span
+                                        className="category-dot"
+                                        style={{ background: category.color }}
+                                    >
+                                        <i className={`bi ${category.icon}`}></i>
+                                    </span>
+                                    {category.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     {/* shows the media upload fields */}
                     <div className="upload-boxes">
-                        {/* shows the image upload field */}
                         <div className="upload-box text-center">
                             <input
                                 key={`images-${mediaInputKey}`}
@@ -264,20 +353,21 @@ export default function Upload() {
                                 accept="image/*"
                                 onChange={handleMediaChange}
                             />
-                            <label htmlFor="images-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
-                                <div className="upload-icon d-flex align-items-center justify-content-center">
+                            <label htmlFor="images-input" className="upload-label">
+                                <div className="upload-icon">
                                     <i className="bi bi-image"></i>
                                 </div>
                                 <h6>Upload Images</h6>
-                                <p className='fw-lighter'>
+                                <p>
                                     {selectedImages.length > 0
-                                        ? `${selectedImages.length} image${selectedImages.length === 1 ? "" : "s"} ready to upload`
+                                        ? `${selectedImages.length} image${
+                                              selectedImages.length === 1 ? "" : "s"
+                                          } ready to upload`
                                         : "Select images to upload with this story"}
                                 </p>
                             </label>
                         </div>
 
-                        {/* shows the audio upload field */}
                         <div className="upload-box text-center">
                             <input
                                 key={`audio-${mediaInputKey}`}
@@ -287,12 +377,12 @@ export default function Upload() {
                                 accept="audio/*"
                                 onChange={handleMediaChange}
                             />
-                            <label htmlFor="audio-input" className="upload-label d-flex flex-column align-items-center gap-1 text-uppercase m-0 fw-medium">
-                                <div className="upload-icon d-flex align-items-center justify-content-center">
+                            <label htmlFor="audio-input" className="upload-label">
+                                <div className="upload-icon">
                                     <i className="bi bi-mic"></i>
                                 </div>
                                 <h6>Add Oral History</h6>
-                                <p className='fw-lighter'>
+                                <p>
                                     {selectedAudio
                                         ? `${selectedAudio.name} ready to upload`
                                         : "Select audio to upload with this story"}
@@ -303,67 +393,149 @@ export default function Upload() {
 
                     {/* lets the user choose a map location */}
                     <div className="form-section">
-                        <label className="form-label d-block text-uppercase mb-2 fw-medium">Geographic Anchor</label>
+                        <label className="form-label">Geographic Anchor</label>
                         <div className="map-wrapper">
-                            {/* renders the picker map with a custom zoom control placement */}
-                            <MapContainer center={CyprusCenter} zoom={9}  maxBounds={bounds} maxBoundsViscosity={1.0}
-                            zoomControl={false}
-                            style={{height: "180px", borderRadius:"15px" }}
+                            <MapContainer
+                                center={CYPRUS_CENTER}
+                                zoom={9}
+                                maxBounds={CYPRUS_BOUNDS}
+                                maxBoundsViscosity={1.0}
+                                zoomControl={false}
+                                style={{ height: "230px", borderRadius: "15px" }}
                             >
-                                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+                                <TileLayer
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    attribution='&copy; OpenStreetMap contributors'
+                                />
 
-                                {/* listens for clicks and updates the selected coordinates */}
-                                <LocationMarker setPosition={setPosition}
+                                <LocationMarker
+                                    setPosition={setPosition}
                                     onSelectLocation={handleLocationSelect}
                                 />
 
-                                {/* shows a marker only after a location is selected */}
-                                {position && <Marker position={position} />}
+                                {/* pin previews the colour of the chosen category */}
+                                {position && (
+                                    <Marker
+                                        position={position}
+                                        icon={getMarkerIcon(formData.category)}
+                                    />
+                                )}
 
-                                {/* shows zoom controls on the right side of the map */}
-                                <ZoomControl position="topright"/>
+                                <ZoomControl position="topright" />
                             </MapContainer>
 
-                            {/* explains how to choose a location */}
-                            <div className="map-overlay d-flex gap-1">
-                                <i className="bi bi-geo-alt-fill"></i>
-                                <p className="fw-medium">Click to pinpoint location</p>
+                            <div
+                                className={`map-overlay ${
+                                    formData.location
+                                        ? "map-overlay-confirmed"
+                                        : "map-overlay-pending"
+                                }`}
+                            >
+                                <i
+                                    className={`bi ${
+                                        formData.location
+                                            ? "bi-check-circle-fill"
+                                            : "bi-hand-index-thumb-fill"
+                                    }`}
+                                ></i>
+                                <p>
+                                    {formData.location
+                                        ? `Pinned at ${formData.location.lat.toFixed(
+                                              4
+                                          )}, ${formData.location.lng.toFixed(4)}`
+                                        : "Click anywhere on the map to pin your story's location"}
+                                </p>
                             </div>
                         </div>
                     </div>
 
+                    {/* lets a contributor stay unnamed on the public story */}
+                    <div className="form-section">
+                        <label className="anon-toggle">
+                            <input
+                                type="checkbox"
+                                name="isAnonymous"
+                                checked={formData.isAnonymous}
+                                onChange={handleInputChange}
+                            />
+                            <span className="anon-toggle-track">
+                                <span className="anon-toggle-thumb" />
+                            </span>
+                            <span className="anon-toggle-text">
+                                <strong>Share anonymously</strong>
+                                <small>Your name won't be shown on the published story.</small>
+                            </span>
+                        </label>
+                    </div>
+
                     {/* submits the story once required fields are complete */}
-                    <div className="form-section submit-section d-flex justify-content-center mt-5 gap-2">
-                        <button type="submit" id="submit-btn" className= "main-btn rounded-pill"
+                    <div className="form-section submit-section">
+                        <button
+                            type="submit"
+                            id="submit-btn"
+                            className="main-btn rounded-pill"
                             disabled={btnDisable}
                         >
-                            {submitting ? "SAVING..." : "SUBMIT STORY"}
+                            {submitting ? "SAVING…" : "SUBMIT STORY"}
                         </button>
 
-                        <button type="button" className= "main-btn rounded-pill" id="ai-btn"
+                        <button
+                            type="button"
+                            className="main-btn rounded-pill"
+                            id="ai-btn"
                             onClick={handleGenerateAI}
                             disabled={aiDisabled}
                         >
                             {loadingAI ? (
-                                "Generating..."
+                                <AiLoader inline messages={["Generating…"]} />
                             ) : (
-                                <><i className="bi bi-stars"></i> Generate Companion Card</>
+                                <>
+                                    <i className="bi bi-stars"></i> Generate Companion Card
+                                </>
                             )}
                         </button>
-
                     </div>
 
-                    {loadingAI && (
-                        <p className="text-primary mt-2">
-                            Preparing companion card...
+                    {/* explains exactly why the submit button won't click yet */}
+                    {!submitting && missingFields.length > 0 && (
+                        <p className="submit-hint">
+                            <i className="bi bi-info-circle-fill"></i>
+                            Before you can submit, add {formatList(missingFields)}.
                         </p>
+                    )}
+
+                    {/* narrates the AI moderation-assist check that runs as part of saving */}
+                    {submitting && (
+                        <div className="submit-status">
+                            <AiLoader inline messages={SUBMIT_MESSAGES} />
+                        </div>
+                    )}
+
+                    {loadingAI && !companionCard && (
+                        <div className="ai-companion-panel ai-companion-panel-loading">
+                            <AiLoader messages={COMPANION_CARD_MESSAGES} />
+                        </div>
                     )}
 
                     {companionCard && (
                         <div className="ai-companion-panel">
-                            <h5>Companion Card</h5>
+                            <h5>
+                                <i className="bi bi-stars"></i>
+                                Companion Card
+                                <span
+                                    className={`ai-source-badge ${
+                                        companionCard.generated_by === "gemini" ? "live" : ""
+                                    }`}
+                                >
+                                    {companionCard.generated_by === "gemini"
+                                        ? "Generated by Gemini"
+                                        : "Generated automatically"}
+                                </span>
+                            </h5>
 
-                            <p className="ai-companion-summary">{companionCard.short_summary}</p>
+                            <p className="ai-companion-summary">
+                                {companionCard.short_summary}
+                            </p>
 
                             <div className="ai-companion-tags">
                                 {companionCard.themes.map((theme) => (
@@ -393,7 +565,7 @@ export default function Upload() {
             </div>
 
             {/* shows the closing page quote */}
-            <div className="story-footer text-center fst-italic fw-lighter">
+            <div className="story-footer text-center fst-italic">
                 <p>"We are the stories we tell." — The Curator</p>
             </div>
         </div>

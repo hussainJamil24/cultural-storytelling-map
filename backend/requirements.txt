@@ -18,3 +18,8 @@ pwdlib[argon2]==0.3.0
 
 # AI video generation (app/routes/ai.py)
 replicate==1.0.7
+
+# AI companion card, translation, and moderation assist (app/routes/ai.py, app/core/ai_client.py)
+# Gemini has a free tier (no credit card) via a key from https://aistudio.google.com/apikey
+google-genai==2.24.0
+python-dotenv==1.2.3

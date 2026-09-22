@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar";
 import { Link } from "react-router-dom";
+import Logo from "../assets/images/logo.png";
 import '../assets/styles/about.css';
 
 export default function About() {
@@ -7,18 +8,33 @@ export default function About() {
         <div>
             <Navbar />
 
-            {/* HERO */}
+            {/* HERO -- two-column so the logo earns its place instead of
+                floating in a wall of flat colour */}
             <div className="about-hero">
-                <h1>Every Place Holds a Story</h1>
-                <p>
-                    Discover, preserve, and share cultural stories connected to real locations around the world.
-                </p>
+                <div className="about-hero-inner">
+                    <div className="about-hero-copy">
+                        <span className="about-eyebrow">Cultural Inclusion Storytelling Map</span>
+                        <h1>Every Place Holds a Story</h1>
+                        <p>
+                            Discover, preserve, and share cultural stories connected to real locations around the world.
+                        </p>
 
-                <div className="hero-cta">
-                    <Link to="/upload" className="upload-btn mt-auto">
-                        <i className="bi bi-send"></i>
-                        Start Sharing
-                    </Link>
+                        <div className="hero-cta">
+                            <Link to="/upload" className="upload-btn mt-auto">
+                                <i className="bi bi-send"></i>
+                                Start Sharing
+                            </Link>
+                            <Link to="/browse" className="hero-secondary-link">
+                                Browse stories
+                                <i className="bi bi-arrow-right"></i>
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div className="about-hero-mark">
+                        <div className="about-hero-glow"></div>
+                        <img src={Logo} alt="Narrify" />
+                    </div>
                 </div>
             </div>
 

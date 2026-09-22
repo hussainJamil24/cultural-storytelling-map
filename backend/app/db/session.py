@@ -17,30 +17,32 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
-def init_db():
-    Base.metadata.create_all(bind=engine)
-
-    if engine.url.get_backend_name() != "sqlite":
-        return
-
-    inspector = inspect(engine)
+def validate_existing_schema(db_engine=None):
+    """Check existing tables before issuing any schema-changing statements."""
+    db_engine = db_engine if db_engine is not None else engine
+    inspector = inspect(db_engine)
     table_names = set(inspector.get_table_names())
-
-    schema_is_stale = False
+    problems = []
     for table in Base.metadata.sorted_tables:
         if table.name not in table_names:
-            schema_is_stale = True
-            break
-
+            continue
         existing_columns = {column["name"] for column in inspector.get_columns(table.name)}
         expected_columns = {column.name for column in table.columns}
-        if not expected_columns.issubset(existing_columns):
-            schema_is_stale = True
-            break
+        missing_columns = sorted(expected_columns - existing_columns)
+        if missing_columns:
+            problems.append(f"{table.name}: missing {', '.join(missing_columns)}")
+    if problems:
+        raise RuntimeError(
+            "Database schema is incompatible; no tables or data were changed. "
+            "Back up this database and migrate it explicitly before starting. "
+            + "; ".join(problems)
+        )
 
-    if schema_is_stale:
-        Base.metadata.drop_all(bind=engine)
-        Base.metadata.create_all(bind=engine)
+
+def init_db(db_engine=None):
+    db_engine = db_engine if db_engine is not None else engine
+    validate_existing_schema(db_engine)
+    Base.metadata.create_all(bind=db_engine)
 
 
 # yields one database session for each request

@@ -1,15 +1,221 @@
-/* sets the global page typography and smoothing */
+/* ==========================================================================
+   Narrify design tokens
+   Keeps the existing brand blue and builds a consistent scale around it.
+   ========================================================================== */
+
+:root {
+  /* brand — unchanged primary, with supporting shades */
+  --brand: #007bff;
+  --brand-dark: #0056b3;
+  --brand-soft: #e7f1ff;
+
+  /* AI accent — reserved exclusively for AI-generated moments (companion card,
+     translation, moderation assist) so they read as a distinct, deliberate
+     signal rather than blending into ordinary UI. Not a rebrand: the primary
+     blue above still owns every non-AI surface. */
+  --ai-accent: #372dff;
+  --ai-accent-dark: #2a21d1;
+  --ai-accent-soft: #ece9ff;
+
+  /* surfaces */
+  --bg: #f6f8fb;
+  --surface: #ffffff;
+  --border: #e6eaf0;
+
+  /* soft aurora backdrop for full-page surfaces -- built from the brand blue
+     and AI violet already in use elsewhere, so it reads as "the same app,
+     more depth" rather than a new palette. Small components keep --bg. */
+  --page-gradient: radial-gradient(1100px circle at 6% -8%, rgba(0, 123, 255, 0.14), transparent 55%),
+    radial-gradient(900px circle at 102% 0%, rgba(55, 45, 255, 0.13), transparent 50%),
+    radial-gradient(1000px circle at 28% 115%, rgba(0, 123, 255, 0.09), transparent 55%),
+    radial-gradient(650px circle at 90% 85%, rgba(55, 45, 255, 0.08), transparent 50%), #f8f9ff;
+
+  /* text */
+  --ink: #16202c;
+  --ink-soft: #5a6573;
+  --ink-faint: #8b95a3;
+
+  /* category accents — same colour language as before, tuned for legibility */
+  --cat-heritage: #007bff;
+  --cat-landmarks: #d64545;
+  --cat-oral_history: #2e9e5b;
+  --cat-customs: #e0a325;
+  --cat-migration: #7c5cbf;
+  --cat-food: #e2703a;
+  --cat-music: #c2559a;
+  --cat-religion: #4a5578;
+
+  /* status */
+  --success: #2e9e5b;
+  --danger: #d64545;
+  --warning: #e0a325;
+
+  /* type */
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", sans-serif;
+
+  /* elevation */
+  --shadow-sm: 0 1px 2px rgba(22, 32, 44, 0.06), 0 2px 8px rgba(22, 32, 44, 0.06);
+  --shadow-md: 0 4px 14px rgba(22, 32, 44, 0.08), 0 12px 32px rgba(22, 32, 44, 0.08);
+  --shadow-lg: 0 10px 26px rgba(22, 32, 44, 0.12), 0 28px 64px rgba(22, 32, 44, 0.14);
+
+  /* shape — the app already leans on pills, keep that */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  background: var(--page-gradient);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* sets a monospace stack for code snippets */
+h1,
+h2,
+h3,
+h4,
+h5 {
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+/* keyboard focus stays visible, mouse clicks stay clean */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- shared motion ---------- */
+
+@keyframes narrify-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes narrify-shimmer {
+  from {
+    background-position: -320px 0;
+  }
+  to {
+    background-position: 320px 0;
+  }
+}
+
+/* ---------- shared components ---------- */
+
+/* loading skeleton block */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #eef1f6 25%,
+    #e2e7ee 50%,
+    #eef1f6 75%
+  );
+  background-size: 320px 100%;
+  animation: narrify-shimmer 1.2s infinite linear;
+  border-radius: var(--radius-sm);
+}
+
+/* inline error / empty notice */
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.notice-error {
+  background: #fdf1f1;
+  color: var(--danger);
+  border: 1px solid #f6d9d9;
+}
+
+.notice-empty {
+  background: var(--bg);
+  color: var(--ink-soft);
+  border: 1px solid var(--border);
+}
+
+/* reusable gradient-text treatment for page headings on a light background
+   only -- never use over photos or varying user content, contrast isn't
+   guaranteed there */
+.gradient-text {
+  background: linear-gradient(100deg, var(--brand) 0%, var(--ai-accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* small reusable "this came from AI" tag -- used anywhere AI-generated or
+   AI-assisted content needs a quick, consistent visual signal */
+.ai-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 7px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--ai-accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.ai-tag i {
+  font-size: 9px;
+}
+
+/* category chip used on cards, popups and the story page */
+.cat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

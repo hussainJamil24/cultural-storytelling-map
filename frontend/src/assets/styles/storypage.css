@@ -1,169 +1,517 @@
-/* constrains the story detail to a readable column */
-.story-detail {
-    max-width: 760px;
+/* centred reading column for the story detail page */
+.story-shell {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+    animation: narrify-fade-up 0.45s var(--ease) both;
 }
 
-/* like button row under the story */
+.story-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 7px 14px 7px 11px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: color 0.2s var(--ease), border-color 0.2s var(--ease),
+        transform 0.2s var(--ease);
+}
+
+.story-back:hover {
+    color: var(--brand);
+    border-color: var(--brand);
+    transform: translateX(-2px);
+}
+
+/* ---------------- header ---------------- */
+
+.story-header {
+    margin: 22px 0 26px;
+}
+
+.story-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* ---------------- language toggle ---------------- */
+
+.lang-toggle {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+}
+
+.lang-toggle button {
+    border: none;
+    background: transparent;
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background 0.2s var(--ease), color 0.2s var(--ease);
+    white-space: nowrap;
+}
+
+.lang-toggle button:hover:not(:disabled):not(.active) {
+    color: var(--brand);
+}
+
+.lang-flag {
+    margin-right: 5px;
+    font-size: 13px;
+}
+
+.lang-toggle button.active {
+    background: var(--brand);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+}
+
+/* a translated language gets the AI-accent instead of brand blue -- a
+   deliberate, consistent signal that this content came from Gemini */
+.lang-toggle button.active-ai {
+    background: var(--ai-accent);
+    box-shadow: 0 2px 10px rgba(55, 45, 255, 0.35);
+}
+
+.lang-toggle button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.lang-note {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 10px 0 0;
+    font-size: 12.5px;
+    font-style: italic;
+    color: var(--ai-accent-dark);
+}
+
+.lang-note i {
+    color: var(--ai-accent);
+}
+
+.story-body-loading {
+    display: flex;
+    flex-direction: column;
+}
+
+.story-translate-panel {
+    background: linear-gradient(180deg, var(--ai-accent-soft) 0%, var(--surface) 70%);
+    border: 1px solid #ded9ff;
+    border-radius: var(--radius-lg);
+}
+
+.story-header h1 {
+    margin: 14px 0 0;
+    font-size: clamp(28px, 4.4vw, 40px);
+    font-weight: 700;
+    line-height: 1.18;
+}
+
+.story-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--ink-faint);
+}
+
+.story-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.story-meta i {
+    font-size: 13px;
+}
+
+/* ---------------- media ---------------- */
+
+.story-hero {
+    margin: 0 0 26px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    background: var(--bg);
+}
+
+.story-hero img {
+    width: 100%;
+    max-height: 440px;
+    object-fit: cover;
+    display: block;
+}
+
+.story-audio {
+    margin-bottom: 26px;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.story-audio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+}
+
+.story-audio-label i {
+    color: var(--brand);
+}
+
+.story-audio audio {
+    width: 100%;
+    height: 38px;
+}
+
+/* ---------------- body copy ---------------- */
+
+.story-body p {
+    font-size: 17px;
+    line-height: 1.75;
+    color: #2c3744;
+    margin: 0 0 20px;
+}
+
+/* ---------------- likes ---------------- */
+
 .like-bar {
     display: flex;
     align-items: center;
-    gap: 14px;
-    margin-top: 20px;
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
 }
 
 .like-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 18px;
-    border: 1px solid #e0556b;
-    border-radius: 50px;
-    background: #fff;
-    color: #e0556b;
-    font-weight: 500;
+    gap: 9px;
+    padding: 10px 22px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-soft);
+    border-radius: var(--radius-pill);
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
+    transition: all 0.2s var(--ease);
+}
+
+.like-btn i {
+    font-size: 16px;
+    transition: transform 0.25s var(--ease);
 }
 
 .like-btn:hover {
-    background: #fdeef0;
+    border-color: var(--danger);
+    color: var(--danger);
+    transform: translateY(-1px);
 }
 
 .like-btn.liked {
-    background: #e0556b;
-    color: #fff;
+    background: #fdf1f1;
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.like-btn.liked i {
+    animation: like-pop 0.35s var(--ease);
+}
+
+@keyframes like-pop {
+    0% {
+        transform: scale(1);
+    }
+    45% {
+        transform: scale(1.35);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 .like-count {
-    color: #666;
-    font-size: 0.95rem;
+    font-size: 13.5px;
+    color: var(--ink-faint);
 }
 
-/* comments block */
+/* ---------------- comments ---------------- */
+
 .comments-section {
-    margin-top: 40px;
-    border-top: 1px solid #eee;
-    padding-top: 24px;
+    margin-top: 44px;
 }
 
 .comments-section h4 {
-    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.comment-count {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brand-dark);
+    background: var(--brand-soft);
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
 }
 
 .comment-form,
 .reply-form {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     gap: 10px;
-    margin-bottom: 24px;
+    margin-bottom: 26px;
 }
 
 .comment-form textarea,
 .reply-form textarea {
     width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 12px;
+    padding: 13px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
     font-family: inherit;
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--ink);
     resize: vertical;
+    outline: none;
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.comment-form textarea:focus,
+.reply-form textarea:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 4px var(--brand-soft);
+}
+
+.comment-form textarea::placeholder,
+.reply-form textarea::placeholder {
+    color: var(--ink-faint);
 }
 
 .btn-primary {
-    align-self: flex-start;
-    padding: 8px 20px;
-    border: none;
-    border-radius: 50px;
-    background: #2c5f7c;
+    padding: 9px 22px;
+    background: var(--brand);
     color: #fff;
-    font-weight: 500;
+    border: none;
+    border-radius: var(--radius-pill);
+    font-size: 13.5px;
+    font-weight: 600;
     cursor: pointer;
+    transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--brand-dark);
+    transform: translateY(-1px);
 }
 
 .btn-primary:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
 }
 
-.login-hint {
-    color: #666;
-    margin-bottom: 24px;
+.comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
-.no-comments {
-    color: #999;
-    font-style: italic;
-}
-
-/* individual comment */
 .comment {
-    padding: 14px 0;
-    border-bottom: 1px solid #f2f2f2;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    animation: narrify-fade-up 0.35s var(--ease) both;
 }
 
+/* replies sit indented with a thread line */
 .comment-reply {
-    margin-left: 28px;
-    border-left: 2px solid #eee;
-    padding-left: 14px;
-    border-bottom: none;
+    margin-top: 14px;
+    margin-left: 22px;
+    border-left: 3px solid var(--brand-soft);
+    background: var(--bg);
 }
 
 .comment-head {
     display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 4px;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 9px;
+}
+
+.comment-avatar {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--brand-soft);
+    color: var(--brand-dark);
+    font-weight: 700;
+    font-size: 13px;
 }
 
 .comment-author {
+    display: block;
+    font-size: 15px;
     font-weight: 600;
+    color: var(--ink);
 }
 
 .comment-date {
-    font-size: 0.8rem;
-    color: #999;
+    display: block;
+    font-size: 12px;
+    color: var(--ink-faint);
 }
 
 .comment-body {
-    margin: 0 0 6px;
+    margin: 0;
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: #2c3744;
     white-space: pre-wrap;
 }
 
 .comment-actions {
     display: flex;
-    gap: 14px;
-    margin-top: 6px;
+    gap: 16px;
+    margin-top: 10px;
 }
 
 .link-btn {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    background: #f5f7fa;
-    color: #2c5f7c;
-    border: 1px solid transparent;
+    gap: 6px;
+    border: none;
+    background: none;
+    padding: 0;
+    color: var(--ink-faint);
+    font-size: 12.5px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: color 0.2s var(--ease);
 }
 
 .link-btn:hover {
-    background: #e8f1f5;
-    border-color: #2c5f7c;
-}
-
-.link-btn:active {
-    transform: scale(0.95);
-}
-
-.link-btn.danger {
-    background: #fff5f5;
-    color: #c0392b;
+    color: var(--brand);
 }
 
 .link-btn.danger:hover {
-    background: #fdecea;
-    border-color: #c0392b;
+    color: var(--danger);
+}
+
+.no-comments {
+    padding: 26px;
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 15px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-md);
+}
+
+.login-hint {
+    padding: 15px 18px;
+    background: var(--brand-soft);
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin-bottom: 26px;
+}
+
+.login-hint a {
+    color: var(--brand-dark);
+    font-weight: 600;
+}
+
+/* ---------------- not found ---------------- */
+
+.story-error {
+    margin-top: 60px;
+    padding: 48px 32px;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.story-error i {
+    font-size: 40px;
+    color: var(--brand);
+    opacity: 0.8;
+}
+
+.story-error h3 {
+    margin: 16px 0 8px;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.story-error p {
+    margin: 0 0 22px;
+    color: var(--ink-soft);
+    font-size: 15.5px;
+}
+
+.story-error-btn {
+    display: inline-block;
+    padding: 11px 26px;
+    background: var(--brand);
+    color: #fff;
+    text-decoration: none;
+    border-radius: var(--radius-pill);
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s var(--ease);
+}
+
+.story-error-btn:hover {
+    background: var(--brand-dark);
+    color: #fff;
+}
+
+@media (max-width: 600px) {
+    .story-shell {
+        padding: 22px 16px 60px;
+    }
+
+    .comment-reply {
+        margin-left: 10px;
+    }
 }

@@ -53,3 +53,17 @@ class StoryPublicResponse(StoryBase):
 
 class StoryPrivateResponse(StoryPublicResponse):
     user_id: int
+    ai_flag: Optional[bool] = None
+    ai_flag_reason: Optional[str] = None
+
+
+class StoryTranslationResponse(BaseModel):
+    language: str
+    title: str
+    content: str
+    cached: bool
+
+
+class StoryLocationResponse(BaseModel):
+    label: str
+    cached: bool

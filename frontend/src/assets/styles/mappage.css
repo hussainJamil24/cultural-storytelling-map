@@ -1,86 +1,94 @@
 /* sizes the layout below the navbar */
 .main-layout {
-    height: calc(100vh - 70px); /* adjust based on navbar height */
+    height: calc(100vh - 70px);
+    overflow: hidden;
 }
-
 
 /* lets the map fill the remaining space */
 .map-wrapper {
     flex: 1;
     position: relative;
+    min-width: 0;
 }
 
-.menu-btn {
-    position: absolute;
-    top: 45px;
-    left: 0;
-    z-index: 2000;
-    font-size: 20px;
-    font-weight: bold;
-    background: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 15px;
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    -ms-border-radius: 15px;
-    -o-border-radius: 15px;
-}
+/* ---------- desktop: sidebar is a static column ---------- */
 
-/* sidebar mobile */
 .sidebar-wrapper {
-    width: 0;
-    overflow: hidden;
-    position: fixed;
-    left: -260px;
-    top: 0;
-    height: 100%;
-    width: 260px;
-    z-index: 1000;
-    transition: all 0.3s ease;
-    background: white;
-}
-
-.sidebar-wrapper.open {
-    left: 0;
+    flex: 0 0 275px;
     width: 275px;
-}
-
-/* overlay */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.4);
-    z-index: 999;
+    background: var(--surface);
+    z-index: 600;
 }
 
-/* close button */
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    border: none;
-    background: none;
-    font-size: 20px;
+/* the drawer toggle and overlay only exist on small screens */
+.menu-btn,
+.overlay {
+    display: none;
 }
 
-/* adjusts the layout on smaller screens */
-@media (max-width: 768px) {
-    /* keeps the sidebar visible while leaving the old fallback commented out */
-    /* .sidebar-wrapper {
-            display: none;
-    } */
+/* ---------- mobile: sidebar becomes a slide-in drawer ---------- */
 
-    /* .sidebar-wrapper.open {
+@media (max-width: 991px) {
+    /* the navbar sits at z-index 1500 -- the drawer starts at top:0 and
+       overlaps it, so it needs a higher z-index or its own close button
+       (and everything else in its top strip) becomes unclickable, sitting
+       underneath the navbar even though it's visible */
+    .sidebar-wrapper {
+        position: fixed;
+        top: 0;
+        left: -290px;
+        height: 100%;
+        width: 275px;
+        flex: none;
+        z-index: 1600;
+        box-shadow: var(--shadow-lg);
+        transition: left 0.32s var(--ease);
+    }
+
+    .sidebar-wrapper.open {
         left: 0;
-    } */
+    }
+
+    .menu-btn {
+        display: grid;
+        place-items: center;
+        position: fixed;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        z-index: 900;
+        width: 34px;
+        height: 52px;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--brand);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border);
+        border-left: none;
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        box-shadow: var(--shadow-md);
+        cursor: pointer;
+        transition: background 0.2s var(--ease), color 0.2s var(--ease);
+    }
+
+    .menu-btn:hover {
+        background: var(--brand);
+        color: #fff;
+    }
+
+    .overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(22, 32, 44, 0.45);
+        backdrop-filter: blur(2px);
+        z-index: 1550;
+        animation: narrify-fade-up 0.25s var(--ease) both;
+    }
 
     .main-layout {
-        height: calc(100vh - 70px);
+        height: calc(100vh - 64px);
     }
 }
-
-

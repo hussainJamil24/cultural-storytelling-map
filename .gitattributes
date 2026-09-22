@@ -1,0 +1,4 @@
+# Preserve the exact bytes checked by the portable snapshot manifest.
+backend/demo/*.json -text
+backend/demo/uploads/** -text
+*.bat text eol=crlf

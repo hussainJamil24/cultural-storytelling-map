@@ -1,21 +1,31 @@
+import logging
+import os
+
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status as http_status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-from fastapi import UploadFile, File
-import os
 
+from app.core import ai_client
 from app.core.dependencies import get_current_user, get_optional_current_user, require_admin
 from app.db.session import get_db
-from app.models.story_model import Story, StoryCategory, StoryStatus
+from app.models.story_model import Story, StoryCategory, StoryStatus, StoryTranslation
 from app.models.user_model import User, UserRole
 from app.schemas.story_schema import (
     StoryCreate,
+    StoryLocationResponse,
     StoryPrivateResponse,
     StoryPublicResponse,
     StoryStatusUpdate,
+    StoryTranslationResponse,
 )
 
 router = APIRouter(tags=["stories"])
+logger = logging.getLogger(__name__)
+
+SUPPORTED_TRANSLATION_LANGUAGES = {"el", "tr"}
+
+# Human moderation is the default and is required for the demonstration.
+AUTO_APPROVE_NEW_STORIES = os.getenv("NARRIFY_AUTO_APPROVE", "false").lower() == "true"
 
 
 def _raise_missing_token() -> None:
@@ -40,10 +50,25 @@ def create_story(
         audio_url=story.audio_url,
         latitude=story.latitude,
         longitude=story.longitude,
-        status=StoryStatus.PENDING.value,
+        status=(
+            StoryStatus.APPROVED.value
+            if AUTO_APPROVE_NEW_STORIES
+            else StoryStatus.PENDING.value
+        ),
         category=story.category.value,
         is_anonymous=story.is_anonymous,
     )
+
+    # AI moderation assist: best-effort only. A failure here (no API key, network
+    # error, etc.) must never block a story submission -- it just leaves the story
+    # unassessed for the human moderator, same as before this feature existed.
+    try:
+        assessment = ai_client.assess_story_sensitivity(story.title, story.content)
+        if assessment is not None:
+            new_story.ai_flag = assessment.flagged
+            new_story.ai_flag_reason = assessment.reason
+    except Exception:
+        logger.exception("AI moderation assist raised unexpectedly during story creation")
 
     try:
         db.add(new_story)
@@ -56,14 +81,17 @@ def create_story(
     return new_story
 
 
-@router.get("/stories", response_model=list[StoryPublicResponse])
+@router.get("/stories")
 def get_stories(
     status: StoryStatus | None = Query(None),
     category: StoryCategory | None = Query(None),
     db: Session = Depends(get_db),
     current_user: User | None = Depends(get_optional_current_user),
 ):
-    if status is not None and status != StoryStatus.APPROVED:
+    # only an admin querying a non-public status sees moderation-only fields
+    # (ai_flag / ai_flag_reason / user_id) -- everyone else gets the public shape
+    is_moderation_view = status is not None and status != StoryStatus.APPROVED
+    if is_moderation_view:
         if current_user is None:
             _raise_missing_token()
         if current_user.role != UserRole.ADMIN.value:
@@ -83,9 +111,12 @@ def get_stories(
         if category is not None:
             query = query.filter(Story.category == category.value)
 
-        return query.order_by(Story.created_at.desc()).all()
+        stories = query.order_by(Story.created_at.desc()).all()
     except SQLAlchemyError:
         raise HTTPException(status_code=500, detail="Could not fetch stories")
+
+    schema = StoryPrivateResponse if is_moderation_view else StoryPublicResponse
+    return [schema.model_validate(story) for story in stories]
 
 
 @router.get("/stories/{story_id}", response_model=StoryPublicResponse)
@@ -136,18 +167,120 @@ def update_story_status(
 
     return story
 
-@router.post("/upload-image")
-def upload_image(file: UploadFile = File(...)):
 
-    upload_dir = "uploads"
-    os.makedirs(upload_dir, exist_ok=True)
+@router.get(
+    "/stories/{story_id}/translate/{language}",
+    response_model=StoryTranslationResponse,
+)
+def translate_story(
+    story_id: int = Path(..., gt=0),
+    language: str = Path(...),
+    db: Session = Depends(get_db),
+):
+    if language not in SUPPORTED_TRANSLATION_LANGUAGES:
+        raise HTTPException(
+            status_code=http_status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported language. Choose one of: {sorted(SUPPORTED_TRANSLATION_LANGUAGES)}",
+        )
 
-    file_path = f"{upload_dir}/{file.filename}"
+    try:
+        story = (
+            db.query(Story)
+            .filter(Story.id == story_id, Story.status == StoryStatus.APPROVED.value)
+            .first()
+        )
+    except SQLAlchemyError:
+        raise HTTPException(status_code=500, detail="Could not fetch story")
 
-    with open(file_path, "wb") as f:
-        f.write(file.file.read())
+    if story is None:
+        raise HTTPException(status_code=404, detail="Story not found")
 
-    return {
-        "url": file_path
-    }
+    # serve the cached translation if we've already paid for one
+    try:
+        cached = (
+            db.query(StoryTranslation)
+            .filter(
+                StoryTranslation.story_id == story_id,
+                StoryTranslation.language == language,
+            )
+            .first()
+        )
+    except SQLAlchemyError:
+        cached = None
 
+    if cached is not None:
+        return StoryTranslationResponse(
+            language=language, title=cached.title, content=cached.content, cached=True
+        )
+
+    if not ai_client.is_configured():
+        raise HTTPException(
+            status_code=http_status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="AI translation is not configured.",
+        )
+
+    result = ai_client.translate_story(story.title, story.content, language)
+    if result is None:
+        raise HTTPException(
+            status_code=http_status.HTTP_502_BAD_GATEWAY,
+            detail="AI translation failed. Please try again.",
+        )
+
+    translation = StoryTranslation(
+        story_id=story_id, language=language, title=result.title, content=result.content
+    )
+    try:
+        db.add(translation)
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        # translation still succeeded -- serve it even if caching failed
+        logger.exception("Failed to cache translation for story %s (%s)", story_id, language)
+
+    return StoryTranslationResponse(
+        language=language, title=result.title, content=result.content, cached=False
+    )
+
+
+@router.get("/stories/{story_id}/locate", response_model=StoryLocationResponse)
+def locate_story(
+    story_id: int = Path(..., gt=0),
+    db: Session = Depends(get_db),
+):
+    try:
+        story = (
+            db.query(Story)
+            .filter(Story.id == story_id, Story.status == StoryStatus.APPROVED.value)
+            .first()
+        )
+    except SQLAlchemyError:
+        raise HTTPException(status_code=500, detail="Could not fetch story")
+
+    if story is None:
+        raise HTTPException(status_code=404, detail="Story not found")
+
+    if story.ai_location_label:
+        return StoryLocationResponse(label=story.ai_location_label, cached=True)
+
+    if not ai_client.is_configured():
+        raise HTTPException(
+            status_code=http_status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="AI location lookup is not configured.",
+        )
+
+    result = ai_client.describe_location(story.latitude, story.longitude)
+    if result is None:
+        raise HTTPException(
+            status_code=http_status.HTTP_502_BAD_GATEWAY,
+            detail="Could not describe this location. Please try again.",
+        )
+
+    try:
+        story.ai_location_label = result.label
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
+        # label still succeeded -- serve it even if caching failed
+        logger.exception("Failed to cache location label for story %s", story_id)
+
+    return StoryLocationResponse(label=result.label, cached=False)

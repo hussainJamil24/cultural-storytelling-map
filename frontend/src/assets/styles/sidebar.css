@@ -1,80 +1,143 @@
 /* positions the sidebar container */
 .sidebar {
     position: relative;
-    height: 100vh;
+    height: 100%;
+    width: 275px;
+    padding: 22px 16px 18px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+}
+
+.sidebar-head {
+    padding: 0 8px;
+    margin-bottom: 14px;
+}
+
+.sidebar-head h5 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.sidebar-head p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: var(--ink-faint);
 }
 
 /* lays out the category links as a vertical list */
 .sidebar-menu {
     list-style: none;
     padding: 0;
-    gap: 8px;
+    margin: 0;
+    gap: 2px;
     flex: 1;
     overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 .sidebar-menu li {
     margin: 0;
 }
 
-/* highlights the active sidebar link */
-.sidebar-menu li.active .menu-link {
-    color: #fff;
-    background: #007BFF;
-    border-radius: 50px;
-    -webkit-border-radius: 50px;
-    -moz-border-radius: 50px;
-    -ms-border-radius: 50px;
-    -o-border-radius: 50px;
-}
-
 /* styles the shared sidebar link appearance */
 .menu-link {
-    gap: 20px;
-    padding: 12px 20px;
-    color: #111;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    color: var(--ink);
     text-decoration: none;
     cursor: pointer;
-    border-radius: 50px;
-    -webkit-border-radius: 50px;
-    -moz-border-radius: 50px;
-    -ms-border-radius: 50px;
-    -o-border-radius: 50px;
-    transition: all 0.3s ease;
+    border-radius: var(--radius-pill);
+    transition: background 0.2s var(--ease), color 0.2s var(--ease);
     font-weight: 500;
 }
 
-.sidebar-menu li:not(.active) .menu-link:hover {
-    background-color: #007BFF;
+/* coloured tile makes each category readable at a glance and matches its pin */
+.menu-icon {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
     color: #fff;
+    font-size: 14px;
+    transition: transform 0.2s var(--ease);
 }
 
-.menu-link i {
-    font-size: 25px;
+.menu-label {
+    font-size: 15.5px;
+    letter-spacing: -0.01em;
 }
 
-.menu-link span {
-    font-size: 20px;
+.sidebar-menu li:not(.active) .menu-link:hover {
+    background: var(--bg);
+}
+
+.sidebar-menu li:not(.active) .menu-link:hover .menu-icon {
+    transform: scale(1.08);
+}
+
+/* highlights the active sidebar link */
+.sidebar-menu li.active .menu-link {
+    background: var(--brand-soft);
+    color: var(--brand-dark);
+    font-weight: 600;
 }
 
 /* styles the upload action at the bottom of the sidebar */
 .upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     width: 100%;
-    background: #007BFF;
+    margin-top: 14px;
+    background: var(--brand);
     color: #fff;
     border: none;
     padding: 12px 20px;
     text-decoration: none;
-    font-weight: 500;
-    border-radius: 50px;
-    -webkit-border-radius: 50px;
-    -moz-border-radius: 50px;
-    -ms-border-radius: 50px;
-    -o-border-radius: 50px;
-    /* keeps the button in normal flow instead of absolute positioning */
+    font-weight: 600;
+    font-size: 14.5px;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.28);
+    transition: background 0.2s var(--ease), transform 0.2s var(--ease),
+        box-shadow 0.2s var(--ease);
+}
+
+.upload-btn:hover {
+    background: var(--brand-dark);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 123, 255, 0.34);
 }
 
 .upload-btn i {
-    font-size: 16px;
-    margin-right: 5px;
+    font-size: 15px;
+}
+
+/* close button (mobile drawer) */
+.close-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    border: none;
+    background: var(--bg);
+    color: var(--ink-soft);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.close-btn:hover {
+    background: var(--danger);
+    color: #fff;
 }

@@ -1,0 +1,82 @@
+{
+  "format_version": 1,
+  "captured_date": "2026-09-22",
+  "snapshot_sha256": "52faf02e7aca698261aa0bf2dfe3eef42c6b176fcf31a19861c377a21baf687b",
+  "counts": {
+    "users": 6,
+    "stories": 16,
+    "story_translations": 6,
+    "comments": 3,
+    "likes": 2
+  },
+  "story_status_counts": {
+    "approved": 13,
+    "rejected": 3
+  },
+  "account_handling": "User IDs, public names, roles, active state and creation dates are retained; emails are demo-only and original password hashes are omitted. Setup generates fresh local passwords.",
+  "media": [
+    {
+      "path": "uploads/3eca9d6773f842af91f3a50cfc1fa4b5.png",
+      "bytes": 9568,
+      "sha256": "2c29d98c3fe48edfea4babfcfa09179d4a3f7b20640b205e578ba048f5e189ed"
+    },
+    {
+      "path": "uploads/59ec0fa90d0740cf80ee647760039479.jpg",
+      "bytes": 17117,
+      "sha256": "08ff0924b1dcf3706e74e70be48c1b1c44e0db1741bf734413bf210caceb3159"
+    },
+    {
+      "path": "uploads/67f17e5f11ee4c659be4c691a7d4f35c.mp3",
+      "bytes": 2038355,
+      "sha256": "217b0e1171ad85c69416a609c10a793beff72d871bbf4e55a0f867b951c25129"
+    },
+    {
+      "path": "uploads/7708306aed2d44e0b19109f21160b1d4.jpg",
+      "bytes": 7116518,
+      "sha256": "b870c891d8b7ecca3ecd687f163e006709d8f689465264ddc544500f907e7e94"
+    },
+    {
+      "path": "uploads/8169f3a365bb40aba4bddee6e68ec9ba.jpg",
+      "bytes": 17117,
+      "sha256": "08ff0924b1dcf3706e74e70be48c1b1c44e0db1741bf734413bf210caceb3159"
+    },
+    {
+      "path": "uploads/8c8f8a5d9b65436ab99bb1e09607e0d4.mp3",
+      "bytes": 2038355,
+      "sha256": "217b0e1171ad85c69416a609c10a793beff72d871bbf4e55a0f867b951c25129"
+    },
+    {
+      "path": "uploads/e97259698ba2478388230416bee93bac.mp3",
+      "bytes": 2038355,
+      "sha256": "217b0e1171ad85c69416a609c10a793beff72d871bbf4e55a0f867b951c25129"
+    },
+    {
+      "path": "uploads/syrian.jpg",
+      "bytes": 109062,
+      "sha256": "86a14654bad44810c3fb3b267a39280238f0762510748fbbdf80b9ba0b357807"
+    }
+  ],
+  "missing_media": [
+    {
+      "story_id": 1,
+      "field": "audio_url",
+      "path": "uploads/A journey from war to hope.mp3"
+    },
+    {
+      "story_id": 2,
+      "field": "image_url",
+      "path": "uploads/armenian-church-nicosia.jpg"
+    },
+    {
+      "story_id": 4,
+      "field": "image_url",
+      "path": "uploads/01d1f894decd4110a1c7edf3dbbfb7a8.jpeg"
+    },
+    {
+      "story_id": 4,
+      "field": "audio_url",
+      "path": "uploads/c41340fee0524822a5c5308b61385b15.mp3"
+    }
+  ],
+  "missing_media_note": "These four references were already missing from the running source application. Their original paths and story content are preserved; no unrelated replacement media is substituted."
+}

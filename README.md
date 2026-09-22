@@ -1,107 +1,59 @@
-# Cultural Inclusion Storytelling Map
+# Narrify — cultural storytelling map
 
-Map-based platform for cultural stories linked to real locations.
+React/Leaflet frontend, FastAPI/SQLite backend, and server-side Gemini features.
 
-Current MVP focus:
-- Cyprus
-- Greece next
-- Europe later
+**For the Windows demo: follow [the short setup instructions](docs/WINDOWS_DEMO.md), then [the 115-second filming checklist](docs/DEMO_FILMING_CHECKLIST.md).**
 
-## Current Status
+## Start the Windows demo
 
-- Backend and frontend run locally
-- Story upload works from the UI
-- Uploaded stories appear on the map in local demo mode
-- Story statuses exist: `pending`, `approved`, `rejected`
-
-## Important Local Note
-
-For local UI testing, new stories are auto-approved in:
-
-- [backend/app/routes/stories.py](backend/app/routes/stories.py)
-
-```python
-AUTO_APPROVE_NEW_STORIES = True
-```
-
-Turn this off when the real moderation flow is ready.
-
-## Run Locally
-
-### Backend
+Install Git, Python **3.13** (including its launcher), and Node.js **24 LTS**. Open PowerShell:
 
 ```powershell
-cd "C:\Users\nadio\Documents\02_Projects_&_Code\cultural-storytelling-map\backend"
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+git clone https://github.com/hussainJamil24/cultural-storytelling-map.git narrify-demo
+cd narrify-demo
+.\SetupDemo.bat
+.\RunDemo.bat
 ```
 
-- API: `http://127.0.0.1:8000`
-- Docs: `http://127.0.0.1:8000/docs`
+Setup asks for the private Gemini key if it is not already in `backend/.env`. Paste it and press Enter; it will not be displayed. Alternatively copy the private `.env` file supplied by Charalampos into `backend/.env` before setup. Never upload it to GitHub. Wait for **Setup complete** before starting the app. Keep both app windows open and visit <http://127.0.0.1:3000>.
 
-### Frontend
+Before recording, double-click `CheckDemo.bat`. It makes an actual Gemini request; a configuration badge alone is not a successful API test. Internet is required for Gemini and map tiles.
+
+## Accounts and stored stories
+
+Setup initializes an empty database with **16 stories: 13 approved and 3 rejected**, plus 6 translations, 3 comments and 2 likes. All existing story fields, authors' display names and relationships are preserved. Private account emails and old password hashes are replaced with local demo credentials. Open `backend/.demo-accounts.json` in Notepad for each account's email/password; the account with `role: admin` opens the moderation dashboard.
+
+All **8 available uploaded files** are bundled under `backend/demo/uploads/`. Four pre-existing missing image/audio references remain listed in `backend/demo/manifest.json`; those missing files cannot be restored from this checkout. The checklist explains how to create a clearly labelled multimedia rehearsal story without altering the existing records.
+
+**Autoapproval is OFF.** New stories remain pending until an admin approves them. Rejected stories remain in the database and the admin's Flagged tab; they are not public map markers. Setup never replaces a populated database. Use a fresh clone for the exact supplied snapshot. Runtime database, media uploads, API keys and generated passwords stay local and are gitignored. Keep your local backend/storymap.db, backend/uploads, backend/.env and backend/.demo-accounts.json when moving the same running installation to another folder.
+
+## Features covered by the demo
+
+- Registration, login, logout and public access to approved stories.
+- Map markers, location selection, category filtering, keyword search and list browsing.
+- Text, photo, audio and optional anonymous attribution.
+- Gemini companion cards, Greek/Turkish translation, approximate location labels and moderation assistance.
+- Human approval, rejection and restoration.
+- Likes, comments, nested replies and authorised comment removal.
+- SQLite persistence across refreshes/restarts.
+
+The optional Replicate video endpoint is not connected to the current frontend and is not part of the filmed feature list. Gemini output varies between requests; the same version/data do not imply identical generated wording.
+
+## Updating an existing checkout
+
+For filming, a **new `narrify-demo` folder is recommended**. This update removes the old database from Git tracking, so before the **first pull** of this release, stop the app and back up `backend/storymap.db`, `backend/uploads`, `backend/.env`, and any `.demo-accounts.json` outside the repository. Do not discard uncommitted work to force a pull. A populated database is preserved by setup; an incompatible schema produces a clear stop instead of deleting tables. Existing older databases may require an explicit migration; a fresh clone needs none.
+
+## Verification
+
+From the repository root after setup:
 
 ```powershell
-cd "C:\Users\nadio\Documents\02_Projects_&_Code\cultural-storytelling-map\frontend"
-npm start
+cd backend
+.\.venv\Scripts\python.exe -m unittest discover -s tests -p "test_demo*.py" -v
+cd ..
+.\backend\.venv\Scripts\python.exe scripts/check_demo.py
+cd frontend
+npm run build
 ```
 
-- App: `http://localhost:3000`
-- If busy: `http://localhost:3001`
-
-## Current Story Fields
-
-The frontend and backend currently use:
-
-- `title`
-- `content`
-- `media_url`
-- `latitude`
-- `longitude`
-- `status`
-
-## What Is Done
-
-- Story backend wired with FastAPI + SQLite + SQLAlchemy
-- Story upload connected from frontend to backend
-- Map pages read backend story data correctly
-- API import casing fixed to match `Api.js`
-- Local demo flow works end to end
-
-## Team Checklist
-
-### Backend Dev 1
-
-- [x] Database/session setup
-- [x] Story model, schema, and routes
-- [x] Status update route
-- [ ] Backend tests
-- [ ] Replace local auto-approve with proper config
-- [ ] Add submitter support without blocking anonymous posting
-- [ ] Plan real media storage
-
-### Developer 2
-
-- [x] Frontend/backend story contract aligned
-- [x] Map pages connected to backend
-- [x] Upload flow connected to backend
-- [ ] Story detail page
-- [ ] Loading and error states
-- [ ] Re-enable media upload after backend support exists
-
-### Developer 3
-- [x] User authentication (register/login)
-- [x] Comments model, schema and routes
-- [x] Likes & Tags model, schema and routes
-- [ ] Define moderation rules
-- [ ] Finalize content categories
-- [ ] Prepare demo stories
-- [ ] Review wording and cultural-sensitivity copy
-- [ ] Help define anonymous posting and version history
-
-## Current Limitations
-
-- Media upload is not implemented yet
-- No authentication yet
-- No moderation dashboard yet
-- No comments/reactions yet
-- No story detail page yet
+The data tests use temporary folders and check the snapshot, media, repeat-run preservation, schema mismatch, and tamper detection. `npm ci` uses the committed lockfile; Windows setup installs the tested pinned Python dependencies from `backend/requirements-demo.lock.txt`. The current Create React App toolchain has known dependency audit findings; the demo is intended to run locally, not as a production deployment.

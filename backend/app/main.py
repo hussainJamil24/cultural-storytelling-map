@@ -6,6 +6,12 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
+# loads GEMINI_API_KEY / REPLICATE_API_TOKEN / NARRIFY_AUTO_APPROVE from a local
+# .env file if one exists, before anything else reads the environment
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+
 from app.db.session import init_db
 # imports story model so sqlalchemy registers the table before creation
 from app.models import story_model
@@ -13,9 +19,6 @@ from app.routes import stories
 from app.routes import comments
 from app.routes import likes
 from app.routes import media
-
-from fastapi.staticfiles import StaticFiles
-
 
 # imports user routes (registration, authentication endpoints)
 from app.routes import users
@@ -41,14 +44,14 @@ app.mount("/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
 app.add_middleware(
     CORSMiddleware,
     # allows the local frontend during development, including CRA fallback ports
-    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_origins=[
+        "http://localhost:3000", "http://localhost:3001",
+        "http://127.0.0.1:3000", "http://127.0.0.1:3001",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.mount("/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
-
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(_request, exc):
@@ -57,9 +60,6 @@ async def validation_exception_handler(_request, exc):
         content=jsonable_encoder({"detail": exc.errors()}),
     )
 
-
-# mount uploads AFTER app exists
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # returns a basic health check response
 @app.get("/")
@@ -84,4 +84,3 @@ app.include_router(media.router)
 from app.routes import ai
 
 app.include_router(ai.router, prefix="/ai", tags=["AI"])
-

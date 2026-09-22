@@ -7,8 +7,22 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field, field_validator
 import replicate
 
+from app.core import ai_client
+
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+class AIStatusResponse(BaseModel):
+    configured: bool
+
+
+@router.get("/status", response_model=AIStatusResponse)
+async def ai_status():
+    """Lets the frontend know whether live AI (translation, real companion card,
+    moderation assist) is available before offering it, instead of letting the
+    user hit a dead endpoint."""
+    return AIStatusResponse(configured=ai_client.is_configured())
 
 
 class AIRequest(BaseModel):
@@ -35,6 +49,7 @@ class CompanionCardResponse(BaseModel):
     cultural_value: str
     respect_note: str
     safety_notice: str
+    generated_by: str  # "gemini" or "heuristic" -- surfaced so the UI can be honest about it
 
 
 class VideoGenerationResponse(BaseModel):
@@ -169,7 +184,11 @@ def _extract_video_url(output: Any) -> str | None:
     return None
 
 
-def generate_companion_card(title: str, content: str, category: str) -> CompanionCardResponse:
+def _generate_companion_card_heuristic(
+    title: str, content: str, category: str
+) -> CompanionCardResponse:
+    """Deterministic fallback used when no GEMINI_API_KEY is configured or the
+    live call fails -- keeps the feature demoable even without AI wired up."""
     clean_content = _clean_text(content, max_length=10000)
     clean_category = _clean_text(category, max_length=80)
 
@@ -184,10 +203,30 @@ def generate_companion_card(title: str, content: str, category: str) -> Companio
         timeline=timeline,
         cultural_value=cultural_value,
         respect_note=(
+            "This companion card summarizes only the submitted story. "
+            "The human story remains the source of truth."
+        ),
+        safety_notice="Generated card requires moderation before publication.",
+        generated_by="heuristic",
+    )
+
+
+def generate_companion_card(title: str, content: str, category: str) -> CompanionCardResponse:
+    ai_result = ai_client.generate_companion_card_ai(title, content, category)
+    if ai_result is None:
+        return _generate_companion_card_heuristic(title, content, category)
+
+    return CompanionCardResponse(
+        short_summary=ai_result.short_summary,
+        themes=ai_result.themes,
+        timeline=ai_result.timeline,
+        cultural_value=ai_result.cultural_value,
+        respect_note=(
             "This AI companion card summarizes only the submitted story. "
             "The human story remains the source of truth."
         ),
         safety_notice="Generated card requires moderation before publication.",
+        generated_by="gemini",
     )
 
 

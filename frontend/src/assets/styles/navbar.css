@@ -1,33 +1,64 @@
 .navbar {
     width: 100%;
     margin: 0;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.88) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: none !important;
+    position: relative;
+    z-index: 1500;
 }
 
-/* highlights nav links on hover */
-.nav-link:hover {
-    color: #007BFF !important;
+.navbar-brand {
+    gap: 2px;
+    color: var(--ink) !important;
 }
 
-/* styles the secondary login button */
-.login-btn {
-    color: #111;
-    text-decoration: none;
-    padding:12px 20px;
-    border-radius: 50px;
-    -webkit-border-radius: 50px;
-    -moz-border-radius: 50px;
-    -ms-border-radius: 50px;
-    -o-border-radius: 50px;
+.brand-text {
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
 }
 
-.login-btn:hover {
-    background: #007BFF;
-    color: #fff;
+/* nav links get an animated underline instead of a colour-only hover */
+.navbar-nav .nav-link {
+    white-space: nowrap;
+    position: relative;
+    color: var(--ink-soft) !important;
+    font-size: 15.5px;
+    padding: 6px 4px !important;
+    margin: 0 12px;
+    transition: color 0.2s var(--ease);
+}
+
+.navbar-nav .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--brand);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s var(--ease);
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--brand) !important;
+}
+
+.navbar-nav .nav-link:hover::after {
+    transform: scaleX(1);
 }
 
 /* styles the mobile navbar toggle button */
 .custom-toggler {
-    border-color: #007BFF;
+    border-color: var(--border);
+    padding: 4px 9px;
 }
 
 .custom-toggler .navbar-toggler-icon {
@@ -37,14 +68,72 @@
 
 .custom-toggler .navbar-toggler-icon::before {
     content: "☰";
-    color: #007BFF;
-    font-size: 24px;
+    color: var(--brand);
+    font-size: 22px;
 }
 
-/* styles the mobile toggle focus state */
 .custom-toggler:focus {
-    /* keeps the toggle focus state simple without the default shadow */
-    color: #007BFF !important;
+    box-shadow: none;
+    color: var(--brand) !important;
+}
+
+/* auth actions */
+.navbar .btn {
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.navbar .btn:hover {
+    transform: translateY(-1px);
+}
+
+.navbar .btn-outline-primary {
+    --bs-btn-color: var(--brand);
+    --bs-btn-border-color: var(--brand);
+    --bs-btn-hover-bg: var(--brand);
+    --bs-btn-hover-border-color: var(--brand);
+}
+
+/* signed-in user chip */
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.nav-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--brand-soft);
+    color: var(--brand-dark);
+    font-weight: 700;
+    font-size: 13px;
+    flex: 0 0 auto;
+}
+
+.nav-username {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-admin-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--brand-dark);
+    background: var(--brand-soft);
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
 }
 
 /* fix collapsed menu width */
@@ -52,16 +141,15 @@
     width: 100%;
 }
 
-/* prevent text cutting */
-.navbar-nav .nav-link {
-    white-space: nowrap;
-}
-
-
 /* adjusts navbar spacing on smaller screens */
 @media (max-width: 991px) {
+    .navbar {
+        height: auto;
+        min-height: 64px;
+    }
+
     .mobile-nav .nav-item {
-        margin-bottom: 10px;
+        margin-bottom: 6px;
     }
 
     .mobile-nav {
@@ -69,8 +157,15 @@
     }
 
     .navbar-collapse {
-        background: white;
-        padding: 10px;
+        background: var(--surface);
+        padding: 12px 4px;
     }
 
+    .navbar-nav .nav-link {
+        margin: 0;
+    }
+
+    .nav-user {
+        margin-top: 8px;
+    }
 }

@@ -1,13 +1,7 @@
-/* resets the base box model and default font */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-}
-
 /* keeps the root containers stretched to the viewport */
-html, body, #root {
+html,
+body,
+#root {
     height: 100%;
     width: 100%;
 }
@@ -17,278 +11,332 @@ html, body, #root {
     height: 100vh;
 }
 
-/* lays out the branding and form panels */
-.login-container {
+/* ---------------- shared aurora backdrop ---------------- */
+/* same brand-blue + AI-violet mesh used on the About page -- no stock photo,
+   no baked-in city label, just the app's own identity */
+
+.login-container,
+.register-container {
     flex: 1;
-    height: calc(100vh - 70px);  /* accounts for navbar height */
-    /* background-color: #f0f2f5; */
-    background: 
-        linear-gradient(
-            rgba(240, 242, 245, 0.30),
-            rgba(240, 242, 245, 0.30)
-        ),
-        url('../images/nicosia-map.png') no-repeat center center;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(1100px circle at 10% 10%, rgba(0, 123, 255, 0.45), transparent 55%),
+        radial-gradient(900px circle at 90% 0%, rgba(55, 45, 255, 0.4), transparent 50%),
+        radial-gradient(1000px circle at 20% 100%, rgba(0, 123, 255, 0.22), transparent 55%),
+        radial-gradient(800px circle at 95% 90%, rgba(55, 45, 255, 0.26), transparent 50%),
+        #0a1030;
 }
 
-.brand-text {
-    background: linear-gradient(90deg, #e0556b, #2c5f7c);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;  
-    -webkit-text-fill-color: transparent;
-    font-weight: bold;
+.login-container {
+    height: calc(100vh - 70px);
 }
 
-.brand-text:hover {
-    filter: brightness(1.2);
-    transform: scale(1.05);
+.register-container {
+    min-height: calc(100vh - 70px);
+    padding: 40px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* styles the left branding panel */
+/* ---------------- left branding panel (login only) ---------------- */
+
 .login-left {
+    position: relative;
+    z-index: 1;
     flex: 1;
     padding: 60px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .branding-content {
-    max-width: 400px;
+    max-width: 560px;
 }
 
-.accent-line {
-    width: 80px;
-    height: 4px;
-    background-color: #0066cc;
-    border-radius: 2px;
+.branding-mark {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    margin-bottom: 50px;
+}
+
+.branding-mark img {
+    width: 96px;
+    height: 96px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.34));
+    flex: 0 0 auto;
+}
+
+.branding-mark-text {
+    line-height: 1.15;
+}
+
+/* the wordmark is the single biggest thing on this panel -- everything
+   else, including the headline below it, stays smaller than this */
+.branding-mark-text strong {
+    display: block;
+    font-size: 68px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+}
+
+.branding-mark-text span {
+    display: block;
+    margin-top: 6px;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
 }
 
 .branding-content h2 {
     font-size: 42px;
-    color: #f8f9fb;
-    font-weight: 600;
-    line-height: 1.3;
-    margin-bottom: 20px;
+    color: #fff;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 24px;
 }
 
 .branding-content p {
-    line-height: 1.6;
-    margin-bottom: 50px;
-    color: #f8f9fb;
+    font-size: 19px;
+    line-height: 1.65;
+    margin-bottom: 0;
+    color: rgba(255, 255, 255, 0.88);
 }
 
-/* styles the right form panel */
+/* the logo's own warm orange, borrowed for emphasis so it reads as
+   intentional rather than a random highlight colour */
+.tagline-emphasis {
+    color: #f5821f;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 22px rgba(245, 130, 31, 0.45);
+}
+
+/* the "coming soon" business tease */
+.branding-expansion {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 30px;
+    padding: 11px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: var(--radius-pill);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-size: 14.5px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.branding-expansion i {
+    color: var(--ai-accent-soft, #cfd6ff);
+    font-size: 16px;
+}
+
+/* ---------------- right form panel ---------------- */
+
 .login-right {
+    position: relative;
+    z-index: 1;
     flex: 1;
     padding: 60px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.login-left,
-.login-right {
-    background: transparent;
-}
-
-/* styles the login card shell */
-.login-card {
-     width: 100%;
+/* card shell shared by login and register */
+.login-card,
+.register-card {
+    width: 100%;
     max-width: 420px;
+    padding: 52px 44px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
 
-    padding: 60px 50px;
+.register-card {
+    max-width: 400px;
+    padding: 44px 40px;
+}
 
-    /* translucent glass effect */
-    background: rgba(255, 255, 255, 0.88);
+.register-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 22px;
+}
 
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+.register-brand img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
 
-    border: 1px solid rgba(255, 255, 255, 0.65);
-    border-radius: 16px;
-
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+.register-brand span {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
 }
 
 .login-card h1 {
-    color: #1a3a52;
+    font-size: 27px;
+    color: var(--ink);
 }
 
 .login-subtitle {
-    line-height: 1.5;
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.55;
 }
 
-/* styles the form labels */
+.register-card h3 {
+    color: var(--ink);
+    font-weight: 700;
+    font-size: 22px;
+}
+
+/* ---------------- form fields ---------------- */
+
 .form-group label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #5a7085;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ink-soft);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.05em;
 }
 
-/* styles the password row label alignment */
 .password-label label {
     margin: 0;
 }
 
-/* styles the forgot password link */
 .forgot-link {
-    font-size: 12px;
-    color: #0066cc;
+    font-size: 13px;
+    color: var(--brand);
     text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
+    font-weight: 600;
+    transition: color 0.2s var(--ease);
 }
 
 .input-wrapper {
     position: relative;
 }
 
-/* reserves space for optional input icons */
 .input-icon {
     position: absolute;
     left: 16px;
-    width: 18px;
-    height: 18px;
-    color: #007BFF;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: var(--brand);
     pointer-events: none;
-    flex-shrink: 0;
 }
 
-/* styles the shared login inputs */
 .input-wrapper input {
     width: 100%;
-    padding: 14px 16px 14px 48px;
-
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 8px;
-
-    font-size: 15px;
-    color: #1a3a52;
-
-    background: rgba(248, 249, 251, 0.85);
-
-    transition: all 0.3s ease;
+    padding: 14px 16px 14px 46px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 16px;
+    color: var(--ink);
+    background: var(--bg);
+    transition: all 0.2s var(--ease);
 }
 
 .input-wrapper input:focus {
     outline: none;
-    border-color: #0066cc;
-    background: rgba(255, 255, 255, 0.95);
+    border-color: var(--brand);
+    background: var(--surface);
+    box-shadow: 0 0 0 4px var(--brand-soft);
 }
 
 .input-wrapper input::placeholder {
-    color:  #8d9aaa;
+    color: var(--ink-faint);
 }
 
-/* styles the primary sign-in button */
-.signin-button {
-    background: #007BFF;
-    color: white;
+.signin-button,
+.reg-button {
+    background: var(--brand);
+    color: #fff;
     border: none;
-    padding: 14px 24px;
-    border-radius: 50px;
-    font-size: 15px;
-    font-weight: 600;
+    padding: 15px 24px;
+    border-radius: var(--radius-pill);
+    font-size: 15.5px;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(0, 123, 255, 0.3);
+    transition: all 0.2s var(--ease);
 }
 
-.register-container {
-    flex: 1;
-    min-height: calc(100vh - 70px);
-
-    background:
-        linear-gradient(
-            rgba(240, 242, 245, 0.30),
-            rgba(240, 242, 245, 0.30)
-        ),
-        url("../images/nicosia-map.png") no-repeat center center;
-
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
-    padding: 40px 20px;
+.signin-button:hover:not(:disabled),
+.reg-button:hover:not(:disabled) {
+    background: var(--brand-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0, 123, 255, 0.36);
 }
 
-/* registration card */
-.register-card {
-    width: 100%;
-    max-width: 400px;
-
-    padding: 45px 40px;
-
-    background: rgba(255, 255, 255, 0.88);
-
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
-    border: 1px solid rgba(255, 255, 255, 0.65);
-    border-radius: 16px;
-
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
-}
-
-.register-card h3 {
-    color: #1a3a52;
-    font-weight: 600;
+.signin-button:disabled,
+.reg-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
 }
 
 .register-card .form-control {
     width: 100%;
-    padding: 12px 14px;
-
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 8px;
-
-    background: rgba(248, 249, 251, 0.85);
-
-    font-size: 15px;
-    color: #1a3a52;
-
-    transition: all 0.3s ease;
+    padding: 13px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    font-size: 16px;
+    color: var(--ink);
+    transition: all 0.2s var(--ease);
 }
 
 .register-card .form-control:focus {
     outline: none;
-
-    border-color: #0066cc;
-
-    background: rgba(255, 255, 255, 0.95);
-
-    box-shadow: none;
+    border-color: var(--brand);
+    background: var(--surface);
+    box-shadow: 0 0 0 4px var(--brand-soft);
 }
 
 .register-card .form-control::placeholder {
-    color: #8d9aaa;
+    color: var(--ink-faint);
 }
 
-/* styles the registration prompt area */
 .register-section {
-    border-top: 2px solid #e0e6f0;
+    border-top: 1px solid var(--border);
+    font-size: 14.5px;
+    color: var(--ink-soft);
 }
 
-/* styles the registration link */
 .register-link {
-    color: #0066cc;
+    color: var(--brand);
     text-decoration: none;
-    transition: color 0.3s ease;
+    font-weight: 700;
+    transition: color 0.2s var(--ease);
 }
 
-/* registraion page */
-.reg-button {
-    background: #007BFF;
-    color: white;
-    border: none;
-    padding: 14px 24px;
-    border-radius: 50px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.register-card p.text-center {
+    font-size: 14.5px;
+    color: var(--ink-soft);
 }
 
-/* adjusts the layout for tablet screens */
+/* ---------------- responsive ---------------- */
+
 @media (max-width: 1024px) {
     .login-container {
         flex-direction: column;
@@ -297,7 +345,7 @@ html, body, #root {
 
     .login-left {
         padding: 40px 30px;
-        min-height: 50vh;
+        min-height: 44vh;
     }
 
     .login-right {
@@ -305,178 +353,52 @@ html, body, #root {
         min-height: 50vh;
     }
 
-    .login-card {
-        padding: 40px 30px;
+    .branding-mark img {
+        width: 68px;
+        height: 68px;
+    }
+
+    .branding-mark-text strong {
+        font-size: 46px;
     }
 
     .branding-content h2 {
-        font-size: 32px;
-    }
-
-    .login-card h1 {
-        font-size: 26px;
+        font-size: 30px;
     }
 }
 
-/* adjusts spacing and sizing for mobile screens */
 @media (max-width: 768px) {
     .login-container {
         flex-direction: column;
         height: auto;
     }
 
-    .login-container .login-left {
-        padding: 30px 20px;
-        min-height: auto;
+    .login-left {
         display: none !important;
     }
 
     .login-right {
-        padding: 30px 20px;
+        padding: 40px 20px;
         min-height: auto;
         width: 100% !important;
     }
 
     .login-card {
-        padding: 30px 20px;
+        padding: 36px 26px;
     }
 
-    .branding-content h2 {
+    .login-card h1 {
         font-size: 24px;
     }
-
-    .branding-content p {
-        margin-bottom: 30px;
-        font-size: 14px;
-    }
-
-
-    .login-card h1 {
-        font-size: 22px;
-    }
-
-    .login-subtitle {
-        font-size: 13px;
-    }
-
-    .signin-button {
-        padding: 12px 20px;
-        font-size: 14px;
-    }
 }
 
-/* tightens the layout for small mobile screens */
 @media (max-width: 480px) {
-     .register-container {
-        min-height: calc(100vh - 70px);
-        padding: 25px 15px;
-
-        background:
-            linear-gradient(
-                rgba(240, 242, 245, 0.30),
-                rgba(240, 242, 245, 0.30)
-            ),
-            url("../images/nicosia-map.png") no-repeat center center;
-
-        background-size: cover;
-        background-position: center;
-    }
-
     .register-card {
         max-width: 100%;
+        padding: 32px 22px;
+    }
+
+    .login-card {
         padding: 30px 20px;
-        border-radius: 14px;
     }
-
-    .login-page {
-        height: 100%;
-    }
-
-    .login-container {
-        height: auto;
-        flex-direction: column;
-    }
-
-    .login-left {
-        padding: 25px 15px;
-    }
-
-    .login-right {
-        padding: 25px 15px;
-    }
-
-    .branding-content {
-        max-width: 100%;
-    }
-
-    .accent-line {
-        width: 60px;
-    }
-
-    .branding-content h2 {
-        font-size: 20px;
-        margin-bottom: 15px;
-    }
-
-    .branding-content p {
-        font-size: 13px;
-        margin-bottom: 25px;
-    }
-
-
-    .login-card {
-        padding: 25px 15px;
-    }
-
-    .login-card h1 {
-        font-size: 20px;
-        margin-bottom: 10px;
-    }
-
-    .login-subtitle {
-        font-size: 12px;
-        margin-bottom: 25px !important;
-    }
-
-    .form-group label {
-        font-size: 10px;
-    }
-
-    .input-wrapper input {
-        padding: 10px 12px 10px 36px;
-        font-size: 13px;
-    }
-
-    .input-icon {
-        left: 10px;       
-        font-size: 14px; 
-    }
-
-    .signin-button {
-        padding: 10px 16px;
-        font-size: 12px;
-        margin-top: 15px !important;
-    }
-
-    .register-section {
-        font-size: 12px;
-        margin-top: 15px !important;
-        padding-top: 15px !important;
-    }
-}
-
-/* tightens the card further on extra small screens */
-@media (max-width: 360px) {
-    .login-card {
-        padding: 20px 12px;
-    }
-
-    .branding-content h2 {
-        font-size: 18px;
-    }
-
-    .login-card h1 {
-        font-size: 18px;
-    }
-
 }

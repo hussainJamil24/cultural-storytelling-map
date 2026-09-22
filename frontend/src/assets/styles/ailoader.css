@@ -1,0 +1,137 @@
+/* ==========================================================================
+   AI loader — the "something is thinking" moment, styled deliberately with
+   the AI-accent (violet) so it reads as a distinct signal from ordinary
+   loading states elsewhere in the app.
+   ========================================================================== */
+
+.ai-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 30px 20px;
+    animation: narrify-fade-up 0.35s var(--ease) both;
+}
+
+/* spinning gradient ring with a pulsing sparkle at its center */
+.ai-loader-ring {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: conic-gradient(
+        from 0deg,
+        var(--ai-accent) 0%,
+        var(--brand) 35%,
+        var(--ai-accent-soft) 55%,
+        var(--ai-accent) 100%
+    );
+    animation: ai-spin 1.3s linear infinite;
+    box-shadow: 0 0 22px rgba(55, 45, 255, 0.28);
+}
+
+.ai-loader-ring::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--surface);
+}
+
+.ai-loader-ring i {
+    position: relative;
+    z-index: 1;
+    font-size: 19px;
+    color: var(--ai-accent);
+    animation: ai-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ai-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes ai-pulse {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.22);
+        opacity: 1;
+    }
+}
+
+.ai-loader-text {
+    margin: 0;
+    max-width: 260px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ai-accent-dark);
+    text-align: center;
+    line-height: 1.5;
+    animation: ai-text-in 0.35s var(--ease) both;
+}
+
+@keyframes ai-text-in {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* compact size for tight spaces (e.g. inside a card, above a button) */
+.ai-loader-sm {
+    padding: 16px 12px;
+    gap: 10px;
+}
+
+.ai-loader-sm .ai-loader-ring {
+    width: 36px;
+    height: 36px;
+}
+
+.ai-loader-sm .ai-loader-ring i {
+    font-size: 14px;
+}
+
+.ai-loader-sm .ai-loader-text {
+    font-size: 12.5px;
+}
+
+/* inline variant: sits next to text in a single line, e.g. under a button */
+.ai-loader-inline {
+    flex-direction: row;
+    padding: 0;
+    gap: 9px;
+    animation: none;
+}
+
+.ai-loader-ring-sm {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 auto;
+    box-shadow: 0 0 12px rgba(55, 45, 255, 0.32);
+}
+
+.ai-loader-ring-sm::before {
+    inset: 2.5px;
+}
+
+.ai-loader-ring-sm i {
+    font-size: 10px;
+}
+
+.ai-loader-inline .ai-loader-text {
+    text-align: left;
+    max-width: none;
+}

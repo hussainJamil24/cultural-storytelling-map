@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
+import BrowsePage from "./pages/BrowsePage";
 import Login from "./pages/Login";
 import Upload from "./pages/Upload";
-import MapPage from "./pages/MapPage";
 import AdminPage from "./pages/AdminPage";
 import Register from "./pages/Register";
 import StoryPage from "./pages/StoryPage";
@@ -18,7 +18,9 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/upload" element={<Upload />} />
-        <Route path="/map" element={<MapPage />} />
+        {/* map and home share the same full map experience */}
+        <Route path="/map" element={<HomePage />} />
+        <Route path="/browse" element={<BrowsePage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/story/:id" element={<StoryPage />} />

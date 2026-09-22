@@ -1,44 +1,19 @@
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { ZoomControl } from "react-leaflet";
 import { Link } from "react-router-dom";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import '../assets/styles/mapview.css';
-import { useEffect, useState } from "react";
-import API from "../services/Api";
+import "../assets/styles/mapview.css";
+import { useEffect, useMemo, useState } from "react";
+import API, { mediaUrl } from "../services/Api";
+import { getCategory, getMarkerIcon } from "../constants/categories";
+import Logo from "../assets/images/logo.png";
 
-// create colored marker icon
-const createIcon = (color) =>
-    new L.Icon({
-        iconUrl: `https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-${color}.png`,
-        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-    });
-
-    // map category → color
-    const getMarkerIcon = (category) => {
-        switch (category) {
-            case "heritage":
-                return createIcon("blue");
-            case "landmarks":
-                return createIcon("red");
-            case "oral_history":
-                return createIcon("green");
-            case "customs":
-                return createIcon("yellow");
-            case "migration":
-                return createIcon("violet");
-            case "food":
-                return createIcon("orange");
-            case "music":
-                return createIcon("grey");
-            case "religion":
-                return createIcon("black");
-            default:
-                return createIcon("blue");
-        }
-    };
+// centers the map on cyprus and keeps panning inside island bounds
+const CYPRUS_CENTER = [35.1264, 33.4299];
+const CYPRUS_BOUNDS = [
+    [34.5, 32.0], // southwest map limit
+    [35.7, 34.8], // northeast map limit
+];
 
 // pans and zooms the map to a matching story when searching
 function FlyToStory({ story }) {
@@ -58,149 +33,232 @@ function FlyToStory({ story }) {
     return null;
 }
 
+// builds a short preview for each story popup
+const getStoryPreview = (story) => {
+    if (!story.content) {
+        return "No story content available yet.";
+    }
+
+    return story.content.length > 110
+        ? `${story.content.slice(0, 110).trimEnd()}…`
+        : story.content;
+};
+
 // renders the reusable story map with approved story markers
-// renders category filters instead of navigation links
-// clicking a category updates the selected category in the parent component
-// receives the selected category and updates map content accordingly
-export default function MapView({ activeCategory }) {
-    
-    console.log(activeCategory);
-
-    // builds a short preview for each story popup
-    const getStoryPreview = (story) => {
-        if (!story.content) {
-            return "No story content available yet.";
-        }
-
-        return story.content.length > 80
-            ? `${story.content.slice(0, 80)}...`
-            : story.content;
-    };
-
-    // centers the map on cyprus and keeps panning inside island bounds
-    const CyprusCenter = [35.1264, 33.4299];
-    const bounds = [
-        [34.5, 32.0], // southwest map limit
-        [35.7, 34.8], // northeast map limit
-    ];
-
-    // stores approved stories loaded from the api
-    // stores stories fetched from the backend based on selected category
+export default function MapView({ activeCategory, focusStoryId, focusLocationLabel }) {
     const [stories, setStories] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [loadError, setLoadError] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
 
-    // loads approved stories when the map first renders
     // fetches stories whenever the selected category changes
-    // if "all" is selected, fetches all approved stories
-    // otherwise, fetches stories filtered by category
     useEffect(() => {
+        let isCurrent = true;
+
         const fetchStories = async () => {
+            setIsLoading(true);
+            setLoadError("");
+
             try {
-                let url = "/stories";
-                if (activeCategory !== "all") {
-                    url += `?category=${activeCategory}`;
-                }
+                const url =
+                    activeCategory === "all"
+                        ? "/stories"
+                        : `/stories?category=${activeCategory}`;
 
                 const res = await API.get(url);
-                setStories(res.data);
-
-                console.log(res.data);
-
+                if (isCurrent) setStories(res.data);
             } catch (err) {
-                console.error("Error fetching stories", err);
+                if (isCurrent) {
+                    setLoadError(
+                        "We couldn't load the stories. Check the connection and try again."
+                    );
+                }
+            } finally {
+                if (isCurrent) setIsLoading(false);
             }
         };
 
         fetchStories();
+        return () => {
+            isCurrent = false;
+        };
     }, [activeCategory]);
 
-    // saerch by title
-    const [searchTerm, setSearchTerm] = useState("");
+    // matches on title and story body so search finds themes, not just names
+    const filteredStories = useMemo(() => {
+        const term = searchTerm.trim().toLowerCase();
 
-    const filteredStories = stories.filter((story) => {
-        const hasValidCoords = Number.isFinite(Number(story.latitude)) &&
-        Number.isFinite(Number(story.longitude));
+        return stories.filter((story) => {
+            const hasValidCoords =
+                Number.isFinite(Number(story.latitude)) &&
+                Number.isFinite(Number(story.longitude));
 
-        const matchesSearch = story.title?.toLowerCase().includes(searchTerm.trim().toLowerCase());
-        return hasValidCoords && matchesSearch;
-    });
+            if (!hasValidCoords) return false;
+            if (!term) return true;
+
+            return (
+                story.title?.toLowerCase().includes(term) ||
+                story.content?.toLowerCase().includes(term)
+            );
+        });
+    }, [stories, searchTerm]);
 
     return (
         <div className="map-container">
-            {/* shows a placeholder search input */}
+            {/* floating search panel over the map */}
             <div className="map-search">
-                <input
-                    type="text"
-                    placeholder="Search stories..."
-                    className="form-control shadow"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
+                <div className="map-search-field">
+                    <i className="bi bi-search" aria-hidden="true"></i>
+                    <input
+                        type="search"
+                        placeholder="Search stories, places, themes…"
+                        aria-label="Search stories"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    {searchTerm && (
+                        <button
+                            type="button"
+                            className="map-search-clear"
+                            aria-label="Clear search"
+                            onClick={() => setSearchTerm("")}
+                        >
+                            <i className="bi bi-x-lg"></i>
+                        </button>
+                    )}
+                </div>
+
+                {/* live status under the search field */}
+                {isLoading && (
+                    <div className="map-status">
+                        <span className="map-status-dot" />
+                        Loading stories…
+                    </div>
+                )}
+
+                {!isLoading && loadError && (
+                    <div className="map-status map-status-error">
+                        <i className="bi bi-exclamation-triangle-fill"></i>
+                        {loadError}
+                    </div>
+                )}
+
+                {!isLoading && !loadError && (
+                    <div className="map-status">
+                        <i className="bi bi-geo-alt-fill"></i>
+                        {filteredStories.length}{" "}
+                        {filteredStories.length === 1 ? "story" : "stories"}
+                        {activeCategory !== "all" &&
+                            ` in ${getCategory(activeCategory).label}`}
+                    </div>
+                )}
+                {!isLoading && !loadError && focusLocationLabel && !searchTerm.trim() &&
+                    filteredStories.some((story) => story.id === focusStoryId) && (
+                        <div className="map-status" role="status" aria-live="polite">
+                            <i className="bi bi-stars" aria-hidden="true"></i>
+                            <span>Approximate place (AI): {focusLocationLabel}</span>
+                        </div>
+                    )}
             </div>
 
-            {/* show message when no result */}
-            {searchTerm && filteredStories.length === 0 && (
-                <p className="no-results">No stories found</p>
-            )}
-
-            {/* renders the map with a custom zoom control placement */}
-            <MapContainer center={CyprusCenter} zoom={9}  maxBounds={bounds} maxBoundsViscosity={1.0}
-            zoomControl={false}
-            style={{ height: "100vh", width: "100%" }}
+            <MapContainer
+                center={CYPRUS_CENTER}
+                zoom={9}
+                maxBounds={CYPRUS_BOUNDS}
+                maxBoundsViscosity={1.0}
+                zoomControl={false}
+                style={{ height: "100%", width: "100%" }}
             >
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+                <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
 
-                {/* flies to the first matching story when a search is active */}
+                {/* flies to a search match first, otherwise a story handed off
+                    from the Browse tab's "locate" button */}
                 <FlyToStory
                     story={
                         searchTerm.trim() && filteredStories.length > 0
                             ? filteredStories[0]
-                            : null
+                            : stories.find((s) => s.id === focusStoryId) || null
                     }
                 />
 
-                {/* renders markers only for stories with valid coordinates */}
-                    {filteredStories.map((story) => (
-                    <Marker key={story.id}
-                        position={[Number(story.latitude), Number(story.longitude)]}
-                        icon={getMarkerIcon(story.category)}
-                    >
-                        <Popup>
-                            <div className="popup-card">
-                                {/* shows a placeholder popup image */}
-                                <div className="popup-image">
-                                    {/* uses a temporary image until story media is available */}
-                                    {story.image_url && (
-                                        <img src={`http://127.0.0.1:8000/${story.image_url}`}  alt={story.title}/>
+                {filteredStories.map((story) => {
+                    const category = getCategory(story.category);
+                    const image = mediaUrl(story.image_url);
+                    const audio = mediaUrl(story.audio_url);
+
+                    return (
+                        <Marker
+                            key={story.id}
+                            position={[Number(story.latitude), Number(story.longitude)]}
+                            icon={getMarkerIcon(story.category)}
+                        >
+                            <Popup>
+                                <article className="popup-card">
+                                    {image ? (
+                                        <div className="popup-image">
+                                            <img src={image} alt={story.title} />
+                                            <span
+                                                className="cat-chip popup-chip"
+                                                style={{ background: category.color }}
+                                            >
+                                                <i className={`bi ${category.icon}`}></i>
+                                                {category.label}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <div
+                                            className="popup-image popup-image-empty"
+                                            style={{ background: category.color }}
+                                        >
+                                            <i className={`bi ${category.icon}`}></i>
+                                            <span className="cat-chip popup-chip popup-chip-solid">
+                                                {category.label}
+                                            </span>
+                                        </div>
                                     )}
 
-                                    {story.audio_url && (
-                                        <audio controls>
-                                            <source src={`http://127.0.0.1:8000/${story.audio_url}`} />
-                                        </audio>
-                                    )}
-                                </div>
+                                    <div className="popup-content">
+                                        <h5>{story.title}</h5>
+                                        <p>{getStoryPreview(story)}</p>
 
-                                {/* shows the story title, preview, and action */}
-                                <div className="popup-content">
-                                    <h5>{story.title}</h5>
-                                    <p>{getStoryPreview(story)}</p>
+                                        {audio && (
+                                            <audio controls preload="none" src={audio}>
+                                                Your browser does not support audio playback.
+                                            </audio>
+                                        )}
 
-                                    {/* shows the current fallback action when no media link exists */}
-                                    
                                         <Link to={`/story/${story.id}`} className="popup-btn">
-                                            View Full Story
+                                            Read full story
+                                            <i className="bi bi-arrow-right"></i>
                                         </Link>
-                                    
-                                </div>
-                            </div>
-                        </Popup>
-                    </Marker>
-                ))}
-                
+                                    </div>
+                                </article>
+                            </Popup>
+                        </Marker>
+                    );
+                })}
 
-                {/* shows zoom controls on the right side of the map */}
                 <ZoomControl position="topright" />
             </MapContainer>
+
+            {/* empty state when a filter or search returns nothing */}
+            {!isLoading && !loadError && filteredStories.length === 0 && (
+                <div className="map-empty">
+                    <img src={Logo} alt="" className="map-empty-mark" />
+                    <h5>No stories here yet</h5>
+                    <p>
+                        {searchTerm
+                            ? "Try a different search term or clear the filter."
+                            : "Be the first to add a story to this category."}
+                    </p>
+                    <Link to="/upload" className="map-empty-btn">
+                        Share a story
+                    </Link>
+                </div>
+            )}
         </div>
     );
 }

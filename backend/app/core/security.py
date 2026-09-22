@@ -1,8 +1,12 @@
 from datetime import datetime, timedelta, timezone
+import os
+import secrets
 import jwt
 from pwdlib import PasswordHash
 
-SECRET_KEY = "change-this-dev-secret-key-before-production"
+# Setup persists a private key in backend/.env. Starts without setup use an
+# ephemeral signing key rather than a shared public secret.
+SECRET_KEY = os.getenv("JWT_SECRET_KEY") or secrets.token_urlsafe(48)
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 

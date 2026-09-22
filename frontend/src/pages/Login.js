@@ -2,6 +2,7 @@ import Navbar from '../components/Navbar';
 import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import Logo from "../assets/images/logo.png";
 import '../assets/styles/login.css';
 import API from "../services/Api";
 
@@ -97,9 +98,23 @@ export default function Login() {
                 {/* shows the brand message panel */}
                 <div className="login-left d-flex align-items-center justify-content-center">
                         <div className="branding-content">
-                            <div className="accent-line mb-5"></div>
+                            <div className="branding-mark">
+                                <img src={Logo} alt="" />
+                                <div className="branding-mark-text">
+                                    <strong>Narrify</strong>
+                                    <span>Cultural Inclusion Storytelling Map</span>
+                                </div>
+                            </div>
                             <h2>Every story finds its place.</h2>
-                            <p className='fw-lighter'>Securely access your curated collection of oral histories and heritage landmarks.</p>
+                            <p>
+                                Somewhere on this map, there's{" "}
+                                <span className="tagline-emphasis">ALWAYS</span> room for yours.
+                            </p>
+
+                            <div className="branding-expansion">
+                                <i className="bi bi-globe-americas"></i>
+                                Starting from Cyprus and expanding internationally soon
+                            </div>
                         </div>
                 </div>
 
