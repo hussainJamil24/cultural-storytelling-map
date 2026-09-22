@@ -39,7 +39,11 @@ Next time, open the `narrify-demo` folder and double-click **RunDemo.bat**. No r
 
 ## 4. Get the admin login before filming
 
-Open `backend/.demo-accounts.json` using Notepad. Find the account with `"role": "admin"`. Use that entry's email and password to sign in. Other entries are ordinary users. These are new local demo passwords, not the old application passwords.
+In File Explorer, open the application folder (the folder containing `RunDemo.bat`). Double-click **ShowAdminLogin.bat**. It checks this installation's admin account and displays the exact **ADMIN EMAIL** and **ADMIN PASSWORD**. Copy those into the app's login page. Log out of any ordinary account first, or use an InPrivate/Incognito window. You do not need to create an admin account.
+
+If the file is not there yet, click File Explorer's address bar, type `powershell`, press Enter, and run `git pull --ff-only`. Then double-click **ShowAdminLogin.bat**. This avoids the “cannot find path” error caused by running commands from another folder.
+
+Setup must have completed in this copy. If the helper reports a missing login file, run **SetupDemo.bat** and read its final message. It never guesses a password or changes your accounts/stories.
 
 Do not film the account file, terminal setup, or API key. Keep the admin signed in in a **different browser or browser profile** from the contributor; two ordinary tabs share a login.
 

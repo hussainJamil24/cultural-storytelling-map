@@ -21,7 +21,7 @@ Before recording, double-click `CheckDemo.bat`. It makes an actual Gemini reques
 
 ## Accounts and stored stories
 
-Setup initializes an empty database with **16 stories: 13 approved and 3 rejected**, plus 6 translations, 3 comments and 2 likes. All existing story fields, authors' display names and relationships are preserved. Private account emails and old password hashes are replaced with local demo credentials. Open `backend/.demo-accounts.json` in Notepad for each account's email/password; the account with `role: admin` opens the moderation dashboard.
+Setup initializes an empty database with **16 stories: 13 approved and 3 rejected**, plus 6 translations, 3 comments and 2 likes. All existing story fields, authors' display names and relationships are preserved. Private account emails and old password hashes are replaced with local demo credentials. Double-click `ShowAdminLogin.bat` to display and verify this installation's admin email/password. Log out first or use a private browser window to sign in as admin. All local demo logins are also stored in `backend/.demo-accounts.json`.
 
 All **8 available uploaded files** are bundled under `backend/demo/uploads/`. Four pre-existing missing image/audio references remain listed in `backend/demo/manifest.json`; those missing files cannot be restored from this checkout. The checklist explains how to create a clearly labelled multimedia rehearsal story without altering the existing records.
 
